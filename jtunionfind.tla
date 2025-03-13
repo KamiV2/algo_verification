@@ -606,29 +606,24 @@ InvF1 ==            \A p \in PROCESSES: \A t \in M:
                                             /\  pc[p] = "F1"    =>  /\ t.ret[p] = BOT
                                                                     /\ t.op[p] = "F"
                                                                     /\ t.arg[p] \in NodeSet
-                                                                    /\ InvF1All(p, t)
                                             /\  pc[p] = "F1U1"  =>  /\ t.ret[p] = BOT
                                                                     /\ t.op[p] = "U"
                                                                     /\ t.arg[p] \in NodeSet \X NodeSet
-                                                                    /\ InvF1All(p, t)
                                                                     /\ t.sigma[c[p]] = t.sigma[u_U[p]]
                                             /\  pc[p] = "F1U2"  =>  /\ t.ret[p] = BOT
                                                                     /\ t.op[p] = "U"
                                                                     /\ t.arg[p] \in NodeSet \X NodeSet
                                                                     /\ InvU2All(p, t)
-                                                                    /\ InvF1All(p, t)
                                                                     /\ t.sigma[c[p]] = t.sigma[v_U[p]]
                                             /\  pc[p] = "F1U7"  =>  /\ t.ret[p] = BOT
                                                                     /\ t.op[p] = "U"
                                                                     /\ t.arg[p] \in NodeSet \X NodeSet
                                                                     /\ InvU7All(p, t)
-                                                                    /\ InvF1All(p, t)
                                                                     /\ t.sigma[c[p]] = t.sigma[u_U[p]]
                                             /\  pc[p] = "F1U8"  =>  /\ t.ret[p] = BOT
                                                                     /\ t.op[p] = "U"
                                                                     /\ t.arg[p] \in NodeSet \X NodeSet
                                                                     /\ InvU8All(p, t)
-                                                                    /\ InvF1All(p, t)
                                                                     /\ t.sigma[c[p]] = t.sigma[v_U[p]]
 
 
@@ -999,55 +994,1270 @@ THEOREM NextInv == Inv /\ [Next]_varlist => Inv'
     <1>1. TypeOK'
         BY NextTypeOK
     <1>2. Inv'
-      <2> USE <1>1
       <2>1. ASSUME NEW p \in PROCESSES,
                    F1(p)
             PROVE  Inv'
+        <3> USE <2>1 DEF F1
+        <3>1. TypeOK'
+            BY <1>1
+        <3>2. InvDecide'
+            BY DEF InvDecide, TypeOK, Valid_pc, PCSet
+        <3>3. InvF1'
+          <4> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                              NEW t \in M'
+                       PROVE  (/\  pc[p_1] = "F1"    =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "F"
+                                                       /\ t.arg[p_1] \in NodeSet
+                               /\  pc[p_1] = "F1U1"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F1U2"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU2All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]]
+                               /\  pc[p_1] = "F1U7"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU7All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F1U8"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU8All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF1
+          <4>1. (pc[p_1] = "F1"    =>  /\ t.ret[p_1] = BOT
+                                     /\ t.op[p_1] = "F"
+                                   /\ t.arg[p_1] \in NodeSet)'
+            BY DEF InvF1, TypeOK, Valid_pc, PCSet
+          <4>2. (pc[p_1] = "F1U1"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            BY DEF InvF1, TypeOK, Valid_pc, PCSet
+          <4>3. (pc[p_1] = "F1U2"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU2All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF1, TypeOK, Valid_pc, PCSet, InvU2All, EdgeOK
+          <4>4. (pc[p_1] = "F1U7"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU7All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            BY DEF InvF1, TypeOK, Valid_pc, PCSet, InvU7All, EdgeOK
+          <4>5. (pc[p_1] = "F1U8"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU8All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF1, TypeOK, Valid_pc, PCSet, InvU8All, EdgeOK
+          <4>6. QED
+            BY <4>1, <4>2, <4>3, <4>4, <4>5
+        <3>4. InvF2'
+          <4> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                              NEW t \in M'
+                       PROVE  (/\  pc[p_1] = "F2"    =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "F"
+                                                       /\ t.arg[p_1] \in NodeSet
+                                                       /\ InvF2All(p_1, t)
+                               /\  pc[p_1] = "F2U1"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvF2All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F2U2"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU2All(p_1, t)
+                                                       /\ InvF2All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]]
+                               /\  pc[p_1] = "F2U7"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU7All(p_1, t)
+                                                       /\ InvF2All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F2U8"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU8All(p_1, t)
+                                                       /\ InvF2All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF2
+          <4>1. (pc[p_1] = "F2"    =>  /\ t.ret[p_1] = BOT
+                                     /\ t.op[p_1] = "F"
+                                   /\ t.arg[p_1] \in NodeSet
+                                   /\ InvF2All(p_1, t))'
+          <4>2. (pc[p_1] = "F2U1"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvF2All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+          <4>3. (pc[p_1] = "F2U2"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU2All(p_1, t)
+                                     /\ InvF2All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+          <4>4. (pc[p_1] = "F2U7"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU7All(p_1, t)
+                                     /\ InvF2All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+          <4>5. (pc[p_1] = "F2U8"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU8All(p_1, t)
+                                     /\ InvF2All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+          <4>6. QED
+            BY <4>1, <4>2, <4>3, <4>4, <4>5
+        <3>5. InvF3'
+          <4> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                              NEW t \in M'
+                       PROVE  (/\  pc[p_1] = "F3"    =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "F"
+                                                       /\ t.arg[p_1] \in NodeSet
+                                                       /\ InvF3All(p_1, t)
+                               /\  pc[p_1] = "F3U1"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                           /\ InvF3All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F3U2"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU2All(p_1, t)
+                                                       /\ InvF3All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]]
+                               /\ pc[p_1] = "F3U7"  =>   /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU7All(p_1, t)
+                                                       /\ InvF3All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F3U8"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU8All(p_1, t)
+                                                       /\ InvF3All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF3
+          <4>1. (pc[p_1] = "F3"    =>  /\ t.ret[p_1] = BOT
+                                     /\ t.op[p_1] = "F"
+                                   /\ t.arg[p_1] \in NodeSet
+                                   /\ InvF3All(p_1, t))'
+            BY DEF InvF3, TypeOK, Valid_pc, PCSet, InvF3All, EdgeOK
+          <4>2. (pc[p_1] = "F3U1"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                         /\ InvF3All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            BY DEF InvF3, TypeOK, Valid_pc, PCSet, InvF3All, EdgeOK
+          <4>3. (pc[p_1] = "F3U2"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU2All(p_1, t)
+                                     /\ InvF3All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF3, TypeOK, Valid_pc, PCSet, InvF3All, InvU2All, EdgeOK
+          <4>4. (pc[p_1] = "F3U7"  =>   /\ t.ret[p_1] = BOT
+                                        /\ t.op[p_1] = "U"
+                                      /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                      /\ InvU7All(p_1, t)
+                                      /\ InvF3All(p_1, t)
+                                      /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            BY DEF InvF3, TypeOK, Valid_pc, PCSet, InvF3All, InvU7All, EdgeOK
+          <4>5. (pc[p_1] = "F3U8"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU8All(p_1, t)
+                                     /\ InvF3All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF3, TypeOK, Valid_pc, PCSet, InvF3All, InvU8All, EdgeOK
+          <4>6. QED
+            BY <4>1, <4>2, <4>3, <4>4, <4>5
+        <3>6. InvF4'
+          <4> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                              NEW t \in M'
+                       PROVE  (/\  pc[p_1] = "F4"    =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "F"
+                                                       /\ t.arg[p_1] \in NodeSet
+                                                       /\ InvF4All(p_1, t)
+                               /\  pc[p_1] = "F4U1"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvF4All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F4U2"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU2All(p_1, t)
+                                                       /\ InvF4All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]]
+                               /\  pc[p_1] = "F4U7"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU7All(p_1, t)
+                                                       /\ InvF4All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F4U8"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU8All(p_1, t)
+                                                       /\ InvF4All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF4
+          <4>1. (pc[p_1] = "F4"    =>  /\ t.ret[p_1] = BOT
+                                     /\ t.op[p_1] = "F"
+                                   /\ t.arg[p_1] \in NodeSet
+                                   /\ InvF4All(p_1, t))'
+            BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, EdgeOK            
+          <4>2. (pc[p_1] = "F4U1"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvF4All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, EdgeOK
+          <4>3. (pc[p_1] = "F4U2"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU2All(p_1, t)
+                                     /\ InvF4All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F4U2")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU2All(p_1, t)
+                                 /\ InvF4All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+            <5>3. InvU2All(p_1, t)'
+              <6>1. (t.sigma[t.arg[p_1][1]] = t.sigma[u_U[p_1]])'
+                BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+              <6>2. (t.sigma[t.arg[p_1][2]] = t.sigma[v_U[p_1]])'
+                BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+              <6>3. EdgeOK(t.arg[p_1][1], u_U[p_1])'
+                BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+              <6>4. QED
+                BY <6>1, <6>2, <6>3 DEF InvU2All
+            <5>4. InvF4All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+              <6>2. (t.sigma[a_F[p_1].parent] = t.sigma[u_F[p_1]])'
+                BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+              <6>3. EdgeOK(c[p_1], u_F[p_1])'
+                BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+              <6>4. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+              <6>5. QED
+                BY <6>1, <6>2, <6>3, <6>4 DEF InvF4All
+            <5>5. (t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, InvU2All, EdgeOK
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>4. (pc[p_1] = "F4U7"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU7All(p_1, t)
+                                     /\ InvF4All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F4U7")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU7All(p_1, t)
+                                 /\ InvF4All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvU7All, InvF4All
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvU7All, InvF4All
+            <5>3. InvU7All(p_1, t)'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvU7All, EdgeOK              
+            <5>4. InvF4All(p_1, t)'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, EdgeOK
+            <5>5. (t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+            
+          <4>5. (pc[p_1] = "F4U8"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU8All(p_1, t)
+                                     /\ InvF4All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F4U8")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU8All(p_1, t)
+                                 /\ InvF4All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet
+            <5>3. InvU8All(p_1, t)'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvU8All, EdgeOK
+            <5>4. InvF4All(p_1, t)'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, InvF4All, EdgeOK
+            <5>5. (t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              BY DEF InvF4, TypeOK, Valid_pc, PCSet, EdgeOK
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+                            
+          <4>6. QED
+            BY <4>1, <4>2, <4>3, <4>4, <4>5
+        <3>7. InvF5'
+          <4> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                              NEW t \in M'
+                       PROVE  (/\  pc[p_1] = "F5"    =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "F"
+                                                       /\ t.arg[p_1] \in NodeSet
+                                                       /\ InvF5All(p_1, t)
+                               /\  pc[p_1] = "F5U1"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvF5All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F5U2"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU2All(p_1, t)
+                                                       /\ InvF5All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]]
+                               /\  pc[p_1] = "F5U7"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU7All(p_1, t)
+                                                       /\ InvF5All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F5U8"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU8All(p_1, t)
+                                                       /\ InvF5All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF5
+          <4>1. (pc[p_1] = "F5"    =>  /\ t.ret[p_1] = BOT
+                                     /\ t.op[p_1] = "F"
+                                   /\ t.arg[p_1] \in NodeSet
+                                   /\ InvF5All(p_1, t))'
+            <5> SUFFICES ASSUME (pc[p_1] = "F5")'
+                         PROVE  (    /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "F"
+                                 /\ t.arg[p_1] \in NodeSet
+                                 /\ InvF5All(p_1, t))'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT)'
+              BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>2. (t.op[p_1] = "F")'
+              BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>3. (t.arg[p_1] \in NodeSet)'
+              BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>4. InvF5All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[u_F[p_1]])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>2. (t.sigma[u_F[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF5All
+              
+            <5>5. QED
+              BY <5>1, <5>2, <5>3, <5>4
+            
+          <4>2. (pc[p_1] = "F5U1"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvF5All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F5U1")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvF5All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>3. InvF5All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[u_F[p_1]])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>2. (t.sigma[u_F[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF5All
+            <5>4. (t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>5. QED
+              BY <5>1, <5>2, <5>3, <5>4
+          <4>3. (pc[p_1] = "F5U2"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU2All(p_1, t)
+                                     /\ InvF5All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F5U2")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU2All(p_1, t)
+                                 /\ InvF5All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>3. InvU2All(p_1, t)'
+              BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvU2All, EdgeOK
+            <5>4. InvF5All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[u_F[p_1]])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>2. (t.sigma[u_F[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF5All
+            <5>5. (t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>4. (pc[p_1] = "F5U7"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU7All(p_1, t)
+                                     /\ InvF5All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F5U7")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU7All(p_1, t)
+                                 /\ InvF5All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>3. InvU7All(p_1, t)'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvU7All, EdgeOK              
+            <5>4. InvF5All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[u_F[p_1]])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>2. (t.sigma[u_F[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF5All
+            <5>5. (t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>5. (pc[p_1] = "F5U8"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU8All(p_1, t)
+                                     /\ InvF5All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F5U8")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU8All(p_1, t)
+                                 /\ InvF5All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>3. InvU8All(p_1, t)'
+              BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvU8All, EdgeOK
+            <5>4. InvF5All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[u_F[p_1]])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>2. (t.sigma[u_F[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF5, TypeOK, Valid_pc, PCSet, InvF5All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF5All
+            <5>5. (t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+               BY DEF InvF5, TypeOK, Valid_pc, PCSet
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>6. QED
+            BY <4>1, <4>2, <4>3, <4>4, <4>5
+        <3>8. InvF6'
+          <4> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                              NEW t \in M'
+                       PROVE  (/\  pc[p_1] = "F6"    =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "F"
+                                                       /\ t.arg[p_1] \in NodeSet
+                                                       /\ InvF6All(p_1, t)
+                               /\  pc[p_1] = "F6U1"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                           /\ InvF6All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F6U2"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU2All(p_1, t)
+                                                       /\ InvF6All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]]
+                               /\  pc[p_1] = "F6U7"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU7All(p_1, t)
+                                                       /\ InvF6All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F6U8"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU8All(p_1, t)
+                                                       /\ InvF6All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF6
+          <4>1. (pc[p_1] = "F6"    =>  /\ t.ret[p_1] = BOT
+                                     /\ t.op[p_1] = "F"
+                                   /\ t.arg[p_1] \in NodeSet
+                                   /\ InvF6All(p_1, t))'
+            <5> SUFFICES ASSUME (pc[p_1] = "F6")'
+                         PROVE  (    /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "F"
+                                 /\ t.arg[p_1] \in NodeSet
+                                 /\ InvF6All(p_1, t))'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT)'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>2. (t.op[p_1] = "F")'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>3. (t.arg[p_1] \in NodeSet)'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>4. InvF6All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>2. (t.sigma[a_F[p_1].parent] = t.sigma[u_F[p_1]])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF6All
+            <5>5. QED
+              BY <5>1, <5>2, <5>3, <5>4
+          <4>2. (pc[p_1] = "F6U1"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                         /\ InvF6All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F6U1")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvF6All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>3. InvF6All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>2. (t.sigma[a_F[p_1].parent] = t.sigma[u_F[p_1]])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF6All
+            <5>4. (t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>5. QED
+              BY <5>1, <5>2, <5>3, <5>4
+          <4>3. (pc[p_1] = "F6U2"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU2All(p_1, t)
+                                     /\ InvF6All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F6U2")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU2All(p_1, t)
+                                 /\ InvF6All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>3. InvU2All(p_1, t)'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvU2All, EdgeOK
+            <5>4. InvF6All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>2. (t.sigma[a_F[p_1].parent] = t.sigma[u_F[p_1]])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF6All
+            <5>5. (t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>4. (pc[p_1] = "F6U7"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU7All(p_1, t)
+                                     /\ InvF6All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F6U7")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU7All(p_1, t)
+                                 /\ InvF6All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>3. InvU7All(p_1, t)'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet, EdgeOK, InvU7All
+            <5>4. InvF6All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>2. (t.sigma[a_F[p_1].parent] = t.sigma[u_F[p_1]])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF6All
+               
+            <5>5. (t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>5. (pc[p_1] = "F6U8"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU8All(p_1, t)
+                                     /\ InvF6All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F6U8")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU8All(p_1, t)
+                                 /\ InvF6All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet
+            <5>3. InvU8All(p_1, t)'
+               BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvU8All, EdgeOK
+            <5>4. InvF6All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>2. (t.sigma[a_F[p_1].parent] = t.sigma[u_F[p_1]])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>3. (t.sigma[b_F[p_1].parent] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+              <6>4. EdgeOK(c[p_1], u_F[p_1])'
+                <7>1. EdgeOK(c[p_1], u_F[p_1])
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. c'[p_1] = c[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>5. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                <7>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. u_F'[p_1] = u_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>6. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
+                <7>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
+                    BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
+                <7>2. b_F'[p_1] = b_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_b_F
+                <7>3. a_F'[p_1] = a_F[p_1]
+                    BY DEF TypeOK, Valid_pc, PCSet, Valid_a_F
+                <7> QED
+                    BY <7>1, <7>2, <7>3 DEF EdgeOK
+              <6>7. QED
+                BY <6>1, <6>2, <6>3, <6>4, <6>5, <6>6 DEF InvF6All
+            <5>5. (t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                BY DEF InvF6, TypeOK, Valid_pc, PCSet 
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>6. QED
+            BY <4>1, <4>2, <4>3, <4>4, <4>5
+        <3>9. InvF7'
+          <4> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                              NEW t \in M'
+                       PROVE  (/\  pc[p_1] = "F7"    =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "F"
+                                                       /\ t.arg[p_1] \in NodeSet
+                                                       /\ InvF7All(p_1, t)
+                               /\  pc[p_1] = "F7U1"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvF7All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F7U2"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU2All(p_1, t)
+                                                       /\ InvF7All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]]
+                               /\  pc[p_1] = "F7U7"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU7All(p_1, t)
+                                                       /\ InvF7All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F7U8"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU8All(p_1, t)
+                                                       /\ InvF7All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF7
+          <4>1. (pc[p_1] = "F7"    =>  /\ t.ret[p_1] = BOT
+                                     /\ t.op[p_1] = "F"
+                                   /\ t.arg[p_1] \in NodeSet
+                                   /\ InvF7All(p_1, t))'
+            <5> SUFFICES ASSUME (pc[p_1] = "F7")'
+                         PROVE  (    /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "F"
+                                 /\ t.arg[p_1] \in NodeSet
+                                 /\ InvF7All(p_1, t))'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT)'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet 
+            <5>2. (t.op[p_1] = "F")'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet 
+            <5>3. (t.arg[p_1] \in NodeSet)'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet 
+            <5>4. InvF7All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All
+              <6>2. (t.sigma[a_F[p_1].parent] = t.sigma[u_F[p_1]])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All
+              <6>3. EdgeOK(c[p_1], u_F[p_1])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All, EdgeOK
+              <6>4. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All, EdgeOK
+              <6>5. QED
+                BY <6>1, <6>2, <6>3, <6>4 DEF InvF7All
+            <5>5. QED
+              BY <5>1, <5>2, <5>3, <5>4
+          <4>2. (pc[p_1] = "F7U1"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvF7All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F7U1")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvF7All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet 
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet 
+            <5>3. InvF7All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All
+              <6>2. (t.sigma[a_F[p_1].parent] = t.sigma[u_F[p_1]])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All
+              <6>3. EdgeOK(c[p_1], u_F[p_1])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All, EdgeOK
+              <6>4. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All, EdgeOK
+              <6>5. QED
+                BY <6>1, <6>2, <6>3, <6>4 DEF InvF7All
+            <5>4. (t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet 
+            <5>5. QED
+              BY <5>1, <5>2, <5>3, <5>4
+          <4>3. (pc[p_1] = "F7U2"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU2All(p_1, t)
+                                     /\ InvF7All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F7U2")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU2All(p_1, t)
+                                 /\ InvF7All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet 
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet 
+            <5>3. InvU2All(p_1, t)'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvU2All, EdgeOK
+            <5>4. InvF7All(p_1, t)'
+              <6>1. (t.sigma[c[p_1]] = t.sigma[a_F[p_1].parent])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All
+              <6>2. (t.sigma[a_F[p_1].parent] = t.sigma[u_F[p_1]])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All
+              <6>3. EdgeOK(c[p_1], u_F[p_1])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All, EdgeOK
+              <6>4. EdgeOK(u_F[p_1], a_F[p_1].parent)'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All, EdgeOK
+              <6>5. QED
+                BY <6>1, <6>2, <6>3, <6>4 DEF InvF7All
+            <5>5. (t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                BY DEF InvF7, TypeOK, Valid_pc, PCSet 
+            <5>6. QED
+                BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>4. (pc[p_1] = "F7U7"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU7All(p_1, t)
+                                     /\ InvF7All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F7U7")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU7All(p_1, t)
+                                 /\ InvF7All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet
+            <5>3. InvU7All(p_1, t)'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvU7All, EdgeOK
+            <5>4. InvF7All(p_1, t)'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet, EdgeOK, InvF7All
+            <5>5. (t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>5. (pc[p_1] = "F7U8"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU8All(p_1, t)
+                                     /\ InvF7All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            <5> SUFFICES ASSUME (pc[p_1] = "F7U8")'
+                         PROVE  (  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU8All(p_1, t)
+                                 /\ InvF7All(p_1, t)
+                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              OBVIOUS
+            <5>1. (/\ t.ret[p_1] = BOT
+                   /\ t.op[p_1] = "U")'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet
+            <5>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet
+            <5>3. InvU8All(p_1, t)'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvU8All, EdgeOK
+            <5>4. InvF7All(p_1, t)'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet, InvF7All, EdgeOK
+            <5>5. (t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+              BY DEF InvF7, TypeOK, Valid_pc, PCSet
+            <5>6. QED
+              BY <5>1, <5>2, <5>3, <5>4, <5>5
+          <4>6. QED
+            BY <4>1, <4>2, <4>3, <4>4, <4>5
+        <3>10. InvFR'
+          <4> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                              NEW t \in M'
+                       PROVE  (/\  pc[p_1] = "FR"    =>  /\ t.ret[p_1] = u_F[p_1]
+                                                         /\ t.op[p_1] = "F"
+                                                       /\ t.arg[p_1] \in NodeSet
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_F[p_1]]
+                               /\ pc[p_1] = "FRU1"  =>   /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ t.sigma[u_F[p_1]] = t.sigma[u_U[p_1]]
+                               /\ pc[p_1] = "FRU2"  =>   /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU2All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]]
+                               /\ pc[p_1] = "FRU7"  =>   /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU7All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\ pc[p_1] = "FRU8"  =>   /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU8All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvFR
+          <4>1. (pc[p_1] = "FR"    =>  /\ t.ret[p_1] = u_F[p_1]
+                                     /\ t.op[p_1] = "F"
+                                   /\ t.arg[p_1] \in NodeSet
+                                   /\ t.sigma[c[p_1]] = t.sigma[u_F[p_1]])'
+            BY DEF InvFR, TypeOK, Valid_pc, PCSet
+          <4>2. (pc[p_1] = "FRU1"  =>   /\ t.ret[p_1] = BOT
+                                        /\ t.op[p_1] = "U"
+                                      /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                      /\ t.sigma[u_F[p_1]] = t.sigma[u_U[p_1]])'
+            BY DEF InvFR, TypeOK, Valid_pc, PCSet
+          <4>3. (pc[p_1] = "FRU2"  =>   /\ t.ret[p_1] = BOT
+                                        /\ t.op[p_1] = "U"
+                                      /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                      /\ InvU2All(p_1, t)
+                                      /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvFR, TypeOK, Valid_pc, PCSet, InvU2All, EdgeOK
+          <4>4. (pc[p_1] = "FRU7"  =>   /\ t.ret[p_1] = BOT
+                                        /\ t.op[p_1] = "U"
+                                      /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                      /\ InvU7All(p_1, t)
+                                      /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+            BY DEF InvFR, TypeOK, Valid_pc, PCSet, InvU7All, EdgeOK
+          <4>5. (pc[p_1] = "FRU8"  =>   /\ t.ret[p_1] = BOT
+                                        /\ t.op[p_1] = "U"
+                                      /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                      /\ InvU8All(p_1, t)
+                                      /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvFR, TypeOK, Valid_pc, PCSet, InvU8All, EdgeOK
+          <4>6. QED
+            BY <4>1, <4>2, <4>3, <4>4, <4>5
+        <3>11. InvU1'
+            BY DEF InvU1, TypeOK, Valid_pc, PCSet
+        <3>12. InvU2'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
+        <3>13. InvU3'
+             BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
+        <3>14. InvU4'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
+        <3>15. InvU5'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU5, EdgeOK
+        <3>16. InvU6'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU6, EdgeOK
+        <3>17. InvU7'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
+        <3>18. InvU8'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
+        <3>19. InvUR'
+          BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
+        <3>20. EdgesMonotone'
+          BY DEF EdgesMonotone, EdgeOK
+        <3>21. SigmaRespectsShared'
+          BY DEF SigmaRespectsShared, EdgeOK
+        <3>22. SharedRespectsSigma'
+          BY DEF SharedRespectsSigma, EdgeOK
+        <3>23. Linearizable'
+          BY DEF Linearizable
+        <3>24. QED
+          BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
       <2>2. ASSUME NEW p \in PROCESSES,
                    F2(p)
             PROVE  Inv'
-      <2>3. ASSUME NEW p \in PROCESSES,
-                   F3(p)
-            PROVE  Inv'
-      <2>4. ASSUME NEW p \in PROCESSES,
-                   F4(p)
-            PROVE  Inv'
-      <2>5. ASSUME NEW p \in PROCESSES,
-                   F5(p)
-            PROVE  Inv'
-      <2>6. ASSUME NEW p \in PROCESSES,
-                   F6(p)
-            PROVE  Inv'
-      <2>7. ASSUME NEW p \in PROCESSES,
-                   F7(p)
-            PROVE  Inv'
-      <2>8. ASSUME NEW p \in PROCESSES,
-                   FR(p)
-            PROVE  Inv'
-      <2>9. ASSUME NEW p \in PROCESSES,
-                   U1(p)
-            PROVE  Inv'
-        <3> USE <2>9 DEF U1, Inv, TypeOK, Valid_pc, PCSet 
+        <3> USE <2>2 DEF F2
         <3>1. TypeOK'
-            BY NextTypeOK
+            BY <1>1
         <3>2. InvDecide'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES', NEW t \in M', (pc[q] = "0")'
-                    PROVE  (/\ t.ret[q] = BOT
-                            /\ t.op[q] = BOT
-                            /\ t.arg[q] = BOT)'
-                BY DEF InvDecide
-            <4>2. pc[q] = "0"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U1, InvU1
-            <4> QED
-                BY <4>2, <4>3 DEF InvDecide
         <3>3. InvF1'
         <3>4. InvF2'
         <3>5. InvF3'
@@ -1057,445 +2267,314 @@ THEOREM NextInv == Inv /\ [Next]_varlist => Inv'
         <3>9. InvF7'
         <3>10. InvFR'
         <3>11. InvU1'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES', NEW t \in M', (pc[q] = "U1")'
-                        PROVE  (/\ t.ret[q] = BOT
-                                /\ t.op[q] = "U"                   
-                                /\ t.arg[q] \in NodeSet \X NodeSet)'
-                    BY DEF InvU1
-                <4>2. pc[q] = "U1"
-                    BY <4>1 DEF Valid_pc, PCSet
-                <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                        /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                        /\ told.op[p] = "U"
-                                        /\ t.ret = told.ret
-                                        /\ t.op = told.op
-                                        /\ t.arg = told.arg
-                                        /\ t.sigma = told.sigma
-                    BY <4>2 DEF U1, InvU1
-                <4> QED
-                    BY <4>2, <4>3 DEF InvU1
         <3>12. InvU2'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES', NEW t \in M', (pc[q] = "U2")'
-                        PROVE  (/\ t.ret[q] = BOT
-                                /\ t.op[q] = "U"                   
-                                /\ t.arg[q] \in NodeSet \X NodeSet
-                                /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                                /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                                /\ EdgeOK(t.arg[q][1], u_U[q]))'
-                    BY DEF InvU2
-                <4>2. pc[q] = "U2" /\ q # p
-                    BY <4>1 DEF Valid_pc, PCSet
-                <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                        /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                        /\ told.op[p] = "U"
-                                        /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                        /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                        /\ EdgeOK(t.arg[q][1], u_U[q])
-                                        /\ t.ret = told.ret
-                                        /\ t.op = told.op
-                                        /\ t.arg = told.arg
-                                        /\ t.sigma = told.sigma
-                    BY <4>2 DEF U1, InvU1, InvU2
-                <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                    BY <4>3, <4>2 DEF U1
-                <4> QED
-                    BY <4>2, <4>3, <4>4 DEF InvU2, EdgeOK
         <3>13. InvU3'
-          <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U3")'
-                       PROVE  (/\ t.ret[q] = BOT
-                               /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                    BY DEF InvU3
-                <4>2. pc[q] = "U3"
-                      BY <4>1 DEF Valid_pc, PCSet
-                <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                        /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                        /\ told.op[p] = "U"
-                                        /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                        /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                        /\ EdgeOK(t.arg[q][1], u_U[q])
-                                        /\ EdgeOK(t.arg[q][2], v_U[q])
-                                        /\ t.ret = told.ret
-                                        /\ t.op = told.op
-                                        /\ t.arg = told.arg
-                                        /\ t.sigma = told.sigma
-                    BY <4>2 DEF U1, InvU1, InvU3
-                <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                    BY <4>3, <4>2 DEF U1
-                <4>5.  /\ (t.ret[q] = BOT)'
-                       /\ (t.op[q] = "U")'
-                       /\ (t.arg[q] \in NodeSet \X NodeSet)'
-                       /\ (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                       /\ (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                       /\ EdgeOK(t.arg[q][1], u_U[q])'
-                       /\ EdgeOK(t.arg[q][2], v_U[q])'
-                  <5>1. (t.ret[q] = BOT)'
-                    BY <4>2, <4>3, <4>4 DEF InvU3
-                  <5>2. (t.op[q] = "U")'
-                    BY <4>2, <4>3, <4>4 DEF InvU3
-                  <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                    BY <4>2, <4>3, <4>4 DEF InvU3, EdgeOK
-                  <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                    BY <4>2, <4>3, <4>4 DEF InvU3, EdgeOK
-                  <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3, <4>4 DEF InvU3, EdgeOK
-                  <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU3, EdgeOK
-                  <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU3, EdgeOK
-                  <5>8. QED
-                    BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7
-                <4> QED
-                    BY <4>5
         <3>14. InvU4'
-          <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U4")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q])
-                               /\ u_U[q] # v_U[q])'
-                BY DEF InvU4
-             <4>2. pc[q] = "U4"
-                 BY <4>1 DEF Valid_pc, PCSet
-             <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                     /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                     /\ told.op[p] = "U"
-                                     /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                     /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                     /\ EdgeOK(t.arg[q][1], u_U[q])
-                                     /\ EdgeOK(t.arg[q][2], v_U[q])
-                                     /\ u_U[q] # v_U[q]
-                                     /\ t.ret = told.ret
-                                     /\ t.op = told.op
-                                     /\ t.arg = told.arg
-                                     /\ t.sigma = told.sigma
-                 BY <4>2 DEF U1, InvU1, InvU4
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                    BY <4>3, <4>2 DEF U1
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q])
-                  /\ u_U[q] # v_U[q])'
-                <5>1. (/\ t.ret[q] = BOT)'
-                    BY <4>2, <4>3 DEF InvU4
-                <5>2. (t.op[q] = "U")'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                        BY <4>2, <4>3, <4>4 DEF InvU4, EdgeOK
-                <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                        BY <4>2, <4>3, <4>4 DEF InvU4, EdgeOK
-                <5>8. (u_U[q] # v_U[q])'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>9. QED
-                BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7, <5>8
-           <4> QED
-            BY <4>5
         <3>15. InvU5'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U5")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q])
-                               /\ u_U[q] # v_U[q]
-                               /\ EdgeOK(u_U[q], a_U[q].parent))'
-                BY DEF InvU5
-            <4>2. pc[q] = "U5"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ EdgeOK(t.arg[q][1], u_U[q])
-                                    /\ EdgeOK(t.arg[q][2], v_U[q])
-                                    /\ u_U[q] # v_U[q]
-                                    /\ EdgeOK(u_U[q], a_U[q].parent)
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U1, InvU1, InvU5
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U1
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q])
-                  /\ u_U[q] # v_U[q]
-                  /\ EdgeOK(u_U[q], a_U[q].parent))'
-                 <5>1. (/\ t.ret[q] = BOT)'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>2. (t.op[q] = "U")'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                     BY <4>2, <4>3, <4>4 DEF InvU5, EdgeOK
-                 <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                     BY <4>2, <4>3, <4>4 DEF InvU5, EdgeOK
-                 <5>8. (u_U[q] # v_U[q])'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>9. EdgeOK(u_U[q], a_U[q].parent)'
-                     BY <4>2, <4>3, <4>4 DEF InvU5, EdgeOK
-                 <5>10. QED
-                     BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7, <5>8, <5>9
-            <4> QED
-                BY <4>5
         <3>16. InvU6'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U6")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q])
-                               /\ u_U[q] # v_U[q]
-                               /\ EdgeOK(u_U[q], a_U[q].parent)
-                               /\ EdgeOK(v_U[q], b_U[q].parent))'
-                BY DEF InvU6
-            <4>2. pc[q] = "U6"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ EdgeOK(t.arg[q][1], u_U[q])
-                                    /\ EdgeOK(t.arg[q][2], v_U[q])
-                                    /\ u_U[q] # v_U[q]
-                                    /\ EdgeOK(u_U[q], a_U[q].parent)
-                                    /\ EdgeOK(v_U[q], b_U[q].parent)
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U1, InvU1, InvU6
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U1
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q])
-                  /\ u_U[q] # v_U[q]
-                  /\ EdgeOK(u_U[q], a_U[q].parent)
-                  /\ EdgeOK(v_U[q], b_U[q].parent))'
-              <5>1. (/\ t.ret[q] = BOT)'
-                BY <4>2, <4>3 DEF InvU6
-              <5>2. (t.op[q] = "U")'
-                BY <4>2, <4>3 DEF InvU6
-              <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                BY <4>2, <4>3 DEF InvU6
-              <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                BY <4>2, <4>3 DEF InvU6
-              <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                BY <4>2, <4>3 DEF InvU6
-              <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                BY <4>2, <4>3, <4>4 DEF InvU6, EdgeOK
-              <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                BY <4>2, <4>3, <4>4 DEF InvU6, EdgeOK
-              <5>8. (u_U[q] # v_U[q])'
-                BY <4>2, <4>3 DEF InvU6
-              <5>9. EdgeOK(u_U[q], a_U[q].parent)'
-                BY <4>2, <4>3, <4>4 DEF InvU6, EdgeOK
-              <5>10. EdgeOK(v_U[q], b_U[q].parent)'
-                BY <4>2, <4>3, <4>4 DEF InvU6, EdgeOK
-              <5>11. QED
-                BY <5>1, <5>10, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7, <5>8, <5>9
-          <4> QED
-            BY <4>5
         <3>17. InvU7'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U7")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                BY DEF InvU7
-            <4>2. pc[q] = "U7"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ EdgeOK(t.arg[q][1], u_U[q])
-                                    /\ EdgeOK(t.arg[q][2], v_U[q])
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U1, InvU1, InvU7
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U1
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                <5>1. (/\ t.ret[q] = BOT)'
-                    BY <4>2, <4>3 DEF InvU7
-                <5>2. (t.op[q] = "U")'
-                    BY <4>2, <4>3 DEF InvU7
-                <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                    BY <4>2, <4>3 DEF InvU7
-                <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                    BY <4>2, <4>3 DEF InvU7
-                <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3 DEF InvU7 
-                <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU7, EdgeOK   
-                <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU7, EdgeOK   
-                <5>8. QED
-                    BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7    
-          <4> QED
-            BY <4>5
         <3>18. InvU8'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U8")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                BY DEF InvU8
-            <4>2. pc[q] = "U8"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ EdgeOK(t.arg[q][1], u_U[q])
-                                    /\ EdgeOK(t.arg[q][2], v_U[q])
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U1, InvU1, InvU8
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U1
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                <5>1. (/\ t.ret[q] = BOT)'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>2. (t.op[q] = "U")'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU8, EdgeOK
-                <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU8, EdgeOK
-                <5>8. QED
-                    BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7                
-            <4> QED
-                BY <4>5
         <3>19. InvUR'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "UR")'
-                       PROVE  (    /\ t.ret[q] = ACK
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ t.sigma[u_U[q]] = t.sigma[v_U[q]])'
-                BY DEF InvUR
-            <4>2. pc[q] = "UR"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ told.sigma[u_U[q]] = told.sigma[v_U[q]]
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U1, InvU1, InvUR
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U1
-            <4>5. (/\ t.ret[q] = ACK
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ t.sigma[u_U[q]] = t.sigma[v_U[q]])'
-                <5>1. (/\ t.ret[q] = ACK)'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>2. (t.op[q] = "U")'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>6. (t.sigma[u_U[q]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>7. QED
-                    BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6
-            <4> QED
-                BY <4>5
+        <3>20. EdgesMonotone'
+          BY DEF EdgesMonotone, EdgeOK
+        <3>21. SigmaRespectsShared'
+        <3>22. SharedRespectsSigma'
+        <3>23. Linearizable'
+        <3>24. QED
+          BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
+      <2>3. ASSUME NEW p \in PROCESSES,
+                   F3(p)
+            PROVE  Inv'
+        <3> USE <2>3 DEF F3
+        <3>1. TypeOK'
+            BY <1>1
+        <3>2. InvDecide'
+            BY DEF InvDecide, TypeOK, Valid_pc, PCSet
+        <3>3. InvF1'
+          <4> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                              NEW t \in M'
+                       PROVE  (/\  pc[p_1] = "F1"    =>   /\ t.ret[p_1] = BOT
+                                                            /\ t.op[p_1] = "F"
+                                                            /\ t.arg[p_1] \in NodeSet
+                                                            /\ InvF1All(p_1, t)
+                               /\  pc[p_1] = "F1U1"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvF1All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F1U2"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU2All(p_1, t)
+                                                       /\ InvF1All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]]
+                               /\  pc[p_1] = "F1U7"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU7All(p_1, t)
+                                                       /\ InvF1All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]]
+                               /\  pc[p_1] = "F1U8"  =>  /\ t.ret[p_1] = BOT
+                                                         /\ t.op[p_1] = "U"
+                                                       /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                       /\ InvU8All(p_1, t)
+                                                       /\ InvF1All(p_1, t)
+                                                       /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            BY DEF InvF1
+          <4>1. (pc[p_1] = "F1"    =>  /\ t.ret[p_1] = BOT
+                                     /\ t.op[p_1] = "F"
+                                   /\ t.arg[p_1] \in NodeSet
+                                   /\ InvF1All(p_1, t))'
+          <4>2. (pc[p_1] = "F1U1"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvF1All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+          <4>3. (pc[p_1] = "F1U2"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU2All(p_1, t)
+                                     /\ InvF1All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+          <4>4. (pc[p_1] = "F1U7"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU7All(p_1, t)
+                                     /\ InvF1All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
+          <4>5. (pc[p_1] = "F1U8"  =>  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU8All(p_1, t)
+                                     /\ InvF1All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+          <4>6. QED
+            BY <4>1, <4>2, <4>3, <4>4, <4>5
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+            BY DEF InvU1, TypeOK, Valid_pc, PCSet
+        <3>12. InvU2'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
+        <3>13. InvU3'
+             BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
+        <3>14. InvU4'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
+        <3>15. InvU5'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU5, EdgeOK
+        <3>16. InvU6'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU6, EdgeOK
+        <3>17. InvU7'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
+        <3>18. InvU8'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
+        <3>19. InvUR'
+          BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
+        <3>20. EdgesMonotone'
+          BY DEF EdgesMonotone, EdgeOK
+        <3>21. SigmaRespectsShared'
+          BY DEF SigmaRespectsShared, EdgeOK
+        <3>22. SharedRespectsSigma'
+          BY DEF SharedRespectsSigma, EdgeOK
+        <3>23. Linearizable'
+          BY DEF Linearizable
+        <3>24. QED
+          BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
+      <2>4. ASSUME NEW p \in PROCESSES,
+                   F4(p)
+            PROVE  Inv'
+        <3> USE <2>4 DEF F4
+        <3>1. TypeOK'
+            BY <1>1
+        <3>2. InvDecide'
+            BY DEF InvDecide, TypeOK, Valid_pc, PCSet
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+            BY DEF InvU1, TypeOK, Valid_pc, PCSet
+        <3>12. InvU2'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
+        <3>13. InvU3'
+             BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
+        <3>14. InvU4'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
+        <3>15. InvU5'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU5, EdgeOK
+        <3>16. InvU6'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU6, EdgeOK
+        <3>17. InvU7'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
+        <3>18. InvU8'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
+        <3>19. InvUR'
+          BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
+        <3>20. EdgesMonotone'
+          BY DEF EdgesMonotone, EdgeOK
+        <3>21. SigmaRespectsShared'
+          BY DEF SigmaRespectsShared, EdgeOK
+        <3>22. SharedRespectsSigma'
+          BY DEF SharedRespectsSigma, EdgeOK
+        <3>23. Linearizable'
+          BY DEF Linearizable
+        <3>24. QED
+          BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
+            
+      <2>5. ASSUME NEW p \in PROCESSES,
+                   F5(p)
+            PROVE  Inv'
+        <3> USE <2>5 DEF F5
+        <3>1. TypeOK'
+            BY <1>1
+        <3>2. InvDecide'
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+        <3>12. InvU2'
+        <3>13. InvU3'
+        <3>14. InvU4'
+        <3>15. InvU5'
+        <3>16. InvU6'
+        <3>17. InvU7'
+        <3>18. InvU8'
+        <3>19. InvUR'
+        <3>20. EdgesMonotone'
+          BY DEF EdgesMonotone, EdgeOK, TypeOK
+        <3>21. SigmaRespectsShared'
+        <3>22. SharedRespectsSigma'
+        <3>23. Linearizable'
+        <3>24. QED
+          BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
+      <2>6. ASSUME NEW p \in PROCESSES,
+                   F6(p)
+            PROVE  Inv'
+        <3> USE <2>6 DEF F6
+        <3>1. TypeOK'
+            BY <1>1
+        <3>2. InvDecide'
+            BY DEF InvDecide, TypeOK, Valid_pc, PCSet
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+            BY DEF InvU1, TypeOK, Valid_pc, PCSet
+        <3>12. InvU2'
+        <3>13. InvU3'
+        <3>14. InvU4'
+        <3>15. InvU5'
+        <3>16. InvU6'
+        <3>17. InvU7'
+        <3>18. InvU8'
+        <3>19. InvUR'
+          BY DEF TypeOK, Valid_pc, PCSet, InvUR
+        <3>20. EdgesMonotone'
+        <3>21. SigmaRespectsShared'
+        <3>22. SharedRespectsSigma'
+        <3>23. Linearizable'
+        <3>24. QED
+          BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
+      <2>7. ASSUME NEW p \in PROCESSES,
+                   F7(p)
+            PROVE  Inv'
+        <3> USE <2>7 DEF F7
+        <3>1. TypeOK'
+            BY <1>1
+        <3>2. InvDecide'
+            BY DEF InvDecide, TypeOK, Valid_pc, PCSet
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+            BY DEF InvU1, TypeOK, Valid_pc, PCSet
+        <3>12. InvU2'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
+        <3>13. InvU3'
+             BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
+        <3>14. InvU4'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
+        <3>15. InvU5'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU5, EdgeOK
+        <3>16. InvU6'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU6, EdgeOK
+        <3>17. InvU7'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
+        <3>18. InvU8'
+          BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
+        <3>19. InvUR'
+          BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
+        <3>20. EdgesMonotone'
+          BY DEF EdgesMonotone, EdgeOK
+        <3>21. SigmaRespectsShared'
+          BY DEF SigmaRespectsShared, EdgeOK
+        <3>22. SharedRespectsSigma'
+          BY DEF SharedRespectsSigma, EdgeOK
+        <3>23. Linearizable'
+          BY DEF Linearizable
+        <3>24. QED
+          BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
+      <2>8. ASSUME NEW p \in PROCESSES,
+                   FR(p)
+            PROVE  Inv'
+      <2>9. ASSUME NEW p \in PROCESSES,
+                   U1(p)
+            PROVE  Inv'
+        <3> USE <2>9 DEF U1 
+        <3>1. TypeOK'
+            BY NextTypeOK
+        <3>2. InvDecide'
+            BY DEF TypeOK, Valid_pc, PCSet, InvDecide 
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU1            
+        <3>12. InvU2'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
+        <3>13. InvU3'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
+        <3>14. InvU4'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
+        <3>15. InvU5'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU5, EdgeOK
+        <3>16. InvU6'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU6, EdgeOK
+        <3>17. InvU7'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
+        <3>18. InvU8'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
+        <3>19. InvUR'
+            BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
         <3>20. EdgesMonotone'
             BY DEF EdgesMonotone, EdgeOK
         <3>21. SigmaRespectsShared'
@@ -1509,22 +2588,11 @@ THEOREM NextInv == Inv /\ [Next]_varlist => Inv'
       <2>10. ASSUME NEW p \in PROCESSES,
                     U2(p)
              PROVE  Inv'
-        <3> USE <2>10 DEF U2, Inv, TypeOK, Valid_pc, PCSet
+        <3> USE <2>10 DEF U2 
         <3>1. TypeOK'
             BY NextTypeOK
         <3>2. InvDecide'
-          <4> SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M'
-                       PROVE  (/\  pc[q] = "0"     =>  /\ t.ret[q] = BOT
-                                                       /\ t.op[q] = BOT
-                                                     /\ t.arg[q] = BOT)'
-            BY DEF InvDecide
-          <4>1. (pc[q] = "0"     =>  /\ t.ret[q] = BOT
-                                     /\ t.op[q] = BOT
-                                   /\ t.arg[q] = BOT)'
-            BY DEF InvDecide
-          <4>2. QED
-            BY <4>1
+            BY DEF TypeOK, Valid_pc, PCSet, InvDecide 
         <3>3. InvF1'
         <3>4. InvF2'
         <3>5. InvF3'
@@ -1534,446 +2602,30 @@ THEOREM NextInv == Inv /\ [Next]_varlist => Inv'
         <3>9. InvF7'
         <3>10. InvFR'
         <3>11. InvU1'
-            BY DEF InvU1, U2
+            BY DEF TypeOK, Valid_pc, PCSet, InvU1            
         <3>12. InvU2'
-          <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U2")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q]))'
-            BY DEF InvU2
-          <4>2. pc[q] = "U2"
-            BY <4>1 DEF U2, Valid_pc, PCSet
-          <4>3. \E told \in M:  /\ told.ret[p] = BOT
-                                  /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                  /\ told.op[p] = "U"
-                                  /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                  /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                                  /\ t.ret = told.ret
-                                  /\ t.op = told.op
-                                  /\ t.arg = told.arg
-                                  /\ t.sigma = told.sigma
-            BY <4>2 DEF U2, InvU2
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U2
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q]))'
-                  BY <4>2, <4>3 DEF InvU2, EdgeOK
-          <4> QED
-            BY <4>5 
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
         <3>13. InvU3'
-              <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                                  NEW t \in M',
-                                  (pc[q] = "U3")'
-                           PROVE  (    /\ t.ret[q] = BOT
-                                     /\ t.op[q] = "U"
-                                   /\ t.arg[q] \in NodeSet \X NodeSet
-                                   /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                                   /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                                   /\ EdgeOK(t.arg[q][1], u_U[q])
-                                   /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                BY DEF InvU3
-              <4>2. pc[q] = "U3"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ EdgeOK(t.arg[q][1], u_U[q])
-                                    /\ EdgeOK(t.arg[q][2], v_U[q])
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-            BY <4>2 DEF U2, InvU2, InvU3
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U2
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                <5>1. (t.ret[q] = BOT)'
-                    BY <4>2, <4>3 DEF InvU3
-                <5>2. (t.op[q] = "U")'
-                    BY <4>2, <4>3 DEF InvU3
-                <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                    BY <4>2, <4>3 DEF InvU3
-                <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                    BY <4>2, <4>3 DEF InvU3
-                <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3 DEF InvU3
-                <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU3, EdgeOK
-                <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU3, EdgeOK
-                <5>8. QED
-                    BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7
-          <4> QED
-            BY <4>5
-            
+            BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
         <3>14. InvU4'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U4")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q])
-                               /\ u_U[q] # v_U[q])'
-                BY DEF InvU4
-             <4>2. pc[q] = "U4"
-                 BY <4>1 DEF Valid_pc, PCSet
-             <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                     /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                     /\ told.op[p] = "U"
-                                     /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                     /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                     /\ EdgeOK(t.arg[q][1], u_U[q])
-                                     /\ EdgeOK(t.arg[q][2], v_U[q])
-                                     /\ u_U[q] # v_U[q]
-                                     /\ t.ret = told.ret
-                                     /\ t.op = told.op
-                                     /\ t.arg = told.arg
-                                     /\ t.sigma = told.sigma
-                 BY <4>2 DEF U2, InvU2, InvU4
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                    BY <4>3, <4>2 DEF U2
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q])
-                  /\ u_U[q] # v_U[q])'
-                <5>1. (/\ t.ret[q] = BOT)'
-                    BY <4>2, <4>3 DEF InvU4
-                <5>2. (t.op[q] = "U")'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                        BY <4>2, <4>3, <4>4 DEF InvU4, EdgeOK
-                <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                        BY <4>2, <4>3, <4>4 DEF InvU4, EdgeOK
-                <5>8. (u_U[q] # v_U[q])'
-                        BY <4>2, <4>3 DEF InvU4
-                <5>9. QED
-                BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7, <5>8
-           <4> QED
-            BY <4>5
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
         <3>15. InvU5'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U5")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q])
-                               /\ u_U[q] # v_U[q]
-                               /\ EdgeOK(u_U[q], a_U[q].parent))'
-                BY DEF InvU5
-            <4>2. pc[q] = "U5"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ EdgeOK(t.arg[q][1], u_U[q])
-                                    /\ EdgeOK(t.arg[q][2], v_U[q])
-                                    /\ u_U[q] # v_U[q]
-                                    /\ EdgeOK(u_U[q], a_U[q].parent)
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U2, InvU2, InvU5
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U2
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q])
-                  /\ u_U[q] # v_U[q]
-                  /\ EdgeOK(u_U[q], a_U[q].parent))'
-                 <5>1. (/\ t.ret[q] = BOT)'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>2. (t.op[q] = "U")'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                     BY <4>2, <4>3, <4>4 DEF InvU5, EdgeOK
-                 <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                     BY <4>2, <4>3, <4>4 DEF InvU5, EdgeOK
-                 <5>8. (u_U[q] # v_U[q])'
-                     BY <4>2, <4>3 DEF InvU5
-                 <5>9. EdgeOK(u_U[q], a_U[q].parent)'
-                     BY <4>2, <4>3, <4>4 DEF InvU5, EdgeOK
-                 <5>10. QED
-                     BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7, <5>8, <5>9
-            <4> QED
-                BY <4>5
+            BY DEF TypeOK, Valid_pc, PCSet, InvU5, EdgeOK
         <3>16. InvU6'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U6")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q])
-                               /\ u_U[q] # v_U[q]
-                               /\ EdgeOK(u_U[q], a_U[q].parent)
-                               /\ EdgeOK(v_U[q], b_U[q].parent))'
-                BY DEF InvU6
-            <4>2. pc[q] = "U6"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ EdgeOK(t.arg[q][1], u_U[q])
-                                    /\ EdgeOK(t.arg[q][2], v_U[q])
-                                    /\ u_U[q] # v_U[q]
-                                    /\ EdgeOK(u_U[q], a_U[q].parent)
-                                    /\ EdgeOK(v_U[q], b_U[q].parent)
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U2, InvU2, InvU6
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U1
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q])
-                  /\ u_U[q] # v_U[q]
-                  /\ EdgeOK(u_U[q], a_U[q].parent)
-                  /\ EdgeOK(v_U[q], b_U[q].parent))'
-              <5>1. (/\ t.ret[q] = BOT)'
-                BY <4>2, <4>3 DEF InvU6
-              <5>2. (t.op[q] = "U")'
-                BY <4>2, <4>3 DEF InvU6
-              <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                BY <4>2, <4>3 DEF InvU6
-              <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                BY <4>2, <4>3 DEF InvU6
-              <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                BY <4>2, <4>3 DEF InvU6
-              <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                BY <4>2, <4>3, <4>4 DEF InvU6, EdgeOK
-              <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                BY <4>2, <4>3, <4>4 DEF InvU6, EdgeOK
-              <5>8. (u_U[q] # v_U[q])'
-                BY <4>2, <4>3 DEF InvU6
-              <5>9. EdgeOK(u_U[q], a_U[q].parent)'
-                BY <4>2, <4>3, <4>4 DEF InvU6, EdgeOK
-              <5>10. EdgeOK(v_U[q], b_U[q].parent)'
-                BY <4>2, <4>3, <4>4 DEF InvU6, EdgeOK
-              <5>11. QED
-                BY <5>1, <5>10, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7, <5>8, <5>9
-          <4> QED
-            BY <4>5
+            BY DEF TypeOK, Valid_pc, PCSet, InvU6, EdgeOK
         <3>17. InvU7'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U7")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                BY DEF InvU7
-            <4>2. pc[q] = "U7"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ EdgeOK(t.arg[q][1], u_U[q])
-                                    /\ EdgeOK(t.arg[q][2], v_U[q])
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U2, InvU2, InvU7
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U2
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                <5>1. (/\ t.ret[q] = BOT)'
-                    BY <4>2, <4>3 DEF InvU7
-                <5>2. (t.op[q] = "U")'
-                    BY <4>2, <4>3 DEF InvU7
-                <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                    BY <4>2, <4>3 DEF InvU7
-                <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                    BY <4>2, <4>3 DEF InvU7
-                <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3 DEF InvU7 
-                <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU7, EdgeOK   
-                <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU7, EdgeOK   
-                <5>8. QED
-                    BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7    
-          <4> QED
-            BY <4>5
+            BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
         <3>18. InvU8'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "U8")'
-                       PROVE  (    /\ t.ret[q] = BOT
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ EdgeOK(t.arg[q][1], u_U[q])
-                               /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                BY DEF InvU8
-            <4>2. pc[q] = "U8"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ EdgeOK(t.arg[q][1], u_U[q])
-                                    /\ EdgeOK(t.arg[q][2], v_U[q])
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U2, InvU2, InvU8
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U2
-            <4>5. (/\ t.ret[q] = BOT
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ EdgeOK(t.arg[q][1], u_U[q])
-                  /\ EdgeOK(t.arg[q][2], v_U[q]))'
-                <5>1. (/\ t.ret[q] = BOT)'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>2. (t.op[q] = "U")'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3 DEF InvU8
-                <5>6. EdgeOK(t.arg[q][1], u_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU8, EdgeOK
-                <5>7. EdgeOK(t.arg[q][2], v_U[q])'
-                    BY <4>2, <4>3, <4>4 DEF InvU8, EdgeOK
-                <5>8. QED
-                    BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6, <5>7                
-            <4> QED
-                BY <4>5
+            BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
         <3>19. InvUR'
-            <4>1. SUFFICES ASSUME NEW q \in PROCESSES',
-                              NEW t \in M',
-                              (pc[q] = "UR")'
-                       PROVE  (    /\ t.ret[q] = ACK
-                                 /\ t.op[q] = "U"
-                               /\ t.arg[q] \in NodeSet \X NodeSet
-                               /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                               /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                               /\ t.sigma[u_U[q]] = t.sigma[v_U[q]])'
-                BY DEF InvUR
-            <4>2. pc[q] = "UR"
-                BY <4>1 DEF Valid_pc, PCSet
-            <4>3. \E told \in M:    /\ told.ret[p] = BOT
-                                    /\ \E x \in NodeSet \X NodeSet: told.arg[p] = x
-                                    /\ told.op[p] = "U"
-                                    /\ told.sigma[t.arg[q][1]] = told.sigma[u_U[q]]
-                                    /\ told.sigma[t.arg[q][2]] = told.sigma[v_U[q]]
-                                    /\ told.sigma[u_U[q]] = told.sigma[v_U[q]]
-                                    /\ t.ret = told.ret
-                                    /\ t.op = told.op
-                                    /\ t.arg = told.arg
-                                    /\ t.sigma = told.sigma
-                BY <4>2 DEF U2, InvU2, InvUR
-            <4>4. u_U[q] = u_U[q]' /\ v_U[q] = v_U[q]'
-                BY <4>3, <4>2 DEF U2
-            <4>5. (/\ t.ret[q] = ACK
-                  /\ t.op[q] = "U"
-                  /\ t.arg[q] \in NodeSet \X NodeSet
-                  /\ t.sigma[t.arg[q][1]] = t.sigma[u_U[q]]
-                  /\ t.sigma[t.arg[q][2]] = t.sigma[v_U[q]]
-                  /\ t.sigma[u_U[q]] = t.sigma[v_U[q]])'
-                <5>1. (/\ t.ret[q] = ACK)'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>2. (t.op[q] = "U")'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>3. (t.arg[q] \in NodeSet \X NodeSet)'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>4. (t.sigma[t.arg[q][1]] = t.sigma[u_U[q]])'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>5. (t.sigma[t.arg[q][2]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>6. (t.sigma[u_U[q]] = t.sigma[v_U[q]])'
-                    BY <4>2, <4>3 DEF InvUR
-                <5>7. QED
-                    BY <5>1, <5>2, <5>3, <5>4, <5>5, <5>6
-            <4> QED
-                BY <4>5
+            BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
         <3>20. EdgesMonotone'
             BY DEF EdgesMonotone, EdgeOK
         <3>21. SigmaRespectsShared'
             BY DEF SigmaRespectsShared
         <3>22. SharedRespectsSigma'
             BY DEF SharedRespectsSigma
-        <3>23. Linearizable'
+        <3>23.  Linearizable'
             BY DEF Linearizable
         <3>24. QED
           BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
@@ -2090,21 +2742,237 @@ THEOREM NextInv == Inv /\ [Next]_varlist => Inv'
       <2>12. ASSUME NEW p \in PROCESSES,
                     U4(p)
              PROVE  Inv'
+        <3> USE <2>12 DEF U4 
+        <3>1. TypeOK'
+            BY NextTypeOK
+        <3>2. InvDecide'
+            BY DEF TypeOK, Valid_pc, PCSet, InvDecide 
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU1            
+        <3>12. InvU2'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
+        <3>13. InvU3'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
+        <3>14. InvU4'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
+        <3>15. InvU5' \* TODO: THIS IS A BIT NONTRIVIAL.
+        <3>16. InvU6'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU6, EdgeOK
+        <3>17. InvU7'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
+        <3>18. InvU8'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
+        <3>19. InvUR'
+            BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
+        <3>20. EdgesMonotone'
+            BY DEF EdgesMonotone, EdgeOK
+        <3>21. SigmaRespectsShared'
+            BY DEF SigmaRespectsShared
+        <3>22. SharedRespectsSigma'
+            BY DEF SharedRespectsSigma
+        <3>23.  Linearizable'
+            BY DEF Linearizable
+        <3>24. QED
+            BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
       <2>13. ASSUME NEW p \in PROCESSES,
                     U5(p)
              PROVE  Inv'
+        <3> USE <2>13 DEF U5
+        <3>1. TypeOK'
+            BY NextTypeOK
+        <3>2. InvDecide'
+            BY DEF TypeOK, Valid_pc, PCSet, InvDecide 
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU1            
+        <3>12. InvU2'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
+        <3>13. InvU3'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
+        <3>14. InvU4'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
+        <3>15. InvU5' 
+            BY DEF TypeOK, Valid_pc, PCSet, InvU5, EdgeOK
+        <3>16. InvU6'\* TODO: THIS IS A BIT NONTRIVIAL.
+        <3>17. InvU7'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
+        <3>18. InvU8'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
+        <3>19. InvUR'
+            BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
+        <3>20. EdgesMonotone'
+            BY DEF EdgesMonotone, EdgeOK
+        <3>21. SigmaRespectsShared'
+            BY DEF SigmaRespectsShared
+        <3>22. SharedRespectsSigma'
+            BY DEF SharedRespectsSigma
+        <3>23.  Linearizable'
+            BY DEF Linearizable
+        <3>24. QED
+            BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
       <2>14. ASSUME NEW p \in PROCESSES,
                     U6(p)
              PROVE  Inv'
+        <3> USE <2>14 DEF U6
+        <3>1. TypeOK'
+            BY NextTypeOK
+        <3>2. InvDecide'
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+        <3>12. InvU2'
+        <3>13. InvU3'
+        <3>14. InvU4'
+        <3>15. InvU5' 
+        <3>16. InvU6'
+        <3>17. InvU7' \* Nontrivial
+        <3>18. InvU8'
+        <3>19. InvUR'
+        <3>20. EdgesMonotone'
+        <3>21. SigmaRespectsShared'
+        <3>22. SharedRespectsSigma'
+        <3>23.  Linearizable'
+        <3>24. QED
+            BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
       <2>15. ASSUME NEW p \in PROCESSES,
                     U7(p)
              PROVE  Inv'
+        <3> USE <2>15 DEF U7
+        <3>1. TypeOK'
+            BY NextTypeOK
+        <3>2. InvDecide'
+            BY DEF TypeOK, Valid_pc, PCSet, InvDecide 
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU1            
+        <3>12. InvU2'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
+        <3>13. InvU3'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
+        <3>14. InvU4'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
+        <3>15. InvU5' 
+            BY DEF TypeOK, Valid_pc, PCSet, InvU5, EdgeOK
+        <3>16. InvU6'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU6, EdgeOK
+        <3>17. InvU7'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
+        <3>18. InvU8'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
+        <3>19. InvUR'
+            BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
+        <3>20. EdgesMonotone'
+            BY DEF EdgesMonotone, EdgeOK
+        <3>21. SigmaRespectsShared'
+            BY DEF SigmaRespectsShared
+        <3>22. SharedRespectsSigma'
+            BY DEF SharedRespectsSigma
+        <3>23.  Linearizable'
+            BY DEF Linearizable
+        <3>24. QED
+            BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
       <2>16. ASSUME NEW p \in PROCESSES,
                     U8(p)
              PROVE  Inv'
+        <3> USE <2>16 DEF U8
+        <3>1. TypeOK'
+            BY NextTypeOK
+        <3>2. InvDecide'
+            BY DEF TypeOK, Valid_pc, PCSet, InvDecide 
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU1            
+        <3>12. InvU2'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU2, EdgeOK
+        <3>13. InvU3'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU3, EdgeOK
+        <3>14. InvU4'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU4, EdgeOK
+        <3>15. InvU5' 
+            BY DEF TypeOK, Valid_pc, PCSet, InvU5, EdgeOK
+        <3>16. InvU6'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU6, EdgeOK
+        <3>17. InvU7'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU7, EdgeOK
+        <3>18. InvU8'
+            BY DEF TypeOK, Valid_pc, PCSet, InvU8, EdgeOK
+        <3>19. InvUR'
+            BY DEF TypeOK, Valid_pc, PCSet, InvUR, EdgeOK
+        <3>20. EdgesMonotone'
+            BY DEF EdgesMonotone, EdgeOK
+        <3>21. SigmaRespectsShared'
+            BY DEF SigmaRespectsShared
+        <3>22. SharedRespectsSigma'
+            BY DEF SharedRespectsSigma
+        <3>23.  Linearizable'
+            BY DEF Linearizable
+        <3>24. QED
+            BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
       <2>17. ASSUME NEW p \in PROCESSES,
                     UR(p)
              PROVE  Inv'
+        <3> USE <2>17 DEF UR
+        <3>1. TypeOK'
+            BY NextTypeOK
+        <3>2. InvDecide'
+        <3>3. InvF1'
+        <3>4. InvF2'
+        <3>5. InvF3'
+        <3>6. InvF4'
+        <3>7. InvF5'
+        <3>8. InvF6'
+        <3>9. InvF7'
+        <3>10. InvFR'
+        <3>11. InvU1'
+        <3>12. InvU2'
+        <3>13. InvU3'
+        <3>14. InvU4'
+        <3>15. InvU5' 
+        <3>16. InvU6'
+        <3>17. InvU7'
+        <3>18. InvU8'
+        <3>19. InvUR'
+        <3>20. EdgesMonotone'
+        <3>21. SigmaRespectsShared'
+        <3>22. SharedRespectsSigma'
+        <3>23.  Linearizable'
+        <3>24. QED
+            BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>22, <3>23, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
       <2>18. ASSUME NEW p \in PROCESSES,
                     Decide(p)
              PROVE  Inv'
@@ -2120,5 +2988,5 @@ THEOREM NextInv == Inv /\ [Next]_varlist => Inv'
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Feb 11 01:11:09 EST 2025 by karunram
+\* Last modified Thu Mar 13 00:33:28 EDT 2025 by karunram
 \* Created Wed Sep 25 22:47:00 EDT 2024 by kaunram
