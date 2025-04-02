@@ -1,0 +1,7 @@
+> val it = (): unit
+val commit = fn: unit -> bool
+Loading theory "tlapm_48650a"
+*** Failed to finish proof
+*** At command "by" (line 162 of "/Users/karunram/Desktop/TLAPS/jayanti_tarjan_union_find/jtunionfind.tlaps/tlapm_48650a.thy")
+Exception- TOPLEVEL_ERROR raised
+ML> 

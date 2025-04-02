@@ -1,0 +1,59 @@
+;; obligation #1773
+$hyp "v'200" Inv
+$hyp "v'201" (\/ Next (= hbf6f3f86ac3e561c1ee154bb0de6ab
+varlist))
+$hyp "p_in" (TLA.in p PROCESSES)
+$hyp "v'219" (= (TLA.fapply pc p) "U1")
+$hyp "v'220" (= a_pchash_primea
+(TLA.except pc p "F1U1"))
+$hyp "v'221" (= a_uunde_Uhash_primea
+(TLA.except a_uunde_Ua p (TLA.fapply a_ca p)))
+$hyp "v'222" (= a_vunde_Uhash_primea
+(TLA.except a_vunde_Ua p (TLA.fapply d p)))
+$hyp "v'223" (= a_Fhash_primea F)
+$hyp "v'224" (= a_uunde_Fhash_primea
+a_uunde_Fa)
+$hyp "v'225" (= a_aunde_Fhash_primea
+a_aunde_Fa)
+$hyp "v'226" (= a_bunde_Fhash_primea
+a_bunde_Fa)
+$hyp "v'227" (= a_aunde_Uhash_primea
+a_aunde_Ua)
+$hyp "v'228" (= a_bunde_Uhash_primea
+a_bunde_Ua)
+$hyp "v'229" (= a_chash_primea a_ca)
+$hyp "v'230" (= a_dhash_primea d)
+$hyp "v'231" (= a_Mhash_primea
+M)
+$hyp "a_punde_1a_in" (TLA.in a_punde_1a PROCESSES)
+$hyp "t_in" (TLA.in t a_Mhash_primea)
+$hyp "v'249" (= (TLA.fapply a_pchash_primea a_punde_1a)
+"F4U8")
+$goal (/\ (= (TLA.fapply (TLA.fapply t "sigma") (TLA.fapply a_chash_primea a_punde_1a))
+(TLA.fapply (TLA.fapply t "sigma") (TLA.fapply (TLA.fapply a_aunde_Fhash_primea a_punde_1a) "parent")))
+(= (TLA.fapply (TLA.fapply t "sigma") (TLA.fapply (TLA.fapply a_aunde_Fhash_primea a_punde_1a) "parent"))
+(TLA.fapply (TLA.fapply t "sigma") (TLA.fapply a_uunde_Fhash_primea a_punde_1a)))
+(\/ (= (TLA.fapply a_chash_primea a_punde_1a)
+(TLA.fapply a_uunde_Fhash_primea a_punde_1a))
+(= (TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_chash_primea a_punde_1a)) "bit")
+(TLA.fapply TLA.Succ 0))
+(/\ (= (TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_chash_primea a_punde_1a)) "bit")
+0)
+(\/ (arith.lt (TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_chash_primea a_punde_1a)) "rank")
+(TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_uunde_Fhash_primea a_punde_1a)) "rank"))
+(/\ (= (TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_uunde_Fhash_primea a_punde_1a)) "rank")
+(TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_chash_primea a_punde_1a)) "rank"))
+(arith.le (TLA.fapply a_chash_primea a_punde_1a)
+(TLA.fapply a_uunde_Fhash_primea a_punde_1a))))))
+(\/ (= (TLA.fapply a_uunde_Fhash_primea a_punde_1a)
+(TLA.fapply (TLA.fapply a_aunde_Fhash_primea a_punde_1a) "parent"))
+(= (TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_uunde_Fhash_primea a_punde_1a)) "bit")
+(TLA.fapply TLA.Succ 0))
+(/\ (= (TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_uunde_Fhash_primea a_punde_1a)) "bit")
+0)
+(\/ (arith.lt (TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_uunde_Fhash_primea a_punde_1a)) "rank")
+(TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply (TLA.fapply a_aunde_Fhash_primea a_punde_1a) "parent")) "rank"))
+(/\ (= (TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply (TLA.fapply a_aunde_Fhash_primea a_punde_1a) "parent")) "rank")
+(TLA.fapply (TLA.fapply a_Fhash_primea (TLA.fapply a_uunde_Fhash_primea a_punde_1a)) "rank"))
+(arith.le (TLA.fapply a_uunde_Fhash_primea a_punde_1a)
+(TLA.fapply (TLA.fapply a_aunde_Fhash_primea a_punde_1a) "parent")))))))

@@ -6989,30 +6989,17 @@ THEOREM NextInv == Inv /\ [Next]_varlist => Inv'
                                      /\ InvU2All(p_1, t)
                                      /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
             <5>1. CASE pc[p_1] = "U2"
-              <6> USE <5>1
-              <6> InvU2
-                BY DEF Inv
-              <6> SUFFICES ASSUME (pc[p_1] = "F1U2")'
-                           PROVE  (  /\ t.ret[p_1] = BOT
-                                     /\ t.op[p_1] = "U"
-                                   /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                   /\ InvU2All(p_1, t)
-                                   /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
-                OBVIOUS
-              <6> p = p_1
-                BY DEF TypeOK, Valid_pc, PCSet
-              <6>1. (/\ t.ret[p_1] = BOT
-                     /\ t.op[p_1] = "U")'
-                BY DEF InvU2, InvF1, InvU2All, EdgeOK
-              <6>2. (t.arg[p_1] \in NodeSet \X NodeSet)'
-                BY DEF InvU2, InvF1, InvU2All, EdgeOK
-              <6>3. InvU2All(p_1, t)'
-                BY DEF InvU2, InvF1, InvU2All, EdgeOK
-              <6>4. (t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
-                BY DEF InvU2, InvF1, InvU2All, EdgeOK, TypeOK, Valid_c, Valid_v_U
-              <6>5. QED
-                BY <6>1, <6>2, <6>3, <6>4
-                
+                <6> SUFFICES ASSUME (pc[p_1] = "F1U2")'
+                             PROVE  (  /\ t.ret[p_1] = BOT
+                                       /\ t.op[p_1] = "U"
+                                     /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                     /\ InvU2All(p_1, t)
+                                     /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                    OBVIOUS
+                <6> InvU2
+                    BY DEF Inv
+                <6> QED
+                    BY <5>1 DEF InvU2, InvF1, InvU2All, EdgeOK
             <5>2. CASE pc[p_1] = "F1U2"
                 <6> SUFFICES ASSUME (pc[p_1] = "F1U2")'
                              PROVE  (  /\ t.ret[p_1] = BOT
@@ -8563,5 +8550,5 @@ THEOREM NextInv == Inv /\ [Next]_varlist => Inv'
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Apr 02 14:37:15 EDT 2025 by karunram
+\* Last modified Wed Apr 02 14:30:42 EDT 2025 by karunram
 \* Created Wed Sep 25 22:47:00 EDT 2024 by kaunram

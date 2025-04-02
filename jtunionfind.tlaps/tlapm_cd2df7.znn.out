@@ -1,0 +1,50 @@
+(* PROOF-FOUND *)
+(* BEGIN-PROOF *)
+proof (rule zenon_nnpp)
+ have z_Hs:"(((a_pchash_primea[a_punde_1a])=''F5'')=>((((((t[''ret''])[a_punde_1a])=BOT)&(((t[''op''])[a_punde_1a])=''F''))&(((t[''arg''])[a_punde_1a]) \\in NodeSet))&a_h85db120dd089bb8fb553c353a285f7a(a_punde_1a, t)))" (is "?z_hy=>?z_hbd")
+ using v'255 by blast
+ have z_Ht:"(((a_pchash_primea[a_punde_1a])=''F5U1'')=>(((((((t[''ret''])[a_punde_1a])=BOT)&(((t[''op''])[a_punde_1a])=''U''))&(((t[''arg''])[a_punde_1a]) \\in prod(NodeSet, NodeSet)))&a_h85db120dd089bb8fb553c353a285f7a(a_punde_1a, t))&(((t[''sigma''])[(a_chash_primea[a_punde_1a])])=((t[''sigma''])[(a_uunde_Uhash_primea[a_punde_1a])]))))" (is "?z_hbx=>?z_hbz")
+ using v'256 by blast
+ have z_Hu:"(((a_pchash_primea[a_punde_1a])=''F5U2'')=>((((((((t[''ret''])[a_punde_1a])=BOT)&(((t[''op''])[a_punde_1a])=''U''))&(((t[''arg''])[a_punde_1a]) \\in prod(NodeSet, NodeSet)))&h29e700f910ac66eea1136a63914adb(a_punde_1a, t))&a_h85db120dd089bb8fb553c353a285f7a(a_punde_1a, t))&(((t[''sigma''])[(a_chash_primea[a_punde_1a])])=((t[''sigma''])[(a_vunde_Uhash_primea[a_punde_1a])]))))" (is "?z_hcq=>?z_hcs")
+ using v'257 by blast
+ have z_Hv:"(((a_pchash_primea[a_punde_1a])=''F5U7'')=>((((((((t[''ret''])[a_punde_1a])=BOT)&(((t[''op''])[a_punde_1a])=''U''))&(((t[''arg''])[a_punde_1a]) \\in prod(NodeSet, NodeSet)))&a_hd9bc9358b287a226e1580f74721591a(a_punde_1a, t))&a_h85db120dd089bb8fb553c353a285f7a(a_punde_1a, t))&(((t[''sigma''])[(a_chash_primea[a_punde_1a])])=((t[''sigma''])[(a_uunde_Uhash_primea[a_punde_1a])]))))" (is "?z_hda=>?z_hdc")
+ using v'258 by blast
+ have z_Hw:"(((a_pchash_primea[a_punde_1a])=''F5U8'')=>((((((((t[''ret''])[a_punde_1a])=BOT)&(((t[''op''])[a_punde_1a])=''U''))&(((t[''arg''])[a_punde_1a]) \\in prod(NodeSet, NodeSet)))&a_hb26ed4cbc0279941f049d798b203f8a(a_punde_1a, t))&a_h85db120dd089bb8fb553c353a285f7a(a_punde_1a, t))&(((t[''sigma''])[(a_chash_primea[a_punde_1a])])=((t[''sigma''])[(a_vunde_Uhash_primea[a_punde_1a])]))))" (is "?z_hdg=>?z_hdi")
+ using v'259 by blast
+ assume z_Hx:"(~((?z_hy=>?z_hbd)&((?z_hbx=>?z_hbz)&((?z_hcq=>?z_hcs)&((?z_hda=>?z_hdc)&(?z_hdg=>?z_hdi))))))" (is "~(?z_hs&?z_hdn)")
+ show FALSE
+ proof (rule zenon_notand [OF z_Hx])
+  assume z_Hdq:"(~?z_hs)"
+  show FALSE
+  by (rule notE [OF z_Hdq z_Hs])
+ next
+  assume z_Hdr:"(~?z_hdn)" (is "~(?z_ht&?z_hdo)")
+  show FALSE
+  proof (rule zenon_notand [OF z_Hdr])
+   assume z_Hds:"(~?z_ht)"
+   show FALSE
+   by (rule notE [OF z_Hds z_Ht])
+  next
+   assume z_Hdt:"(~?z_hdo)" (is "~(?z_hu&?z_hdp)")
+   show FALSE
+   proof (rule zenon_notand [OF z_Hdt])
+    assume z_Hdu:"(~?z_hu)"
+    show FALSE
+    by (rule notE [OF z_Hdu z_Hu])
+   next
+    assume z_Hdv:"(~?z_hdp)" (is "~(?z_hv&?z_hw)")
+    show FALSE
+    proof (rule zenon_notand [OF z_Hdv])
+     assume z_Hdw:"(~?z_hv)"
+     show FALSE
+     by (rule notE [OF z_Hdw z_Hv])
+    next
+     assume z_Hdx:"(~?z_hw)"
+     show FALSE
+     by (rule notE [OF z_Hdx z_Hw])
+    qed
+   qed
+  qed
+ qed
+qed
+(* END-PROOF *)

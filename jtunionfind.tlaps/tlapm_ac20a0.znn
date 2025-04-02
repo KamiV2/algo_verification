@@ -1,0 +1,33 @@
+;; obligation #1774
+$hyp "v'201" Inv
+$hyp "v'202" (\/ Next (= hbf6f3f86ac3e561c1ee154bb0de6ab
+varlist))
+$hyp "p_in" (TLA.in p PROCESSES)
+$hyp "v'220" (= (TLA.fapply pc p) "U1")
+$hyp "v'221" (= a_pchash_primea
+(TLA.except pc p "F1U1"))
+$hyp "v'222" (= a_uunde_Uhash_primea
+(TLA.except a_uunde_Ua p (TLA.fapply a_ca p)))
+$hyp "v'223" (= a_vunde_Uhash_primea
+(TLA.except a_vunde_Ua p (TLA.fapply d p)))
+$hyp "v'224" (= a_Fhash_primea F)
+$hyp "v'225" (= a_uunde_Fhash_primea
+a_uunde_Fa)
+$hyp "v'226" (= a_aunde_Fhash_primea
+a_aunde_Fa)
+$hyp "v'227" (= a_bunde_Fhash_primea
+a_bunde_Fa)
+$hyp "v'228" (= a_aunde_Uhash_primea
+a_aunde_Ua)
+$hyp "v'229" (= a_bunde_Uhash_primea
+a_bunde_Ua)
+$hyp "v'230" (= a_chash_primea a_ca)
+$hyp "v'231" (= a_dhash_primea d)
+$hyp "v'232" (= a_Mhash_primea
+M)
+$hyp "a_punde_1a_in" (TLA.in a_punde_1a PROCESSES)
+$hyp "t_in" (TLA.in t a_Mhash_primea)
+$hyp "v'250" (= (TLA.fapply a_pchash_primea a_punde_1a)
+"F4U8")
+$goal (= (TLA.fapply (TLA.fapply t "sigma") (TLA.fapply a_chash_primea a_punde_1a))
+(TLA.fapply (TLA.fapply t "sigma") (TLA.fapply a_vunde_Uhash_primea a_punde_1a)))
