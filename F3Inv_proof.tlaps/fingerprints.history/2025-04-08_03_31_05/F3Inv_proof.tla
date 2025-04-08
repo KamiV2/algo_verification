@@ -1,70 +1,7 @@
----------------------------- MODULE jtunionfind ----------------------------
+---------------------------- MODULE F3Inv_proof ----------------------------
 
-EXTENDS FiniteSets, Integers, Implementation, Inv, TypeSafety, Lemmas
+EXTENDS Implementation, TypeSafety, Inv, Lemmas
 
-THEOREM Inv /\ [Next]_varlist => Inv
-  <1> SUFFICES ASSUME Inv,
-                      [Next]_varlist
-               PROVE  Inv
-    OBVIOUS
-  <1>1. ASSUME NEW p \in PROCESSES,
-               F1(p)
-        PROVE  Inv
-  <1>2. ASSUME NEW p \in PROCESSES,
-               F2(p)
-        PROVE  Inv
-  <1>3. ASSUME NEW p \in PROCESSES,
-               F3(p)
-        PROVE  Inv
-  <1>4. ASSUME NEW p \in PROCESSES,
-               F4(p)
-        PROVE  Inv
-  <1>5. ASSUME NEW p \in PROCESSES,
-               F5(p)
-        PROVE  Inv
-  <1>6. ASSUME NEW p \in PROCESSES,
-               F6(p)
-        PROVE  Inv
-  <1>7. ASSUME NEW p \in PROCESSES,
-               F7(p)
-        PROVE  Inv
-  <1>8. ASSUME NEW p \in PROCESSES,
-               FR(p)
-        PROVE  Inv
-  <1>9. ASSUME NEW p \in PROCESSES,
-               U1(p)
-        PROVE  Inv
-  <1>10. ASSUME NEW p \in PROCESSES,
-                U2(p)
-         PROVE  Inv
-  <1>11. ASSUME NEW p \in PROCESSES,
-                U3(p)
-         PROVE  Inv
-  <1>12. ASSUME NEW p \in PROCESSES,
-                U4(p)
-         PROVE  Inv
-  <1>13. ASSUME NEW p \in PROCESSES,
-                U5(p)
-         PROVE  Inv
-  <1>14. ASSUME NEW p \in PROCESSES,
-                U6(p)
-         PROVE  Inv
-  <1>15. ASSUME NEW p \in PROCESSES,
-                U7(p)
-         PROVE  Inv
-  <1>16. ASSUME NEW p \in PROCESSES,
-                U8(p)
-         PROVE  Inv
-  <1>17. ASSUME NEW p \in PROCESSES,
-                UR(p)
-         PROVE  Inv
-  <1>18. ASSUME NEW p \in PROCESSES,
-                Decide(p)
-         PROVE  Inv
-  <1>19. CASE UNCHANGED varlist
-  <1>20. QED
-    BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Next, Step
-                                       
 THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
     <1> SUFFICES ASSUME Inv, [Next]_varlist, NEW p \in PROCESSES, F3(p)
                 PROVE Inv'
@@ -918,7 +855,7 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
             <5>1. EdgeOK(u_F[p_1], a_F[p_1].parent)
                 BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
             <5> QED
-                BY <5>1 DEF EdgeOK, InvF6, TypeOK, Valid_pc, PCSet, InvF6All, Valid_u_F, Valid_a_F, FieldSet
+                BY <4>2, <5>1 DEF EdgeOK, InvF6, TypeOK, Valid_pc, PCSet, InvF6All, Valid_u_F, Valid_a_F, FieldSet
           <4>10. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)'
             <5>1. EdgeOK(a_F[p_1].parent, b_F[p_1].parent)
                 BY DEF InvF6, TypeOK, Valid_pc, PCSet, InvF6All
@@ -1240,7 +1177,7 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
                                    /\ t.op[p_1] = "U"
                                  /\ t.arg[p_1] \in NodeSet \X NodeSet
                                  /\ InvF7All(p_1, t)
-                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                                 /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
         <3>1. CASE pc[p_1] = "F3U1"
           <4> USE <3>1
           <4> SUFFICES ASSUME (pc[p_1] = "F7U1")'
@@ -1248,7 +1185,7 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
                                /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
                                /\ InvF7All(p_1, t)
-                               /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                               /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
             OBVIOUS
           <4> InvF3
             BY DEF Inv
@@ -1282,15 +1219,15 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
                                /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
                                /\ InvF7All(p_1, t)
-                               /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                               /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
             OBVIOUS
-          <4> InvF7
-            BY DEF Inv
-          <4> QED
-            BY <3>2 DEF InvF7, TypeOK, InvF7All, EdgeOK          
+            <4> InvF7
+                BY DEF Inv
+            <4> QED
+                BY <3>2 DEF InvF7, TypeOK, InvF7All, EdgeOK          
         <3> QED
             BY <3>1, <3>2 DEF TypeOK, Valid_pc, PCSet
-      <2>3. pc[p_1] = "F7U2"  =>  (/\ t.ret[p_1] = BOT
+      <2>3. (pc[p_1] = "F7U2"  =>  /\ t.ret[p_1] = BOT
                                    /\ t.op[p_1] = "U"
                                  /\ t.arg[p_1] \in NodeSet \X NodeSet
                                  /\ InvU2All(p_1, t)
@@ -1332,15 +1269,15 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
           <4>5. QED
             BY <4>1, <4>2, <4>3 DEF InvF3, InvU2All, EdgeOK, TypeOK
         <3>2. CASE pc[p_1] = "F7U2"
-          <4> SUFFICES ASSUME pc[p_1] = "F7U2"
-                       PROVE   (/\ t.ret[p_1] = BOT
-                                /\ t.op[p_1] = "U"
-                              /\ t.arg[p_1] \in NodeSet \X NodeSet
-                              /\ InvU2All(p_1, t)
-                              /\ InvF7All(p_1, t)
-                              /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
-            OBVIOUS
           <4> USE <3>2
+          <4> SUFFICES ASSUME (pc[p_1] = "F7U2")'
+                       PROVE  (/\ t.ret[p_1] = BOT
+                               /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU2All(p_1, t)
+                               /\ InvF7All(p_1, t)
+                               /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+            OBVIOUS
           <4> InvF7
             BY DEF Inv
           <4> InvF7All(p_1, t)'
@@ -1354,7 +1291,7 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
                                    /\ t.arg[p_1] \in NodeSet \X NodeSet
                                    /\ InvU7All(p_1, t)
                                    /\ InvF7All(p_1, t)
-                                   /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                                   /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
         <3>1. CASE pc[p_1] = "F3U7"
           <4> USE <3>1
           <4> SUFFICES ASSUME (pc[p_1] = "F7U7")'
@@ -1363,7 +1300,7 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
                                  /\ t.arg[p_1] \in NodeSet \X NodeSet
                                  /\ InvU7All(p_1, t)
                                  /\ InvF7All(p_1, t)
-                                 /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                                 /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
             OBVIOUS
           <4> InvF3
             BY DEF Inv
@@ -1392,12 +1329,12 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
             BY <4>1, <4>2, <4>3 DEF InvF3, InvU7All, EdgeOK, TypeOK
         <3>2. CASE pc[p_1] = "F7U7"
           <4> SUFFICES ASSUME pc[p_1] = "F7U7"
-                       PROVE (/\ t.ret[p_1] = BOT
-                                   /\ t.op[p_1] = "U"
-                                   /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                   /\ InvU7All(p_1, t)
-                                   /\ InvF7All(p_1, t)
-                                   /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
+                       PROVE  (/\ t.ret[p_1] = BOT
+                                /\ t.op[p_1] = "U"
+                                /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                /\ InvU7All(p_1, t)
+                                /\ InvF7All(p_1, t)
+                                /\ t.sigma[c[p_1]] = t.sigma[u_U[p_1]])'
             OBVIOUS
           <4> USE <3>2
           <4> InvF7
@@ -1408,7 +1345,7 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
             BY DEF InvF7, TypeOK, InvU7All, EdgeOK       
         <3> QED
             BY <3>1, <3>2 DEF TypeOK, Valid_pc, PCSet
-      <2>5. pc[p_1] = "F7U8"  =>  (/\ t.ret[p_1] = BOT
+      <2>5. (pc[p_1] = "F7U8"  =>  /\ t.ret[p_1] = BOT
                                    /\ t.op[p_1] = "U"
                                  /\ t.arg[p_1] \in NodeSet \X NodeSet
                                  /\ InvU8All(p_1, t)
@@ -1569,7 +1506,6 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
     <1>24. QED
       BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>22, <1>23, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
 =============================================================================
-=============================================================================
 \* Modification History
-\* Last modified Tue Apr 08 03:40:46 EDT 2025 by karunram
-\* Created Wed Sep 25 22:47:00 EDT 2024 by kaunram
+\* Last modified Tue Apr 08 03:30:57 EDT 2025 by karunram
+\* Created Thu Apr 03 23:39:46 EDT 2025 by karunram

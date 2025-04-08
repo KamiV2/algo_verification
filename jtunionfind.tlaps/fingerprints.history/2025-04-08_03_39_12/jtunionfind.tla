@@ -1332,21 +1332,20 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
           <4>5. QED
             BY <4>1, <4>2, <4>3 DEF InvF3, InvU2All, EdgeOK, TypeOK
         <3>2. CASE pc[p_1] = "F7U2"
-          <4> SUFFICES ASSUME pc[p_1] = "F7U2"
-                       PROVE   (/\ t.ret[p_1] = BOT
-                                /\ t.op[p_1] = "U"
-                              /\ t.arg[p_1] \in NodeSet \X NodeSet
-                              /\ InvU2All(p_1, t)
-                              /\ InvF7All(p_1, t)
-                              /\ t.sigma[c[p_1]] = t.sigma[v_U[p_1]])'
-            OBVIOUS
-          <4> USE <3>2
-          <4> InvF7
-            BY DEF Inv
-          <4> InvF7All(p_1, t)'
-            BY DEF InvF7, TypeOK, InvF7All, EdgeOK       
-          <4> QED
-            BY DEF InvF7, TypeOK, InvU2All, EdgeOK       
+\*          <4> USE <3>2
+\*          <4> SUFFICES ASSUME (pc[p_1] = "F7U2")'
+\*                       PROVE  (/\ t.ret[p_1] = BOT
+\*                               /\ t.op[p_1] = "U"
+\*                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+\*                               /\ InvU2All(p_1, t)
+\*                               /\ InvF7All(p_1, t))'
+\*            OBVIOUS
+\*          <4> InvF7
+\*            BY DEF Inv
+\*          <4> InvF7All(p_1, t)'
+\*            BY DEF InvF7, TypeOK, InvF7All, EdgeOK       
+\*          <4> QED
+\*            BY DEF InvF7, TypeOK, InvU2All, EdgeOK       
         <3> QED
             BY <3>1, <3>2 DEF TypeOK, Valid_pc, PCSet
       <2>4. pc[p_1] = "F7U7"  => (/\ t.ret[p_1] = BOT
@@ -1571,5 +1570,5 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
 =============================================================================
 =============================================================================
 \* Modification History
-\* Last modified Tue Apr 08 03:40:46 EDT 2025 by karunram
+\* Last modified Tue Apr 08 03:38:32 EDT 2025 by karunram
 \* Created Wed Sep 25 22:47:00 EDT 2024 by kaunram

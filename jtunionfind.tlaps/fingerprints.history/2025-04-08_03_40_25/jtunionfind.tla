@@ -1571,5 +1571,5 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
 =============================================================================
 =============================================================================
 \* Modification History
-\* Last modified Tue Apr 08 03:40:46 EDT 2025 by karunram
+\* Last modified Tue Apr 08 03:40:20 EDT 2025 by karunram
 \* Created Wed Sep 25 22:47:00 EDT 2024 by kaunram

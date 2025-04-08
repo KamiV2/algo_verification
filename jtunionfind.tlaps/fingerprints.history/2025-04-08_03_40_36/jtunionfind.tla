@@ -1332,6 +1332,7 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
           <4>5. QED
             BY <4>1, <4>2, <4>3 DEF InvF3, InvU2All, EdgeOK, TypeOK
         <3>2. CASE pc[p_1] = "F7U2"
+          <4> USE <3>2
           <4> SUFFICES ASSUME pc[p_1] = "F7U2"
                        PROVE   (/\ t.ret[p_1] = BOT
                                 /\ t.op[p_1] = "U"
@@ -1571,5 +1572,5 @@ THEOREM F3Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F3(p)) => Inv'
 =============================================================================
 =============================================================================
 \* Modification History
-\* Last modified Tue Apr 08 03:40:46 EDT 2025 by karunram
+\* Last modified Tue Apr 08 03:40:34 EDT 2025 by karunram
 \* Created Wed Sep 25 22:47:00 EDT 2024 by kaunram
