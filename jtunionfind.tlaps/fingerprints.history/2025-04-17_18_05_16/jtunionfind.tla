@@ -128,20 +128,17 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
           /\ SameRoot(told, told.arg[p_1][2], v_U[p_1])
           /\ told.ret[p_1] = ACK => SameRoot(told, u_U[p_1], v_U[p_1])
         BY <2>1 DEF Inv, InvU3
-    <2>3. t.arg[p_1] = told.arg[p_1]
+    <2>a. t.arg[p_1] = told.arg[p_1]
         BY <2>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
     <2> t.op[p_1] = told.op[p_1]
         BY <2>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
     <2> t.ret[p_1] = told.ret[p_1]
         BY <2>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
     <2> SameRoot(t, t.arg[p_1][1], u_U'[p_1])
-        BY <2>1, <2>2, <2>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot
-    <2> SameRoot(t, t.arg[p_1][2], v_U'[p_1])
-        BY <2>1, <2>2, <2>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot
-    <2> t.ret[p_1] = ACK => SameRoot(t, u_U'[p_1], v_U'[p_1])
-        BY <2>1, <2>2, <2>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot
+        BY <2>1, <2>a DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot
     <2> QED
-      BY <2>3 DEF Inv, InvU3, TypeOK, Valid_pc, PCSet, SameRoot
+      BY DEF Inv, InvU2, TypeOK, Valid_pc, PCSet, SameRoot
+\*    BY DEF Inv, InvU3, TypeOK, Valid_pc, PCSet, SameRoot
   <1>14. InvU4'
     BY DEF Inv, InvU4, TypeOK, Valid_pc, PCSet, SameRoot
   <1>15. InvU5'
@@ -164,5 +161,5 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
     BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>22, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
 =============================================================================
 \* Modification History
-\* Last modified Thu Apr 17 18:07:29 EDT 2025 by karunram
+\* Last modified Thu Apr 17 18:05:14 EDT 2025 by karunram
 \* Created Fri Apr 04 00:28:14 EDT 2025 by karunram
