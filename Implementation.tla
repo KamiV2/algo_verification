@@ -198,11 +198,17 @@ U2(p) ==        /\ pc[p] = "U2"
 U3(p) ==        /\ pc[p] = "U3"
                 /\ IF u_U[p] = v_U[p]
                         THEN    /\ pc' = [pc EXCEPT ![p] = "UR"]
-                                /\ M' = {t \in Configs: \E t_old \in M: /\ t_old.ret[p] = BOT 
-                                                              /\ t.sigma = t_old.sigma
-                                                              /\ t.ret = [t_old.ret EXCEPT ![p] = ACK]
-                                                              /\ t.op = t_old.op
-                                                              /\ t.arg = t_old.arg}
+                                /\ M' = {t \in Configs: \E t_old \in M: 
+                                                             \/ /\ t_old.ret[p] = BOT 
+                                                                /\ t.sigma = t_old.sigma
+                                                                /\ t.ret = [t_old.ret EXCEPT ![p] = ACK]
+                                                                /\ t.op = t_old.op
+                                                                /\ t.arg = t_old.arg
+                                                             \/ /\ t_old.ret[p] = ACK
+                                                                /\ t.sigma = t_old.sigma
+                                                                /\ t.ret = t_old.ret
+                                                                /\ t.op = t_old.op
+                                                                /\ t.arg = t_old.arg}
                         ELSE    /\ pc' = [pc EXCEPT ![p] = "U4"]
                                 /\ M' = M
                 /\ UNCHANGED <<F, u_F, a_F, b_F, u_U, v_U, a_U, b_U, u_U, v_U, c, d>>
@@ -221,47 +227,47 @@ U6(p) ==        /\ pc[p] = "U6"
                 /\  IF a_U[p].rank < b_U[p].rank
                             THEN IF F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1]
                                     THEN    /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 0]]
-                                            /\ M' = {t \in Configs: \E t_old \in M: /\ t_old.ret = t.ret
+                                            /\ M' = {t \in Configs: \E t_old \in M: /\ t.ret = [t_old.ret EXCEPT ![p] = ACK]
                                                                                     /\ t.sigma = [i \in NodeSet |-> IF t_old.sigma[i] = u_U[p] 
                                                                                                                         THEN v_U[p] 
                                                                                                                         ELSE t_old.sigma[i]]
-                                                                                    /\ t_old.op = t.op
-                                                                                    /\ t_old.arg = t.arg}
+                                                                                    /\ t.op = t_old.op
+                                                                                    /\ t.arg = t_old.arg}
                                     ELSE    /\ F' = F
                                             /\ M' = M
                     ELSE IF a_U[p].rank < b_U[p].rank
                             THEN IF F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]
                                     THEN    /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
-                                            /\ M' = {t \in Configs: \E t_old \in M: /\ t_old.ret = t.ret
+                                            /\ M' = {t \in Configs: \E t_old \in M: /\ t.ret = [t_old.ret EXCEPT ![p] = ACK]
                                                                                     /\ t.sigma = [i \in NodeSet |-> IF t_old.sigma[i] = v_U[p] 
                                                                                                                         THEN u_U[p] 
                                                                                                                         ELSE t_old.sigma[i]]
-                                                                                    /\ t_old.op = t.op
-                                                                                    /\ t_old.arg = t.arg}
+                                                                                    /\ t.op = t_old.op
+                                                                                    /\ t.arg = t_old.arg}
                                     ELSE    /\ F' = F
                                             /\ M' = M
                     ELSE 
                             IF u_U[p] < v_U[p] \* ranks are equal
                                     THEN IF F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1] \* u < v
                                             THEN    \/  /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 0]]
-                                                        /\ M' = {t \in Configs: \E t_old \in M: /\ t_old.ret = t.ret
+                                                        /\ M' = {t \in Configs: \E t_old \in M: /\ t.ret = [t_old.ret EXCEPT ![p] = ACK]
                                                                                                 /\ t.sigma = [i \in NodeSet |-> IF t_old.sigma[i] = v_U[p] 
                                                                                                                                     THEN u_U[p] 
                                                                                                                                     ELSE t_old.sigma[i]]
-                                                                                                /\ t_old.op = t.op
-                                                                                                /\ t_old.arg = t.arg}
+                                                                                                /\ t.op = t_old.op
+                                                                                                /\ t.arg = t_old.arg}
                                                     \/  /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 1]]
                                                         /\ M' = M
                                             ELSE    /\ F' = F
                                                     /\ M' = M
                                     ELSE IF F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1] \* v > u
                                             THEN    \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
-                                                        /\ M' = {t \in Configs: \E t_old \in M: /\ t_old.ret = t.ret
+                                                        /\ M' = {t \in Configs: \E t_old \in M: /\ t.ret = [t_old.ret EXCEPT ![p] = ACK]
                                                                                                 /\ t.sigma = [i \in NodeSet |-> IF t_old.sigma[i] = v_U[p] 
                                                                                                                                     THEN u_U[p] 
                                                                                                                                     ELSE t_old.sigma[i]]
-                                                                                                /\ t_old.op = t.op
-                                                                                                /\ t_old.arg = t.arg}
+                                                                                                /\ t.op = t_old.op
+                                                                                                /\ t.arg = t_old.arg}
                                                     \/  /\ F' = F
                                                         /\ M' = M
                                             ELSE    /\ F' = F
@@ -291,21 +297,25 @@ UR(p) ==        /\ pc[p] = "UR"
 Decide(p) ==    /\ pc[p] = "0"
                 /\  \/  /\ \E i \in NodeSet:    /\ c' = [c EXCEPT ![p] = i]
                                                 /\ pc' = [pc EXCEPT ![p] = "F1"]
-                                                /\ M' = {t \in Configs: \E t_old \in M: /\ t_old.op = BOT
-                                                                                        /\ t_old.arg = BOT
+                                                /\ M' = {t \in Configs: \E t_old \in M: /\ t_old.ret[p] = BOT
+                                                                                        /\ t_old.op[p] = BOT
+                                                                                        /\ t_old.arg[p] = BOT
                                                                                         /\ t.sigma = t_old.sigma
-                                                                                        /\ t.op = "F"
-                                                                                        /\ t.arg = i}
+                                                                                        /\ t.op = [t_old.op EXCEPT ![p] = "F"]
+                                                                                        /\ t.arg = [t_old.arg EXCEPT ![p] = i]
+                                                                                        /\ t.ret = t_old.ret}
                         /\ UNCHANGED <<F, u_F, a_F, b_F, u_U, v_U, a_U, b_U, d>>
                     \/  /\ \E i \in NodeSet: \E j \in NodeSet: 
                                 /\ c' = [c EXCEPT ![p] = i]
                                 /\ d' = [d EXCEPT ![p] = j]
                                 /\ pc' = [pc EXCEPT ![p] = "U1"]
-                                /\ M' = {t \in Configs: \E t_old \in M: /\ t_old.op = BOT
-                                                                        /\ t_old.arg = BOT
+                                /\ M' = {t \in Configs: \E t_old \in M: /\ t_old.ret[p] = BOT
+                                                                        /\ t_old.op[p] = BOT
+                                                                        /\ t_old.arg[p] = BOT
                                                                         /\ t.sigma = t_old.sigma
-                                                                        /\ t.op = "U"
-                                                                        /\ t.arg = <<i, j>>}
+                                                                        /\ t.op = [t_old.op EXCEPT ![p] = "U"]
+                                                                        /\ t.arg = [t_old.arg EXCEPT ![p] = <<i, j>>]
+                                                                        /\ t.ret = t_old.ret}
                         /\ UNCHANGED <<F, u_F, a_F, b_F, u_U, v_U, a_U, b_U>>
 
 Step(p) ==  \/  F1(p)
@@ -333,5 +343,5 @@ Spec ==     Init /\ [][Next]_varlist
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Apr 07 18:40:25 EDT 2025 by karunram
+\* Last modified Thu Apr 17 02:32:41 EDT 2025 by karunram
 \* Created Thu Apr 03 12:26:37 EDT 2025 by karunram
