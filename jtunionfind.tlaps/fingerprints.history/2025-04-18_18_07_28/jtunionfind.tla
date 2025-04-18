@@ -1436,11 +1436,11 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
             /\ SameRoot(told, c[p_1], u_F[p_1])
         BY <3>1 DEF Inv, InvFR
       <3>3. t.arg[p_1] = told.arg[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
       <3> t.op[p_1] = told.op[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
       <3> t.ret[p_1] = told.ret[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
       <3> QED
         BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F
     <2>3. (pc[p_1] = "FRU2"  =>  /\ t.ret[p_1] = BOT
@@ -1464,70 +1464,23 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
             /\ InvU2All(p_1, told)
         BY <3>1 DEF Inv, InvFR
       <3>3. t.arg[p_1] = told.arg[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
       <3> t.op[p_1] = told.op[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
       <3> t.ret[p_1] = told.ret[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet            
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
       <3> QED
-        BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F, InvU2All
+        BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F
     <2>4. (pc[p_1] = "FRU7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                  /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
                                /\ InvU7All(p_1, t)
                                /\ SameRoot(t, c[p_1], u_U[p_1]))'
-      <3> SUFFICES ASSUME (pc[p_1] = "FRU7")'
-                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
-                             /\ t.op[p_1] = "U"
-                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                           /\ InvU7All(p_1, t)
-                           /\ SameRoot(t, c[p_1], u_U[p_1]))'
-        OBVIOUS
-      <3>1. p_1 # p /\ pc[p_1] = "FRU7"
-        BY DEF TypeOK, Valid_pc, PCSet
-      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
-            /\ told.op[p_1] = "U" 
-            /\ told.arg[p_1] \in NodeSet \X NodeSet
-            /\ SameRoot(told, c[p_1], u_U[p_1])
-            /\ InvU7All(p_1, told)
-        BY <3>1 DEF Inv, InvFR
-      <3>3. t.arg[p_1] = told.arg[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
-      <3> t.op[p_1] = told.op[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
-      <3> t.ret[p_1] = told.ret[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
-      <3> QED
-        BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F, InvU7All
-
     <2>5. (pc[p_1] = "FRU8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                  /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
                                /\ InvU8All(p_1, t)
                                /\ SameRoot(t, c[p_1], v_U[p_1]))'
-      <3> SUFFICES ASSUME (pc[p_1] = "FRU8")'
-                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
-                             /\ t.op[p_1] = "U"
-                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                           /\ InvU8All(p_1, t)
-                           /\ SameRoot(t, c[p_1], v_U[p_1]))'
-        OBVIOUS
-      <3>1. p_1 # p /\ pc[p_1] = "FRU8"
-        BY DEF TypeOK, Valid_pc, PCSet
-      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
-            /\ told.op[p_1] = "U" 
-            /\ told.arg[p_1] \in NodeSet \X NodeSet
-            /\ SameRoot(told, c[p_1], v_U[p_1])
-            /\ InvU8All(p_1, told)
-        BY <3>1 DEF Inv, InvFR
-      <3>3. t.arg[p_1] = told.arg[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
-      <3> t.op[p_1] = told.op[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
-      <3> t.ret[p_1] = told.ret[p_1]
-        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet            
-      <3> QED
-        BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F, InvU8All
     <2>6. QED
       BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>11. InvU1'
@@ -1874,5 +1827,5 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
     BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>22, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
 =============================================================================
 \* Modification History
-\* Last modified Fri Apr 18 18:11:08 EDT 2025 by karunram
+\* Last modified Fri Apr 18 18:07:22 EDT 2025 by karunram
 \* Created Fri Apr 04 00:28:14 EDT 2025 by karunram
