@@ -1,6 +1,5 @@
 -------------------------- MODULE DecideInv_proof --------------------------
 
-\* INCOMPLETE
 EXTENDS Implementation, TypeSafety, Inv
 
 THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) => Inv'
@@ -36,7 +35,16 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
           /\ told.arg[p_1] = BOT
         BY <2>1 DEF Inv, InvDecide
     <2> t.arg[p_1] = told.arg[p_1]
-        BY <2>1 DEF Inv, InvDecide, TypeOK, Valid_pc, Valid_M, PCSet, Configs, ArgSet
+      <3>1. CASE /\ t.op = [told.op EXCEPT ![p] = "F"]
+                 /\ \E i \in NodeSet: t.arg = [told.arg EXCEPT ![p] = i]
+        BY <3>1, <2>1 DEF Inv, InvDecide, TypeOK, Valid_pc, Valid_M, PCSet, Configs, ArgSet
+      <3>2. CASE /\ t.op = [told.op EXCEPT ![p] = "U"]
+                 /\ \E i \in NodeSet: \E j \in NodeSet: 
+                       t.arg = [told.arg EXCEPT ![p] = <<i, j>>]
+        BY <3>2, <2>1 DEF Inv, InvDecide, TypeOK, Valid_pc, Valid_M, PCSet, Configs, ArgSet
+      <3>3. QED
+        BY <3>1, <3>2
+        
     <2> t.op[p_1] = told.op[p_1]
         BY <2>1 DEF Inv, InvDecide, TypeOK, Valid_pc, Valid_M, PCSet, Configs, OpSet
     <2> t.ret[p_1] = told.ret[p_1]
@@ -44,6 +52,236 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
     <2> QED
         BY <2>2
   <1>3. InvF1'
+    <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                        NEW t \in M'
+                 PROVE  (/\  pc[p_1] = "F1"    =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "F"
+                                                 /\ t.arg[p_1] \in NodeSet
+                                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                         /\  pc[p_1] = "F1U1"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                         /\  pc[p_1] = "F1U2"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU2All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                         /\  pc[p_1] = "F1U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU7All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                         /\  pc[p_1] = "F1U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU8All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1]))'
+      BY DEF InvF1
+    <2> PICK told \in M:   (/\ told.ret[p] = BOT
+                            /\ told.op[p] = BOT
+                            /\ told.arg[p] = BOT
+                            /\ t.sigma = told.sigma
+                            /\ t.ret = told.ret
+                            /\ \/ /\ t.op = [told.op EXCEPT ![p] = "F"]
+                                  /\ pc' = [pc EXCEPT ![p] = "F1"]
+                                  /\ \E i \in NodeSet: 
+                                      /\ t.arg = [told.arg EXCEPT ![p] = i]
+                                      /\ c' = [c EXCEPT ![p] = i] 
+                               \/ /\ t.op = [told.op EXCEPT ![p] = "U"]
+                                  /\ \E i \in NodeSet: \E j \in NodeSet: 
+                                      /\ t.arg = [told.arg EXCEPT ![p] = <<i, j>>]
+                                      /\ c' = [c EXCEPT ![p] = i] 
+                                  /\ pc' = [pc EXCEPT ![p] = "U1"])
+        BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet
+    <2>1. (pc[p_1] = "F1"    =>  /\ t.ret[p_1] = BOT
+                               /\ t.op[p_1] = "F"
+                             /\ t.arg[p_1] \in NodeSet
+                             /\ SameRoot(t, c[p_1], t.arg[p_1]))'
+        <3>1. CASE pc[p_1] = "F1"
+          <4> USE <3>1
+          <4> SUFFICES ASSUME (pc[p_1] = "F1")'
+                       PROVE  (    /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "F"
+                               /\ t.arg[p_1] \in NodeSet
+                               /\ SameRoot(t, c[p_1], t.arg[p_1]))'
+            OBVIOUS
+          <4>1. p_1 # p /\ pc[p_1] = "F1"
+              BY DEF TypeOK, Valid_pc, PCSet
+          <4>2. /\ told.ret[p_1] = BOT 
+                /\ told.op[p_1] = "F" 
+                /\ told.arg[p_1] \in NodeSet
+                /\ SameRoot(told, c[p_1], told.arg[p_1])
+              BY <4>1 DEF Inv, InvF1
+          <4>3. t.arg[p_1] = told.arg[p_1]
+              BY <4>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+          <4> t.op[p_1] = told.op[p_1]
+              BY <4>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+          <4> t.ret[p_1] = told.ret[p_1]
+              BY <4>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+          <4> SameRoot(t, c[p_1], t.arg[p_1])'
+              BY <4>1, <4>2, <4>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, Valid_c, SameRoot
+          <4> QED
+            BY <4>1, <4>2, <4>3 DEF Inv, InvF1, TypeOK, Valid_pc, PCSet  
+        <3>2. CASE pc[p_1] = "0"
+            <4> USE <3>2
+            <4> SUFFICES ASSUME (pc[p_1] = "F1")'
+                       PROVE  (    /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "F"
+                               /\ t.arg[p_1] \in NodeSet
+                               /\ SameRoot(t, c[p_1], t.arg[p_1]))'
+              OBVIOUS
+            <4>1. p_1 = p
+                BY DEF TypeOK, Valid_pc, PCSet
+            <4>2. /\ told.ret[p_1] = BOT 
+                  /\ told.op[p_1] = BOT
+                  /\ told.arg[p_1] = BOT
+                BY <4>1 DEF Inv, InvDecide
+            <4>a. pc[p]' # "U1" /\ pc[p]' = "F1"
+                BY <4>1 DEF TypeOK
+            <4> pc' = [pc EXCEPT ![p] = "F1"]
+                BY <4>1 DEF TypeOK
+            <4> TypeOK
+                BY DEF Inv
+            <4> (t.op[p_1] = "F")'
+                BY <4>a, <4>2, <4>1 DEF TypeOK, Valid_M, Configs, OpSet, Valid_pc, PCSet
+            <4>3. \E i \in NodeSet: (t.arg[p] = i)'
+                BY <4>a, <4>2, <4>1 DEF TypeOK, Valid_M, Configs, ArgSet, Valid_pc, PCSet
+            <4> (t.ret[p_1] = BOT)'
+                BY <4>a, <4>2, <4>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet, Valid_pc, PCSet
+            <4> \E i \in NodeSet: (c'[p] = i /\ t.arg[p]' = i)
+                BY <4>a, <4>1, <4>2, <4>3 DEF TypeOK, Valid_M, Configs, ArgSet, Valid_c, Valid_pc, PCSet
+            <4> (SameRoot(t, c[p_1], t.arg[p_1]))'
+                BY <4>1, <4>3 DEF InvU1, NodeSet, SameRoot, Valid_c, TypeOK, Inv
+            <4> QED
+              BY <4>1, <4>3 DEF InvU1, NodeSet, SameRoot, Valid_c, TypeOK, Inv
+        <3> QED
+            BY <3>1, <3>2 DEF Inv, TypeOK, Valid_pc, PCSet
+    <2>2. (pc[p_1] = "F1U1"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ SameRoot(t, c[p_1], u_U[p_1]))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F1U1")'
+                   PROVE  (  /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ SameRoot(t, c[p_1], u_U[p_1]))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F1U1"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT 
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+          BY <3>1 DEF Inv, InvF1
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> SameRoot(t, c[p_1], u_U[p_1])'
+          BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, Valid_c, Valid_u_U, SameRoot
+      <3> QED
+        BY <3>1, <3>2, <3>3 DEF Inv, InvF1, TypeOK, Valid_pc, PCSet
+    <2>3. (pc[p_1] = "F1U2"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU2All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1]))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F1U2")'
+                   PROVE  (  /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU2All(p_1, t)
+                           /\ SameRoot(t, c[p_1], v_U[p_1]))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F1U2"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT 
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvU2All(p_1, told)
+          BY <3>1 DEF Inv, InvF1
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> SameRoot(t, c[p_1], v_U[p_1])'
+          BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, Valid_c, Valid_v_U, SameRoot
+      <3> InvU2All(p_1, t)'
+          BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, Valid_c, Valid_v_U, Valid_u_U, InvU2All, SameRoot
+      <3> QED
+        BY <3>1, <3>2, <3>3 DEF Inv, InvF1, TypeOK, Valid_pc, PCSet
+    <2>4. (pc[p_1] = "F1U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU7All(p_1, t)
+                               /\ SameRoot(t, c[p_1], u_U[p_1]))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F1U7")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU7All(p_1, t)
+                           /\ SameRoot(t, c[p_1], u_U[p_1]))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F1U7"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK} 
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvU7All(p_1, told)
+          BY <3>1 DEF Inv, InvF1
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> SameRoot(t, c[p_1], u_U[p_1])'
+          BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, Valid_c, Valid_u_U, SameRoot
+      <3> InvU7All(p_1, t)'
+          BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, Valid_c, Valid_v_U, Valid_u_U, InvU7All, SameRoot
+      <3> QED
+        BY <3>1, <3>2, <3>3 DEF Inv, InvF1, TypeOK, Valid_pc, PCSet
+    <2>5. (pc[p_1] = "F1U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU8All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1]))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F1U8")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU8All(p_1, t)
+                           /\ SameRoot(t, c[p_1], v_U[p_1]))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F1U8"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK} 
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvU8All(p_1, told)
+          BY <3>1 DEF Inv, InvF1
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> SameRoot(t, c[p_1], v_U[p_1])'
+          BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, Valid_c, Valid_u_U, SameRoot
+      <3> InvU8All(p_1, t)'
+          BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, Valid_c, Valid_v_U, Valid_u_U, InvU8All, SameRoot
+      <3> QED
+        BY <3>1, <3>2, <3>3 DEF Inv, InvF1, TypeOK, Valid_pc, PCSet
+    <2>6. QED
+      BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>4. InvF2'
     <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
                         NEW t \in M'
@@ -298,19 +536,1302 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
     <2>6. QED
       BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>5. InvF3'
-      BY DEF Inv, InvF3, InvF3All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+    <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                        NEW t \in M'
+                 PROVE  (/\  pc[p_1] = "F3"    =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "F"
+                                                 /\ t.arg[p_1] \in NodeSet
+                                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                 /\ InvF3All(p_1, t)
+                         /\  pc[p_1] = "F3U1"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                 /\ InvF3All(p_1, t)
+                         /\  pc[p_1] = "F3U2"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU2All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                 /\ InvF3All(p_1, t)
+                         /\  pc[p_1] = "F3U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU7All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                 /\ InvF3All(p_1, t)
+                         /\  pc[p_1] = "F3U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU8All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                 /\ InvF3All(p_1, t))'
+      BY DEF InvF3
+    <2> PICK told \in M:   (/\ told.ret[p] = BOT
+                            /\ told.op[p] = BOT
+                            /\ told.arg[p] = BOT
+                            /\ t.sigma = told.sigma
+                            /\ t.ret = told.ret
+                            /\ \/ /\ t.op = [told.op EXCEPT ![p] = "F"]
+                                  /\ \E i \in NodeSet: t.arg = [told.arg EXCEPT ![p] = i] 
+                               \/ /\ t.op = [told.op EXCEPT ![p] = "U"]
+                                  /\ \E i \in NodeSet: \E j \in NodeSet: 
+                                        t.arg = [told.arg EXCEPT ![p] = <<i, j>>]) 
+        BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet
+    <2>1. (pc[p_1] = "F3"    =>  /\ t.ret[p_1] = BOT
+                               /\ t.op[p_1] = "F"
+                             /\ t.arg[p_1] \in NodeSet
+                             /\ SameRoot(t, c[p_1], t.arg[p_1])
+                             /\ InvF3All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F3")'
+                   PROVE  (    /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "F"
+                           /\ t.arg[p_1] \in NodeSet
+                           /\ SameRoot(t, c[p_1], t.arg[p_1])
+                           /\ InvF3All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F3"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT 
+            /\ told.op[p_1] = "F" 
+            /\ told.arg[p_1] \in NodeSet
+            /\ SameRoot(told, c[p_1], told.arg[p_1])
+            /\ InvF3All(p_1, told)
+          BY <3>1 DEF Inv, InvF3
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF3All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_F, Valid_c
+      <3> QED
+        BY <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot
+    <2>2. (pc[p_1] = "F3U1"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ SameRoot(t, c[p_1], u_U[p_1])
+                               /\ InvF3All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F3U1")'
+                   PROVE  (  /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ SameRoot(t, c[p_1], u_U[p_1])
+                           /\ InvF3All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F3U1"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT 
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvF3All(p_1, told)
+          BY <3>1 DEF Inv, InvF3
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF3All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_F, Valid_c
+      <3> QED
+        BY <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot
+    <2>3. (pc[p_1] = "F3U2"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU2All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1])
+                               /\ InvF3All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F3U2")'
+                   PROVE  (  /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU2All(p_1, t)
+                           /\ SameRoot(t, c[p_1], v_U[p_1])
+                           /\ InvF3All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F3U2"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT 
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvF3All(p_1, told)
+            /\ InvU2All(p_1, told)
+          BY <3>1 DEF Inv, InvF3
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF3All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_F, Valid_c
+      <3> InvU2All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_U, Valid_v_U, InvU2All
+      <3> QED
+        BY <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot, InvU2All
+    <2>4. (pc[p_1] = "F3U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU7All(p_1, t)
+                               /\ SameRoot(t, c[p_1], u_U[p_1])
+                               /\ InvF3All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F3U7")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU7All(p_1, t)
+                           /\ SameRoot(t, c[p_1], u_U[p_1])
+                           /\ InvF3All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F3U7"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvF3All(p_1, told)
+            /\ InvU7All(p_1, told)
+          BY <3>1 DEF Inv, InvF3
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF3All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_F, Valid_c
+      <3> InvU7All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_U, Valid_v_U, InvU7All
+      <3> QED
+        BY <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot, InvU7All, Valid_u_U, Valid_c
+    <2>5. (pc[p_1] = "F3U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU8All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1])
+                               /\ InvF3All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F3U8")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU8All(p_1, t)
+                           /\ SameRoot(t, c[p_1], v_U[p_1])
+                           /\ InvF3All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F3U8"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvF3All(p_1, told)
+            /\ InvU8All(p_1, told)
+          BY <3>1 DEF Inv, InvF3
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF3All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_F, Valid_c
+      <3> InvU8All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_U, Valid_v_U, InvU8All
+      <3> QED
+        BY <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot, InvU8All
+    <2>6. QED
+      BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>6. InvF4'
-      BY DEF Inv, InvF4, InvF4All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+    <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                        NEW t \in M'
+                 PROVE  (/\  pc[p_1] = "F4"    =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "F"
+                                                 /\ t.arg[p_1] \in NodeSet
+                                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                 /\ InvF4All(p_1, t)
+                         /\  pc[p_1] = "F4U1"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                 /\ InvF4All(p_1, t)
+                         /\  pc[p_1] = "F4U2"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU2All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                 /\ InvF4All(p_1, t)
+                         /\  pc[p_1] = "F4U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU7All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                 /\ InvF4All(p_1, t)
+                         /\  pc[p_1] = "F4U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU8All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                 /\ InvF4All(p_1, t))'
+      BY DEF InvF4
+    <2> PICK told \in M:   (/\ told.ret[p] = BOT
+                            /\ told.op[p] = BOT
+                            /\ told.arg[p] = BOT
+                            /\ t.sigma = told.sigma
+                            /\ t.ret = told.ret
+                            /\ \/ /\ t.op = [told.op EXCEPT ![p] = "F"]
+                                  /\ \E i \in NodeSet: t.arg = [told.arg EXCEPT ![p] = i] 
+                               \/ /\ t.op = [told.op EXCEPT ![p] = "U"]
+                                  /\ \E i \in NodeSet: \E j \in NodeSet: 
+                                        t.arg = [told.arg EXCEPT ![p] = <<i, j>>]) 
+        BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet
+    <2>1. (pc[p_1] = "F4"    =>  /\ t.arg[p_1] \in NodeSet 
+                                 /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "F"
+                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                 /\ InvF4All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F4")'
+                   PROVE  (/\ t.arg[p_1] \in NodeSet 
+                           /\ t.ret[p_1] = BOT
+                           /\ t.op[p_1] = "F"
+                           /\ SameRoot(t, c[p_1], t.arg[p_1])
+                           /\ InvF4All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F4"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "F" 
+            /\ told.arg[p_1] \in NodeSet
+            /\ SameRoot(told, c[p_1], told.arg[p_1])
+            /\ InvF4All(p_1, told)
+          BY <3>1 DEF Inv, InvF4
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF4All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF4All, SameRoot, Valid_u_F, Valid_c
+      <3> QED
+        BY <3>3 DEF Inv, InvF4, TypeOK, Valid_pc, PCSet, InvF4All, SameRoot
+    <2>2. (pc[p_1] = "F4U1"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ SameRoot(t, c[p_1], u_U[p_1])
+                               /\ InvF4All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F4U1")'
+                   PROVE  (  /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ SameRoot(t, c[p_1], u_U[p_1])
+                           /\ InvF4All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F4U1"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvF4All(p_1, told)
+          BY <3>1 DEF Inv, InvF4
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF4All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF4All, SameRoot, Valid_u_F, Valid_c
+      <3> QED
+        BY <3>3 DEF Inv, InvF4, TypeOK, Valid_pc, PCSet, InvF4All, SameRoot
+    <2>3. (pc[p_1] = "F4U2"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU2All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1])
+                               /\ InvF4All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F4U2")'
+                   PROVE  (  /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ SameRoot(t, c[p_1], v_U[p_1])
+                           /\ InvF4All(p_1, t)
+                           /\ InvU2All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F4U2"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvF4All(p_1, told)
+            /\ InvU2All(p_1, told)
+          BY <3>1 DEF Inv, InvF4
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF4All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF4All, SameRoot, Valid_u_F, Valid_c
+      <3> InvU2All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, InvU2All
+      <3> QED
+        BY <3>3 DEF Inv, InvF4, TypeOK, Valid_pc, PCSet, InvF4All, SameRoot, InvU2All, Valid_v_U, Valid_c
+    <2>4. (pc[p_1] = "F4U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU7All(p_1, t)
+                               /\ SameRoot(t, c[p_1], u_U[p_1])
+                               /\ InvF4All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F4U7")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU7All(p_1, t)
+                           /\ SameRoot(t, c[p_1], u_U[p_1])
+                           /\ InvF4All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F4U7"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvF4All(p_1, told)
+            /\ InvU7All(p_1, told)
+          BY <3>1 DEF Inv, InvF4
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF4All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF4All, SameRoot, Valid_u_F, Valid_c
+      <3> InvU7All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, InvU7All
+      <3> QED
+        BY <3>3 DEF Inv, InvF4, TypeOK, Valid_pc, PCSet, InvF4All, SameRoot, InvU7All, Valid_v_U, Valid_c
+    <2>5. (pc[p_1] = "F4U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU8All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1])
+                               /\ InvF4All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F4U8")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU8All(p_1, t)
+                           /\ SameRoot(t, c[p_1], v_U[p_1])
+                           /\ InvF4All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F4U8"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvF4All(p_1, told)
+            /\ InvU8All(p_1, told)
+          BY <3>1 DEF Inv, InvF4
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF4All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF4All, SameRoot, Valid_u_F, Valid_c
+      <3> InvU8All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, InvU8All
+      <3> QED
+        BY <3>3 DEF Inv, InvF4, TypeOK, Valid_pc, PCSet, InvF4All, SameRoot, InvU8All, Valid_v_U, Valid_c
+    <2>6. QED
+      BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>7. InvF5'
-      BY DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
-  <1>8. InvF6'
-      BY DEF Inv, InvF6, InvF6All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+    <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                        NEW t \in M'
+                 PROVE  (/\ pc[p_1] = "F5"    =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "F"
+                                                 /\ t.arg[p_1] \in NodeSet
+                                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                 /\ InvF5All(p_1, t)
+                         /\  pc[p_1] = "F5U1"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                 /\ InvF5All(p_1, t)
+                         /\  pc[p_1] = "F5U2"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU2All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                 /\ InvF5All(p_1, t)
+                         /\  pc[p_1] = "F5U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU7All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                 /\ InvF5All(p_1, t)
+                         /\  pc[p_1] = "F5U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU8All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                 /\ InvF5All(p_1, t))'
+      BY DEF InvF5
+
+    <2> PICK told \in M: ( /\ told.ret[p] = BOT
+                            /\ told.op[p] = BOT
+                            /\ told.arg[p] = BOT
+                            /\ t.sigma = told.sigma
+                            /\ t.ret = told.ret
+                            /\ \/ /\ t.op = [told.op EXCEPT ![p] = "F"]
+                                  /\ \E i \in NodeSet: t.arg = [told.arg EXCEPT ![p] = i]
+                               \/ /\ t.op = [told.op EXCEPT ![p] = "U"]
+                                  /\ \E i \in NodeSet: \E j \in NodeSet: t.arg = [told.arg EXCEPT ![p] = <<i, j>>])
+        BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet
+
+    <2>1. (pc[p_1] = "F5"    =>  /\ t.arg[p_1] \in NodeSet
+                                 /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "F"
+                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                 /\ InvF5All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F5")'
+                   PROVE  (  /\ t.arg[p_1] \in NodeSet
+                             /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "F"
+                             /\ SameRoot(t, c[p_1], t.arg[p_1])
+                             /\ InvF5All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F5"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "F"
+            /\ told.arg[p_1] \in NodeSet
+            /\ SameRoot(told, c[p_1], told.arg[p_1])
+            /\ InvF5All(p_1, told)
+          BY <3>1 DEF Inv, InvF5
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF5All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF5All, SameRoot, Valid_u_F, Valid_c, Valid_a_F, FieldSet
+      <3> QED
+        BY <3>3 DEF Inv, InvF5, TypeOK, Valid_pc, PCSet, InvF5All, SameRoot, Valid_u_U, Valid_c
+
+    <2>2. (pc[p_1] = "F5U1"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                 /\ InvF5All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F5U1")'
+                   PROVE  ( /\ t.ret[p_1] = BOT
+                            /\ t.op[p_1] = "U"
+                            /\ t.arg[p_1] \in NodeSet \X NodeSet
+                            /\ SameRoot(t, c[p_1], u_U[p_1])
+                            /\ InvF5All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F5U1"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "U"
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvF5All(p_1, told)
+          BY <3>1 DEF Inv, InvF5
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF5All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF5All, SameRoot, Valid_u_F, Valid_c, Valid_a_F, FieldSet
+      <3> QED
+        BY <3>3 DEF Inv, InvF5, TypeOK, Valid_pc, PCSet, InvF5All, SameRoot, Valid_u_U, Valid_c
+    <2>3. (pc[p_1] = "F5U2"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU2All(p_1, t)
+                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                 /\ InvF5All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F5U2")'
+                   PROVE  ( /\ t.ret[p_1] = BOT
+                            /\ t.op[p_1] = "U"
+                            /\ t.arg[p_1] \in NodeSet \X NodeSet
+                            /\ InvU2All(p_1, t)
+                            /\ SameRoot(t, c[p_1], v_U[p_1])
+                            /\ InvF5All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F5U2"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "U"
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ InvU2All(p_1, told)
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvF5All(p_1, told)
+          BY <3>1 DEF Inv, InvF5
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF5All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF5All, SameRoot, Valid_u_F, Valid_c, Valid_a_F, FieldSet
+      <3> QED
+        BY <3>3 DEF Inv, InvF5, TypeOK, Valid_pc, PCSet, InvF5All, SameRoot, InvU2All, Valid_u_U, Valid_c
+    <2>4. (pc[p_1] = "F5U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU7All(p_1, t)
+                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                 /\ InvF5All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F5U7")'
+                   PROVE  ( /\ t.ret[p_1] \in {BOT, ACK}
+                            /\ t.op[p_1] = "U"
+                            /\ t.arg[p_1] \in NodeSet \X NodeSet
+                            /\ InvU7All(p_1, t)
+                            /\ SameRoot(t, c[p_1], u_U[p_1])
+                            /\ InvF5All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F5U7"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U"
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ InvU7All(p_1, told)
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvF5All(p_1, told)
+          BY <3>1 DEF Inv, InvF5
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> SameRoot(t, c[p_1], u_U[p_1])'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, Valid_c
+      <3> InvU7All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, InvU7All
+      <3> InvF5All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF5All, SameRoot, Valid_u_F, Valid_c, Valid_a_F, FieldSet
+      <3> QED
+        BY <3>3 DEF Inv, InvF5, TypeOK, Valid_pc, PCSet, Valid_u_U, Valid_c
+    <2>5. (pc[p_1] = "F5U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ InvU8All(p_1, t)
+                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                 /\ InvF5All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F5U8")'
+                   PROVE  ( /\ t.ret[p_1] \in {BOT, ACK}
+                            /\ t.op[p_1] = "U"
+                            /\ t.arg[p_1] \in NodeSet \X NodeSet
+                            /\ InvU8All(p_1, t)
+                            /\ SameRoot(t, c[p_1], v_U[p_1])
+                            /\ InvF5All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F5U8"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U"
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ InvU8All(p_1, told)
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvF5All(p_1, told)
+          BY <3>1 DEF Inv, InvF5
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> SameRoot(t, c[p_1], v_U[p_1])'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, Valid_c
+      <3> InvU8All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, InvU8All
+      <3> InvF5All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF5All, SameRoot, Valid_u_F, Valid_c, Valid_a_F, FieldSet
+      <3> QED
+        BY <3>3 DEF Inv, InvF5, TypeOK, Valid_pc, PCSet, Valid_u_U, Valid_c
+    <2>6. QED
+      BY <2>1, <2>2, <2>3, <2>4, <2>5
+    <1>8. InvF6'
+      <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                          NEW t \in M'
+                   PROVE  (/\  pc[p_1] = "F6"    =>  /\ t.ret[p_1] = BOT
+                                                     /\ t.op[p_1] = "F"
+                                                   /\ t.arg[p_1] \in NodeSet
+                                                   /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                   /\ InvF6All(p_1, t)
+                           /\  pc[p_1] = "F6U1"  =>  /\ t.ret[p_1] = BOT
+                                                     /\ t.op[p_1] = "U"
+                                                   /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                   /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                   /\ InvF6All(p_1, t)
+                           /\  pc[p_1] = "F6U2"  =>  /\ t.ret[p_1] = BOT
+                                                     /\ t.op[p_1] = "U"
+                                                   /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                   /\ InvU2All(p_1, t)
+                                                   /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                   /\ InvF6All(p_1, t)
+                           /\  pc[p_1] = "F6U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                     /\ t.op[p_1] = "U"
+                                                   /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                   /\ InvU7All(p_1, t)
+                                                   /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                   /\ InvF6All(p_1, t)
+                           /\  pc[p_1] = "F6U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                     /\ t.op[p_1] = "U"
+                                                   /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                   /\ InvU8All(p_1, t)
+                                                   /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                   /\ InvF6All(p_1, t))'
+        BY DEF InvF6
+      <2> PICK told \in M:   (/\ told.ret[p] = BOT
+                              /\ told.op[p] = BOT
+                              /\ told.arg[p] = BOT
+                              /\ t.sigma = told.sigma
+                              /\ t.ret = told.ret
+                              /\ \/ /\ t.op = [told.op EXCEPT ![p] = "F"]
+                                    /\ \E i \in NodeSet: t.arg = [told.arg EXCEPT ![p] = i] 
+                                 \/ /\ t.op = [told.op EXCEPT ![p] = "U"]
+                                    /\ \E i \in NodeSet: \E j \in NodeSet: 
+                                          t.arg = [told.arg EXCEPT ![p] = <<i, j>>]) 
+          BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet
+      <2>1. (pc[p_1] = "F6"    =>  /\ t.arg[p_1] \in NodeSet 
+                                   /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "F"
+                                   /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                   /\ InvF6All(p_1, t))'
+        <3> SUFFICES ASSUME (pc[p_1] = "F6")'
+                     PROVE  (/\ t.arg[p_1] \in NodeSet 
+                             /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "F"
+                             /\ SameRoot(t, c[p_1], t.arg[p_1])
+                             /\ InvF6All(p_1, t))'
+          OBVIOUS
+        <3>1. p_1 # p /\ pc[p_1] = "F6"
+            BY DEF TypeOK, Valid_pc, PCSet
+        <3>2. /\ told.ret[p_1] = BOT
+              /\ told.op[p_1] = "F" 
+              /\ told.arg[p_1] \in NodeSet
+              /\ SameRoot(told, c[p_1], told.arg[p_1])
+              /\ InvF6All(p_1, told)
+            BY <3>1 DEF Inv, InvF6
+        <3>3. t.arg[p_1] = told.arg[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+        <3> t.op[p_1] = told.op[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+        <3> t.ret[p_1] = told.ret[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+        <3> InvF6All(p_1, t)'
+          BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF6All, SameRoot, Valid_u_F, Valid_c, Valid_a_F, Valid_b_F, FieldSet
+        <3> QED
+          BY <3>3 DEF Inv, InvF6, TypeOK, Valid_pc, PCSet, InvF6All, SameRoot
+      <2>2. (pc[p_1] = "F6U1"  =>  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                 /\ InvF6All(p_1, t))'
+        <3> SUFFICES ASSUME (pc[p_1] = "F6U1")'
+                     PROVE  (  /\ t.ret[p_1] = BOT
+                               /\ t.op[p_1] = "U"
+                             /\ t.arg[p_1] \in NodeSet \X NodeSet
+                             /\ SameRoot(t, c[p_1], u_U[p_1])
+                             /\ InvF6All(p_1, t))'
+          OBVIOUS
+        <3>1. p_1 # p /\ pc[p_1] = "F6U1"
+            BY DEF TypeOK, Valid_pc, PCSet
+        <3>2. /\ told.ret[p_1] = BOT
+              /\ told.op[p_1] = "U" 
+              /\ told.arg[p_1] \in NodeSet \X NodeSet
+              /\ SameRoot(told, c[p_1], u_U[p_1])
+              /\ InvF6All(p_1, told)
+            BY <3>1 DEF Inv, InvF6
+        <3>3. t.arg[p_1] = told.arg[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+        <3> t.op[p_1] = told.op[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+        <3> t.ret[p_1] = told.ret[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+        <3> InvF6All(p_1, t)'
+            BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF6All, SameRoot, Valid_u_F, Valid_c, Valid_a_F, Valid_b_F, FieldSet
+        <3> QED
+          BY <3>3 DEF Inv, InvF6, TypeOK, Valid_pc, PCSet, InvF6All, SameRoot, Valid_u_U, Valid_c
+      <2>3. (pc[p_1] = "F6U2"  =>  /\ t.ret[p_1] = BOT
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                 /\ InvF6All(p_1, t)
+                                 /\ InvU2All(p_1, t))'
+        <3> SUFFICES ASSUME (pc[p_1] = "F6U2")'
+                     PROVE  (  /\ t.ret[p_1] = BOT
+                               /\ t.op[p_1] = "U"
+                             /\ t.arg[p_1] \in NodeSet \X NodeSet
+                             /\ SameRoot(t, c[p_1], v_U[p_1])
+                             /\ InvF6All(p_1, t)
+                             /\ InvU2All(p_1, t))'
+          OBVIOUS
+        <3>1. p_1 # p /\ pc[p_1] = "F6U2"
+            BY DEF TypeOK, Valid_pc, PCSet
+        <3>2. /\ told.ret[p_1] = BOT
+              /\ told.op[p_1] = "U" 
+              /\ told.arg[p_1] \in NodeSet \X NodeSet
+              /\ SameRoot(told, c[p_1], v_U[p_1])
+              /\ InvF6All(p_1, told)
+              /\ InvU2All(p_1, told)
+            BY <3>1 DEF Inv, InvF6
+        <3>3. t.arg[p_1] = told.arg[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+        <3> t.op[p_1] = told.op[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+        <3> t.ret[p_1] = told.ret[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+        <3> InvF6All(p_1, t)'
+            BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF6All, SameRoot, Valid_u_F, Valid_c, Valid_a_F, Valid_b_F, FieldSet
+        <3> InvU2All(p_1, t)'
+            BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, InvU2All
+        <3> SameRoot(t, c[p_1], v_U[p_1])'
+            BY <3>1, <3>2, <3>3 DEF Inv, InvF6, TypeOK, Valid_pc, PCSet, InvF6All, SameRoot, Valid_v_U, Valid_c
+        <3> QED
+            BY <3>3, <3>2, <3>1 DEF Inv, InvF6, TypeOK, Valid_pc, PCSet
+          
+      <2>4. (pc[p_1] = "F6U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                 /\ InvF6All(p_1, t)
+                                 /\ InvU7All(p_1, t))'
+        <3> SUFFICES ASSUME (pc[p_1] = "F6U7")'
+                     PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                               /\ t.op[p_1] = "U"
+                             /\ t.arg[p_1] \in NodeSet \X NodeSet
+                             /\ SameRoot(t, c[p_1], u_U[p_1])
+                             /\ InvF6All(p_1, t)
+                             /\ InvU7All(p_1, t))'
+            OBVIOUS
+        <3>1. p_1 # p /\ pc[p_1] = "F6U7"
+            BY DEF TypeOK, Valid_pc, PCSet
+        <3>2. /\ TRUE
+              /\ told.ret[p_1] \in {BOT, ACK}
+              /\ told.op[p_1] = "U" 
+              /\ told.arg[p_1] \in NodeSet \X NodeSet
+              /\ SameRoot(told, c[p_1], u_U[p_1])
+              /\ InvF6All(p_1, told)
+              /\ InvU7All(p_1, told)
+            BY <3>1 DEF Inv, InvF6
+        <3>3. t.arg[p_1] = told.arg[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+        <3> t.op[p_1] = told.op[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+        <3> t.ret[p_1] = told.ret[p_1]
+            BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet, SameRoot, Valid_u_U, Valid_v_U, InvU7All
+        <3> QED
+            BY <3>3 DEF Inv, InvF6, TypeOK, Valid_pc, PCSet, InvF6All, SameRoot, Valid_u_U, Valid_c, InvU7All          
+      <2>5. (pc[p_1] = "F6U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                   /\ t.op[p_1] = "U"
+                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                 /\ InvF6All(p_1, t)
+                                 /\ InvU8All(p_1, t))'
+        <3> SUFFICES ASSUME (pc[p_1] = "F6U8")'
+                     PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                               /\ t.op[p_1] = "U"
+                             /\ t.arg[p_1] \in NodeSet \X NodeSet
+                             /\ SameRoot(t, c[p_1], v_U[p_1])
+                             /\ InvF6All(p_1, t)
+                             /\ InvU8All(p_1, t))'
+            OBVIOUS
+        <3>1. p_1 # p /\ pc[p_1] = "F6U8"
+            BY DEF TypeOK, Valid_pc, PCSet
+        <3>2. /\ TRUE
+              /\ told.ret[p_1] \in {BOT, ACK}
+              /\ told.op[p_1] = "U" 
+              /\ told.arg[p_1] \in NodeSet \X NodeSet
+              /\ SameRoot(told, c[p_1], v_U[p_1])
+              /\ InvF6All(p_1, told)
+              /\ InvU8All(p_1, told)
+            BY <3>1 DEF Inv, InvF6
+        <3>3. t.arg[p_1] = told.arg[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+        <3> t.op[p_1] = told.op[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+        <3> t.ret[p_1] = told.ret[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+        <3> InvF6All(p_1, t)'
+            BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF6All, SameRoot, Valid_u_F, Valid_c, Valid_a_F, Valid_b_F, FieldSet
+        <3> QED
+          BY <3>3 DEF Inv, InvF6, TypeOK, Valid_pc, PCSet, InvF6All, SameRoot, Valid_v_U, Valid_c, InvU8All
+    <2> QED
+        BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>9. InvF7'
-      BY DEF Inv, InvF7, InvF7All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+    <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                        NEW t \in M'
+                 PROVE  (/\  pc[p_1] = "F7"    =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "F"
+                                                 /\ t.arg[p_1] \in NodeSet
+                                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                 /\ InvF7All(p_1, t)
+                         /\  pc[p_1] = "F7U1"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                 /\ InvF7All(p_1, t)
+                         /\  pc[p_1] = "F7U2"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU2All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                 /\ InvF7All(p_1, t)
+                         /\  pc[p_1] = "F7U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU7All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                 /\ InvF7All(p_1, t)
+                         /\  pc[p_1] = "F7U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU8All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                 /\ InvF7All(p_1, t))'
+      BY DEF InvF7
+    <2> PICK told \in M:   (/\ told.ret[p] = BOT
+                            /\ told.op[p] = BOT
+                            /\ told.arg[p] = BOT
+                            /\ t.sigma = told.sigma
+                            /\ t.ret = told.ret
+                            /\ \/ /\ t.op = [told.op EXCEPT ![p] = "F"]
+                                  /\ \E i \in NodeSet: t.arg = [told.arg EXCEPT ![p] = i] 
+                               \/ /\ t.op = [told.op EXCEPT ![p] = "U"]
+                                  /\ \E i \in NodeSet: \E j \in NodeSet: 
+                                        t.arg = [told.arg EXCEPT ![p] = <<i, j>>]) 
+        BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet
+    <2>1. (pc[p_1] = "F7"    =>  /\ t.arg[p_1] \in NodeSet 
+                                 /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "F"
+                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                 /\ InvF7All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F7")'
+                   PROVE  (/\ t.arg[p_1] \in NodeSet 
+                           /\ t.ret[p_1] = BOT
+                           /\ t.op[p_1] = "F"
+                           /\ SameRoot(t, c[p_1], t.arg[p_1])
+                           /\ InvF7All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F7"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "F" 
+            /\ told.arg[p_1] \in NodeSet
+            /\ SameRoot(told, c[p_1], told.arg[p_1])
+            /\ InvF7All(p_1, told)
+          BY <3>1 DEF Inv, InvF7
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF7All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF7All, SameRoot, Valid_u_F, Valid_c
+      <3> QED
+        BY <3>3 DEF Inv, InvF7, TypeOK, Valid_pc, PCSet, InvF7All, SameRoot
+    <2>2. (pc[p_1] = "F7U1"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ SameRoot(t, c[p_1], u_U[p_1])
+                               /\ InvF7All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F7U1")'
+                   PROVE  (  /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ SameRoot(t, c[p_1], u_U[p_1])
+                           /\ InvF7All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F7U1"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvF7All(p_1, told)
+          BY <3>1 DEF Inv, InvF7
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF7All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF7All, SameRoot, Valid_u_F, Valid_c
+      <3> QED
+        BY <3>3 DEF Inv, InvF7, TypeOK, Valid_pc, PCSet, InvF7All, SameRoot, Valid_c, Valid_u_U
+    <2>3. (pc[p_1] = "F7U2"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU2All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1])
+                               /\ InvF7All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F7U2")'
+                   PROVE  (  /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ SameRoot(t, c[p_1], v_U[p_1])
+                           /\ InvF7All(p_1, t)
+                           /\ InvU2All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F7U2"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvF7All(p_1, told)
+            /\ InvU2All(p_1, told)
+          BY <3>1 DEF Inv, InvF7
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF7All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF7All, SameRoot, Valid_u_F, Valid_c
+      <3> InvU2All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, InvU2All
+      <3> QED
+        BY <3>3 DEF Inv, InvF7, TypeOK, Valid_pc, PCSet, InvF7All, SameRoot, InvU2All, Valid_u_U, Valid_c
+    <2>4. (pc[p_1] = "F7U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU7All(p_1, t)
+                               /\ SameRoot(t, c[p_1], u_U[p_1])
+                               /\ InvF7All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F7U7")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU7All(p_1, t)
+                           /\ SameRoot(t, c[p_1], u_U[p_1])
+                           /\ InvF7All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F7U7"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvF7All(p_1, told)
+            /\ InvU7All(p_1, told)
+          BY <3>1 DEF Inv, InvF7
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF7All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF7All, SameRoot, Valid_u_F, Valid_c
+      <3> InvU7All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, InvU7All
+      <3> QED
+        BY <3>3 DEF Inv, InvF7, TypeOK, Valid_pc, PCSet, InvF4All, SameRoot, InvU7All, Valid_u_U, Valid_c
+    <2>5. (pc[p_1] = "F7U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU8All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1])
+                               /\ InvF7All(p_1, t))'
+      <3> SUFFICES ASSUME (pc[p_1] = "F7U8")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU8All(p_1, t)
+                           /\ SameRoot(t, c[p_1], v_U[p_1])
+                           /\ InvF7All(p_1, t))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "F7U8"
+          BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvF7All(p_1, told)
+            /\ InvU8All(p_1, told)
+          BY <3>1 DEF Inv, InvF7
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> InvF7All(p_1, t)'
+        BY <3>1, <3>2 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF7All, SameRoot, Valid_u_F, Valid_c
+      <3> InvU8All(p_1, t)'
+        BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, SameRoot, Valid_u_U, Valid_v_U, InvU8All
+      <3> QED
+        BY <3>3 DEF Inv, InvF7, TypeOK, Valid_pc, PCSet, InvF7All, SameRoot, InvU8All, Valid_u_U, Valid_c
+    <2>6. QED
+      BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>10. InvFR'
-      BY DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+    <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                        NEW t \in M'
+                 PROVE  (/\  pc[p_1] = "FR"    =>  /\ t.ret[p_1] = u_F[p_1]
+                                                   /\ t.op[p_1] = "F"
+                                                 /\ t.arg[p_1] \in NodeSet
+                                                 /\ SameRoot(t, t.arg[p_1], u_F[p_1])
+                                                 /\ SameRoot(t, c[p_1], u_F[p_1])
+                         /\  pc[p_1] = "FRU1"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                 /\ SameRoot(t, c[p_1], u_F[p_1])
+                         /\  pc[p_1] = "FRU2"  =>  /\ t.ret[p_1] = BOT
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU2All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1])
+                         
+                         /\  pc[p_1] = "FRU7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU7All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], u_U[p_1])
+                         /\  pc[p_1] = "FRU8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                                   /\ t.op[p_1] = "U"
+                                                 /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                 /\ InvU8All(p_1, t)
+                                                 /\ SameRoot(t, c[p_1], v_U[p_1]))'
+      BY DEF InvFR
+    <2> PICK told \in M:   (/\ told.ret[p] = BOT
+                            /\ told.op[p] = BOT
+                            /\ told.arg[p] = BOT
+                            /\ t.sigma = told.sigma
+                            /\ t.ret = told.ret
+                            /\ \/ /\ t.op = [told.op EXCEPT ![p] = "F"]
+                                  /\ \E i \in NodeSet: t.arg = [told.arg EXCEPT ![p] = i] 
+                               \/ /\ t.op = [told.op EXCEPT ![p] = "U"]
+                                  /\ \E i \in NodeSet: \E j \in NodeSet: 
+                                        t.arg = [told.arg EXCEPT ![p] = <<i, j>>]) 
+        BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet
+    <2>1. (pc[p_1] = "FR"    =>  /\ t.ret[p_1] = u_F[p_1]
+                               /\ t.op[p_1] = "F"
+                             /\ t.arg[p_1] \in NodeSet
+                             /\ SameRoot(t, t.arg[p_1], u_F[p_1])
+                             /\ SameRoot(t, c[p_1], u_F[p_1]))'
+      <3> SUFFICES ASSUME (pc[p_1] = "FR")'
+                   PROVE  (    /\ t.ret[p_1] = u_F[p_1]
+                             /\ t.op[p_1] = "F"
+                           /\ t.arg[p_1] \in NodeSet
+                           /\ SameRoot(t, t.arg[p_1], u_F[p_1])
+                           /\ SameRoot(t, c[p_1], u_F[p_1]))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "FR"
+        BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = u_F[p_1]
+            /\ told.op[p_1] = "F" 
+            /\ told.arg[p_1] \in NodeSet
+            /\ SameRoot(told, told.arg[p_1], u_F[p_1])
+            /\ SameRoot(told, c[p_1], u_F[p_1])
+        BY <3>1 DEF Inv, InvFR
+      <3>3. t.arg[p_1] = told.arg[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+          BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> QED
+        BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F
+    <2>2. (pc[p_1] = "FRU1"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ SameRoot(t, c[p_1], u_U[p_1])
+                               /\ SameRoot(t, c[p_1], u_F[p_1]))'
+      <3> SUFFICES ASSUME (pc[p_1] = "FRU1")'
+                   PROVE  (/\ t.ret[p_1] = BOT
+                           /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ SameRoot(t, c[p_1], u_U[p_1])
+                           /\ SameRoot(t, c[p_1], u_F[p_1]))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "FRU1"
+        BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ SameRoot(told, c[p_1], u_F[p_1])
+        BY <3>1 DEF Inv, InvFR
+      <3>3. t.arg[p_1] = told.arg[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> QED
+        BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F
+    <2>3. (pc[p_1] = "FRU2"  =>  /\ t.ret[p_1] = BOT
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU2All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1]))'
+      <3> SUFFICES ASSUME (pc[p_1] = "FRU2")'
+                   PROVE  (  /\ t.ret[p_1] = BOT
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU2All(p_1, t)
+                           /\ SameRoot(t, c[p_1], v_U[p_1]))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "FRU2"
+        BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] = BOT
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvU2All(p_1, told)
+        BY <3>1 DEF Inv, InvFR
+      <3>3. t.arg[p_1] = told.arg[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet            
+      <3> QED
+        BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F, InvU2All, Valid_u_U
+    <2>4. (pc[p_1] = "FRU7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU7All(p_1, t)
+                               /\ SameRoot(t, c[p_1], u_U[p_1]))'
+      <3> SUFFICES ASSUME (pc[p_1] = "FRU7")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU7All(p_1, t)
+                           /\ SameRoot(t, c[p_1], u_U[p_1]))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "FRU7"
+        BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], u_U[p_1])
+            /\ InvU7All(p_1, told)
+        BY <3>1 DEF Inv, InvFR
+      <3>3. t.arg[p_1] = told.arg[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+      <3> QED
+        BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F, InvU7All, Valid_u_U
+    <2>5. (pc[p_1] = "FRU8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
+                                 /\ t.op[p_1] = "U"
+                               /\ t.arg[p_1] \in NodeSet \X NodeSet
+                               /\ InvU8All(p_1, t)
+                               /\ SameRoot(t, c[p_1], v_U[p_1]))'
+      <3> SUFFICES ASSUME (pc[p_1] = "FRU8")'
+                   PROVE  (  /\ t.ret[p_1] \in {BOT, ACK}
+                             /\ t.op[p_1] = "U"
+                           /\ t.arg[p_1] \in NodeSet \X NodeSet
+                           /\ InvU8All(p_1, t)
+                           /\ SameRoot(t, c[p_1], v_U[p_1]))'
+        OBVIOUS
+      <3>1. p_1 # p /\ pc[p_1] = "FRU8"
+        BY DEF TypeOK, Valid_pc, PCSet
+      <3>2. /\ told.ret[p_1] \in {BOT, ACK}
+            /\ told.op[p_1] = "U" 
+            /\ told.arg[p_1] \in NodeSet \X NodeSet
+            /\ SameRoot(told, c[p_1], v_U[p_1])
+            /\ InvU8All(p_1, told)
+        BY <3>1 DEF Inv, InvFR
+      <3>3. t.arg[p_1] = told.arg[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+      <3> t.op[p_1] = told.op[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+      <3> t.ret[p_1] = told.ret[p_1]
+        BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet            
+      <3> QED
+        BY <3>2, <3>3 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_c, Valid_u_F, InvU8All
+    <2>6. QED
+      BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>11. InvU1'
-    BY DEF Inv, InvU1, TypeOK, Valid_pc, PCSet, SameRoot
+    <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                        NEW t \in M',
+                        (pc[p_1] = "U1")'
+                 PROVE  (    /\ t.ret[p_1] = BOT
+                           /\ t.op[p_1] = "U"
+                         /\ t.arg[p_1] \in NodeSet \X NodeSet)'
+      BY DEF InvU1
+    <2> PICK told \in M:   (/\ told.ret[p] = BOT
+                            /\ told.op[p] = BOT
+                            /\ told.arg[p] = BOT
+                            /\ t.sigma = told.sigma
+                            /\ t.ret = told.ret
+                            /\ \/ /\ t.op = [told.op EXCEPT ![p] = "F"]
+                                  /\ \E i \in NodeSet: t.arg = [told.arg EXCEPT ![p] = i] 
+                                  /\ pc' = [pc EXCEPT ![p] = "F1"]
+                               \/ /\ t.op = [told.op EXCEPT ![p] = "U"]
+                                  /\ \E i \in NodeSet: \E j \in NodeSet: 
+                                        t.arg = [told.arg EXCEPT ![p] = <<i, j>>] 
+                                  /\ pc' = [pc EXCEPT ![p] = "U1"])
+        BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet
+    <2>1. CASE pc[p_1] = "U1"
+        <3> USE <2>1
+        <3>1. p_1 # p /\ pc[p_1] = "U1"
+            BY DEF TypeOK, Valid_pc, PCSet
+        <3>2. /\ told.ret[p_1] = BOT 
+              /\ told.op[p_1] = "U" 
+              /\ told.arg[p_1] \in NodeSet \X NodeSet
+            BY <3>1 DEF Inv, InvU1
+        <3> t.arg[p_1] = told.arg[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+        <3> t.op[p_1] = told.op[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+        <3> t.ret[p_1] = told.ret[p_1]
+            BY <3>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+        <3> QED
+          BY DEF Inv, InvU1, TypeOK, Valid_pc, PCSet, SameRoot
+    <2>2. CASE pc[p_1] = "0"
+        <3> USE <2>2
+        <3>1. p_1 = p
+            BY DEF TypeOK, Valid_pc, PCSet
+        <3>2. /\ told.ret[p_1] = BOT 
+              /\ told.op[p_1] = BOT
+              /\ told.arg[p_1] = BOT
+            BY <3>1 DEF Inv, InvDecide
+        <3>a. pc[p]' # "F1" /\ pc[p]' = "U1"
+            BY <3>1 DEF TypeOK
+        <3> pc' = [pc EXCEPT ![p] = "U1"]
+            BY <3>1 DEF TypeOK
+        <3> TypeOK
+            BY DEF Inv
+        <3> (t.op[p_1] = "U")'
+            BY <3>a, <3>2, <3>1 DEF TypeOK, Valid_M, Configs, OpSet, Valid_pc, PCSet
+        <3>3. \E i, j \in NodeSet: (t.arg[p] = <<i, j>>)'
+            BY <3>a, <3>2, <3>1 DEF TypeOK, Valid_M, Configs, ArgSet, Valid_pc, PCSet
+        <3> (t.ret[p_1] = BOT)'
+            BY <3>a, <3>2, <3>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet, Valid_pc, PCSet
+        <3> QED
+          BY <3>1, <3>3 DEF InvU1, NodeSet            
+    <2> QED
+        BY <2>1, <2>2 DEF TypeOK, Valid_pc, PCSet, SameRoot
   <1>12. InvU2'
     <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
                         NEW t \in M',
@@ -352,8 +1873,8 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
     <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
                         NEW t \in M',
                         (pc[p_1] = "U3")'
-                 PROVE  (    /\ t.ret[p_1] \in {BOT, ACK}
-                           /\ t.op[p_1] = "U"
+                 PROVE  (/\ t.ret[p_1] \in {BOT, ACK}
+                         /\ t.op[p_1] = "U"
                          /\ t.arg[p_1] \in NodeSet \X NodeSet
                          /\ SameRoot(t, t.arg[p_1][1], u_U[p_1])
                          /\ SameRoot(t, t.arg[p_1][2], v_U[p_1])
@@ -591,7 +2112,44 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
     <2> QED
         BY <2>3 DEF Inv, InvU8, TypeOK, Valid_pc, PCSet, InvU8All, SameRoot  
   <1>19. InvUR'
-    BY DEF Inv, InvUR, TypeOK, Valid_pc, PCSet, SameRoot
+    <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
+                        NEW t \in M',
+                        (pc[p_1] = "UR")'
+                 PROVE  (    /\ t.ret[p_1] = ACK
+                           /\ t.op[p_1] = "U"
+                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                         /\ SameRoot(t, t.arg[p_1][1], u_U[p_1])
+                         /\ SameRoot(t, t.arg[p_1][2], v_U[p_1])
+                         /\ SameRoot(t, u_U[p_1], v_U[p_1]))'
+      BY DEF InvUR
+    <2> PICK told \in M:   (/\ told.ret[p] = BOT
+                            /\ told.op[p] = BOT
+                            /\ told.arg[p] = BOT
+                            /\ t.sigma = told.sigma
+                            /\ t.ret = told.ret
+                            /\ \/ /\ t.op = [told.op EXCEPT ![p] = "F"]
+                                  /\ \E i \in NodeSet: t.arg = [told.arg EXCEPT ![p] = i] 
+                               \/ /\ t.op = [told.op EXCEPT ![p] = "U"]
+                                  /\ \E i \in NodeSet: \E j \in NodeSet: 
+                                        t.arg = [told.arg EXCEPT ![p] = <<i, j>>]) 
+        BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet
+    <2>1. p_1 # p /\ pc[p_1] = "UR"
+        BY DEF TypeOK, Valid_pc, PCSet
+    <2>2. /\ told.ret[p_1] = ACK
+          /\ told.op[p_1] = "U" 
+          /\ told.arg[p_1] \in NodeSet \X NodeSet
+         /\ SameRoot(told, told.arg[p_1][1], u_U[p_1])
+         /\ SameRoot(told, told.arg[p_1][2], v_U[p_1])
+         /\ SameRoot(told, u_U[p_1], v_U[p_1])
+        BY <2>1 DEF Inv, InvUR
+    <2>3. t.arg[p_1] = told.arg[p_1]
+        BY <2>1 DEF Inv, TypeOK, Valid_M, Configs, ArgSet
+    <2> t.op[p_1] = told.op[p_1]
+        BY <2>1 DEF Inv, TypeOK, Valid_M, Configs, OpSet
+    <2> t.ret[p_1] = told.ret[p_1]
+        BY <2>1 DEF Inv, TypeOK, Valid_M, Configs, ReturnSet
+    <2> QED
+        BY <2>3 DEF Inv, InvUR, TypeOK, Valid_pc, PCSet, SameRoot, Valid_u_U, Valid_v_U  
   <1>20. SigmaRespectsShared'
     <2> SUFFICES ASSUME NEW t \in M',
                         NEW r \in NodeSet'
@@ -654,5 +2212,5 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Apr 17 22:47:10 EDT 2025 by karunram
+\* Last modified Tue Apr 22 01:04:26 EDT 2025 by karunram
 \* Created Thu Apr 17 22:46:38 EDT 2025 by karunram

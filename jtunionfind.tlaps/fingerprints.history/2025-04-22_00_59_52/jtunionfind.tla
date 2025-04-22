@@ -106,7 +106,7 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
                                /\ t.arg[p_1] \in NodeSet
                                /\ SameRoot(t, c[p_1], t.arg[p_1]))'
             OBVIOUS
-          <4>1. p_1 # p /\ pc[p_1] = "F1"
+          <4>1. p_1 # p /\ pc[p_1] = "F1U2"
               BY DEF TypeOK, Valid_pc, PCSet
           <4>2. /\ told.ret[p_1] = BOT 
                 /\ told.op[p_1] = "F" 
@@ -122,7 +122,9 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
           <4> SameRoot(t, c[p_1], t.arg[p_1])'
               BY <4>1, <4>2, <4>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, Valid_c, SameRoot
           <4> QED
-            BY <4>1, <4>2, <4>3 DEF Inv, InvF1, TypeOK, Valid_pc, PCSet  
+            BY <4>1, <4>2, <4>3 DEF Inv, InvF1, TypeOK, Valid_pc, PCSet
+
+            
         <3>2. CASE pc[p_1] = "0"
             <4> USE <3>2
             <4> SUFFICES ASSUME (pc[p_1] = "F1")'
@@ -2211,5 +2213,5 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
     BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>22, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
 =============================================================================
 \* Modification History
-\* Last modified Tue Apr 22 01:00:22 EDT 2025 by karunram
+\* Last modified Tue Apr 22 00:59:50 EDT 2025 by karunram
 \* Created Fri Apr 04 00:28:14 EDT 2025 by karunram

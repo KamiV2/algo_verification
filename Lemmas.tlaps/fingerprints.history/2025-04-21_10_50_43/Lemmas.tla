@@ -85,10 +85,10 @@ LEMMA NeverReroot == \A i \in NodeSet: TypeOK /\ F[i].bit = 0 /\ [Next]_varlist 
   <1>20. QED
     BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Next, Step 
 
-LEMMA OrIsCases == \A w,x,y,z \in {TRUE, FALSE}: ((x /\ y) \/ (w /\ z)) /\ x /\ (x => ~w) => y
+LEMMA OrIsCases == \A x,y \in {TRUE, FALSE}: ((x /\ y) \/ (~x /\ ~y)) /\ x => y
     OBVIOUS
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Apr 21 10:51:41 EDT 2025 by karunram
+\* Last modified Mon Apr 21 10:50:42 EDT 2025 by karunram
 \* Created Mon Apr 07 18:00:51 EDT 2025 by karunram
