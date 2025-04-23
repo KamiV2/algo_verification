@@ -30,19 +30,6 @@ THEOREM URInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: UR(p)) => Inv'
         <3> QED
             BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet
     <2>2. CASE pc[p_1] = "UR"
-        <3> USE <2>2
-        <3> PICK told \in M: /\ told.ret[p] = ACK
-                     /\ told.op[p] = "U"
-                     /\ told.arg[p] \in NodeSet \X NodeSet
-                     /\ t.ret = [told.ret EXCEPT ![p] = BOT]
-                     /\ t.op = [told.op EXCEPT ![p] = BOT]
-                     /\ t.arg = [told.arg EXCEPT ![p] = BOT]
-                     /\ t.sigma = told.sigma
-            BY DEF Inv, InvUR, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M
-        <3> p = p_1
-            BY DEF TypeOK, Valid_pc, PCSet
-        <3> QED
-            BY DEF Inv, InvDecide, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M
     <2> QED
       BY <2>1, <2>2 DEF TypeOK, Valid_pc, PCSet
   <1>3. InvF1'
@@ -737,5 +724,5 @@ THEOREM URInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: UR(p)) => Inv'
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Apr 22 23:08:30 EDT 2025 by karunram
+\* Last modified Tue Apr 22 23:06:36 EDT 2025 by karunram
 \* Created Fri Apr 04 00:28:14 EDT 2025 by karunram

@@ -1,4 +1,4 @@
----------------------------- MODULE jtunionfind ----------------------------
+---------------------------- MODULE URInv_proof ----------------------------
 
 EXTENDS Implementation, TypeSafety, Inv, Lemmas
 
@@ -734,8 +734,7 @@ THEOREM URInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: UR(p)) => Inv'
   <1>23. QED
     BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>22, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
 
-
 =============================================================================
 \* Modification History
-\* Last modified Tue Apr 22 23:08:30 EDT 2025 by karunram
-\* Created Fri Apr 04 00:28:14 EDT 2025 by karunram
+\* Last modified Tue Apr 22 23:09:20 EDT 2025 by karunram
+\* Created Tue Apr 22 23:09:15 EDT 2025 by karunram
