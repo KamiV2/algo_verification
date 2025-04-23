@@ -1,4 +1,4 @@
----------------------------- MODULE jtunionfind ----------------------------
+---------------------------- MODULE F2Inv_proof ----------------------------
 
 EXTENDS Implementation, TypeSafety, Inv, Lemmas
 
@@ -1046,5 +1046,5 @@ THEOREM F2Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F2(p)) => Inv'
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Apr 23 01:40:15 EDT 2025 by karunram
-\* Created Fri Apr 04 00:28:14 EDT 2025 by karunram
+\* Last modified Wed Apr 23 01:41:41 EDT 2025 by karunram
+\* Created Wed Apr 23 01:41:32 EDT 2025 by karunram

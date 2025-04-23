@@ -754,7 +754,7 @@ THEOREM F2Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F2(p)) => Inv'
             <4> USE <3>2
             <4>1. CASE pc[p_1] = "F2U8"
                 BY <4>1 DEF Inv, InvF2, InvF2All, TypeOK, Valid_pc, PCSet, InvU2All, InvU7All, InvU8All, SameRoot, Valid_u_F, Valid_c, Valid_M, Configs, ArgSet, ReturnSet
-            <4>2. CASE pc[p_1] = "FRU8"
+            <4>2. CASE pc[p_1] = "FRU2"
                 BY <4>2 DEF Inv, InvFR, TypeOK, Valid_pc, PCSet, InvU2All, InvU7All, InvU8All, SameRoot, Valid_u_F, Valid_c, Valid_M, Configs, Valid_u_U, Valid_v_U
             <4> QED         
                 BY <4>1, <4>2 DEF Inv, InvF2, InvF2All, InvFR, TypeOK, Valid_pc, PCSet, InvU2All, InvU7All, InvU8All, SameRoot                
@@ -1046,5 +1046,5 @@ THEOREM F2Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F2(p)) => Inv'
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Apr 23 01:40:15 EDT 2025 by karunram
+\* Last modified Wed Apr 23 01:39:52 EDT 2025 by karunram
 \* Created Fri Apr 04 00:28:14 EDT 2025 by karunram

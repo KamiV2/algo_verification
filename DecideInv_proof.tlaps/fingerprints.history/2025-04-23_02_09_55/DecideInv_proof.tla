@@ -8,7 +8,7 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
         OBVIOUS
   <1>1. TypeOK'
     BY NextTypeOK DEF Inv
-  <1> USE <1>1 DEF Decide, Inv
+  <1> USE <1>1 DEF Decide
   <1>2. InvDecide'
     <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
                         NEW t \in M',
@@ -532,7 +532,7 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
       <3> InvU8All(p_1, t)'
         BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF2All, SameRoot, Valid_u_U, Valid_v_U, InvU8All
       <3> QED
-        BY <3>3 DEF Inv, InvF2, TypeOK, Valid_pc, PCSet, InvF2All, SameRoot, InvU8All
+        BY IsaT(60), <3>3 DEF Inv, InvF2, TypeOK, Valid_pc, PCSet, InvF2All, SameRoot, InvU8All
     <2>6. QED
       BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>5. InvF3'
@@ -672,7 +672,7 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
       <3> InvU2All(p_1, t)'
         BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_U, Valid_v_U, InvU2All
       <3> QED
-        BY <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot, InvU2All
+        BY IsaT(60), <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot, InvU2All
     <2>4. (pc[p_1] = "F3U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                  /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
@@ -707,7 +707,7 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
       <3> InvU7All(p_1, t)'
         BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_U, Valid_v_U, InvU7All
       <3> QED
-        BY <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot, InvU7All, Valid_u_U, Valid_c
+        BY IsaT(60), <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot, InvU7All, Valid_u_U, Valid_c
     <2>5. (pc[p_1] = "F3U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                  /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
@@ -742,7 +742,7 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
       <3> InvU8All(p_1, t)'
         BY <3>1, <3>2, <3>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvF3All, SameRoot, Valid_u_U, Valid_v_U, InvU8All
       <3> QED
-        BY <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot, InvU8All
+        BY IsaT(60), <3>3 DEF Inv, InvF3, TypeOK, Valid_pc, PCSet, InvF3All, SameRoot, InvU8All
     <2>6. QED
       BY <2>1, <2>2, <2>3, <2>4, <2>5
   <1>6. InvF4'
@@ -2212,5 +2212,5 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Apr 23 02:27:49 EDT 2025 by karunram
+\* Last modified Wed Apr 23 02:09:54 EDT 2025 by karunram
 \* Created Thu Apr 17 22:46:38 EDT 2025 by karunram

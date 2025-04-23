@@ -1,5 +1,5 @@
 (* automatically generated -- do not edit manually *)
-theory jtunionfind imports Constant Zenon begin
+theory F2Inv_proof imports Constant Zenon begin
 ML_command {* writeln ("*** TLAPS PARSED\n"); *}
 consts
   "isReal" :: c

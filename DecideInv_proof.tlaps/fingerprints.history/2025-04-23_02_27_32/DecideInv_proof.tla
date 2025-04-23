@@ -2036,7 +2036,7 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
     <2> InvU6All(p_1, t)'
         BY <2>1, <2>2, <2>3 DEF Inv, TypeOK, Valid_M, Configs, StateSet, InvU6All, SameRoot
     <2> QED
-        BY <2>3 DEF Inv, InvU6, TypeOK, Valid_pc, PCSet, InvU6All, SameRoot
+        BY Isa, <2>3 DEF Inv, InvU6, TypeOK, Valid_pc, PCSet, InvU6All, SameRoot
   <1>17. InvU7'
     <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
                         NEW t \in M',
@@ -2212,5 +2212,5 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Apr 23 02:27:49 EDT 2025 by karunram
+\* Last modified Wed Apr 23 02:27:29 EDT 2025 by karunram
 \* Created Thu Apr 17 22:46:38 EDT 2025 by karunram

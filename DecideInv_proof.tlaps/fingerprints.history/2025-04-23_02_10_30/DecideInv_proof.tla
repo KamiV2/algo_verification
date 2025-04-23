@@ -8,7 +8,7 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
         OBVIOUS
   <1>1. TypeOK'
     BY NextTypeOK DEF Inv
-  <1> USE <1>1 DEF Decide, Inv
+  <1> USE <1>1 DEF Decide
   <1>2. InvDecide'
     <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
                         NEW t \in M',
@@ -2212,5 +2212,5 @@ THEOREM DecideInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: Decide(p)) =>
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Apr 23 02:27:49 EDT 2025 by karunram
+\* Last modified Wed Apr 23 02:10:29 EDT 2025 by karunram
 \* Created Thu Apr 17 22:46:38 EDT 2025 by karunram
