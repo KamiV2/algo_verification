@@ -225,6 +225,7 @@ U5(p) ==        /\ pc[p] = "U5"
                 /\ b_U' = [b_U EXCEPT ![p] = F[v_U[p]]]
                 /\ UNCHANGED <<F, u_F, a_F, b_F, u_U, v_U, a_U, c, d, M>>
 
+\* TODO: THIS IS WRONG RIGHT NOW
 U6(p) ==        /\ pc[p] = "U6"
                 /\  IF a_U[p].rank < b_U[p].rank
                             THEN IF F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1]
@@ -253,8 +254,8 @@ U6(p) ==        /\ pc[p] = "U6"
                                     THEN IF F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1] \* u < v
                                             THEN    \/  /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 0]]
                                                         /\ M' = {t \in Configs: \E told \in M: /\ t.ret = [told.ret EXCEPT ![p] = ACK]
-                                                                                                /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = v_U[p] 
-                                                                                                                                    THEN u_U[p] 
+                                                                                                /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = u_U[p] 
+                                                                                                                                    THEN v_U[p] 
                                                                                                                                     ELSE told.sigma[i]]
                                                                                                 /\ t.op = told.op
                                                                                                 /\ t.arg = told.arg}
@@ -345,5 +346,5 @@ Spec ==     Init /\ [][Next]_varlist
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Apr 22 17:47:15 EDT 2025 by karunram
+\* Last modified Thu Apr 24 02:23:47 EDT 2025 by karunram
 \* Created Thu Apr 03 12:26:37 EDT 2025 by karunram
