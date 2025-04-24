@@ -56,6 +56,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/F4Inv_proof.tla</locationURI>
 		</link>
 		<link>
+			<name>F5Inv_proof.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/F5Inv_proof.tla</locationURI>
+		</link>
+		<link>
 			<name>F6Inv_proof.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/F6Inv_proof.tla</locationURI>
@@ -69,6 +74,11 @@
 			<name>F7Inv_proof.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/F7Inv_proof.tla</locationURI>
+		</link>
+		<link>
+			<name>FRInv_Proof.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/FRInv_Proof.tla</locationURI>
 		</link>
 		<link>
 			<name>Implementation.tla</name>
@@ -114,6 +124,11 @@
 			<name>U2Inv_proof.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/U2Inv_proof.tla</locationURI>
+		</link>
+		<link>
+			<name>U3Inv_proof.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/U3Inv_proof.tla</locationURI>
 		</link>
 		<link>
 			<name>U4Inv.tla</name>

@@ -198,6 +198,7 @@ THEOREM U2Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: U2(p)) => Inv'
                  PROVE  (/\  pc[p_1] = "F7"    =>  /\ t.ret[p_1] = BOT
                                                    /\ t.op[p_1] = "F"
                                                  /\ t.arg[p_1] \in NodeSet
+                                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
                                                  /\ InvF7All(p_1, t)
                          /\  pc[p_1] = "F7U1"  =>  /\ t.ret[p_1] = BOT
                                                    /\ t.op[p_1] = "U"
@@ -226,6 +227,7 @@ THEOREM U2Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: U2(p)) => Inv'
     <2>1. (pc[p_1] = "F7"    =>  /\ t.ret[p_1] = BOT
                                /\ t.op[p_1] = "F"
                              /\ t.arg[p_1] \in NodeSet
+                             /\ SameRoot(t, c[p_1], t.arg[p_1])
                              /\ InvF7All(p_1, t))'
       BY DEF Inv, InvF7, InvF7All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
     <2>2. (pc[p_1] = "F7U1"  =>  /\ t.ret[p_1] = BOT
@@ -288,5 +290,5 @@ THEOREM U2Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: U2(p)) => Inv'
     BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>22, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
 =============================================================================
 \* Modification History
-\* Last modified Thu Apr 17 04:25:18 EDT 2025 by karunram
+\* Last modified Wed Apr 23 10:41:10 EDT 2025 by karunram
 \* Created Fri Apr 04 10:06:48 EDT 2025 by karunram

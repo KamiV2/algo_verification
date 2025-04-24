@@ -1,0 +1,3326 @@
+\batchmode %% Suppresses most terminal output.
+\documentclass{article}
+\usepackage{color}
+\definecolor{boxshade}{gray}{0.85}
+\setlength{\textwidth}{360pt}
+\setlength{\textheight}{541pt}
+\usepackage{latexsym}
+\usepackage{ifthen}
+% \usepackage{color}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SWITCHES                                                                  %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newboolean{shading} 
+\setboolean{shading}{false}
+\makeatletter
+ %% this is needed only when inserted into the file, not when
+ %% used as a package file.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                           %
+% DEFINITIONS OF SYMBOL-PRODUCING COMMANDS                                  %
+%                                                                           %
+%    TLA+      LaTeX                                                        %
+%    symbol    command                                                      %
+%    ------    -------                                                      %
+%    =>        \implies                                                     %
+%    <:        \ltcolon                                                     %
+%    :>        \colongt                                                     %
+%    ==        \defeq                                                       %
+%    ..        \dotdot                                                      %
+%    ::        \coloncolon                                                  %
+%    =|        \eqdash                                                      %
+%    ++        \pp                                                          %
+%    --        \mm                                                          %
+%    **        \stst                                                        %
+%    //        \slsl                                                        %
+%    ^         \ct                                                          %
+%    \A        \A                                                           %
+%    \E        \E                                                           %
+%    \AA       \AA                                                          %
+%    \EE       \EE                                                          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\symlength}
+\newcommand{\implies}{\Rightarrow}
+\newcommand{\ltcolon}{\mathrel{<\!\!\mbox{:}}}
+\newcommand{\colongt}{\mathrel{\!\mbox{:}\!\!>}}
+\newcommand{\defeq}{\;\mathrel{\smash   %% keep this symbol from being too tall
+    {{\stackrel{\scriptscriptstyle\Delta}{=}}}}\;}
+\newcommand{\dotdot}{\mathrel{\ldotp\ldotp}}
+\newcommand{\coloncolon}{\mathrel{::\;}}
+\newcommand{\eqdash}{\mathrel = \joinrel \hspace{-.28em}|}
+\newcommand{\pp}{\mathbin{++}}
+\newcommand{\mm}{\mathbin{--}}
+\newcommand{\stst}{*\!*}
+\newcommand{\slsl}{/\!/}
+\newcommand{\ct}{\hat{\hspace{.4em}}}
+\newcommand{\A}{\forall}
+\newcommand{\E}{\exists}
+\renewcommand{\AA}{\makebox{$\raisebox{.05em}{\makebox[0pt][l]{%
+   $\forall\hspace{-.517em}\forall\hspace{-.517em}\forall$}}%
+   \forall\hspace{-.517em}\forall \hspace{-.517em}\forall\,$}}
+\newcommand{\EE}{\makebox{$\raisebox{.05em}{\makebox[0pt][l]{%
+   $\exists\hspace{-.517em}\exists\hspace{-.517em}\exists$}}%
+   \exists\hspace{-.517em}\exists\hspace{-.517em}\exists\,$}}
+\newcommand{\whileop}{\.{\stackrel
+  {\mbox{\raisebox{-.3em}[0pt][0pt]{$\scriptscriptstyle+\;\,$}}}%
+  {-\hspace{-.16em}\triangleright}}}
+
+% Commands are defined to produce the upper-case keywords.
+% Note that some have space after them.
+\newcommand{\ASSUME}{\textsc{assume }}
+\newcommand{\ASSUMPTION}{\textsc{assumption }}
+\newcommand{\AXIOM}{\textsc{axiom }}
+\newcommand{\BOOLEAN}{\textsc{boolean }}
+\newcommand{\CASE}{\textsc{case }}
+\newcommand{\CONSTANT}{\textsc{constant }}
+\newcommand{\CONSTANTS}{\textsc{constants }}
+\newcommand{\ELSE}{\settowidth{\symlength}{\THEN}%
+   \makebox[\symlength][l]{\textsc{ else}}}
+\newcommand{\EXCEPT}{\textsc{ except }}
+\newcommand{\EXTENDS}{\textsc{extends }}
+\newcommand{\FALSE}{\textsc{false}}
+\newcommand{\IF}{\textsc{if }}
+\newcommand{\IN}{\settowidth{\symlength}{\LET}%
+   \makebox[\symlength][l]{\textsc{in}}}
+\newcommand{\INSTANCE}{\textsc{instance }}
+\newcommand{\LET}{\textsc{let }}
+\newcommand{\LOCAL}{\textsc{local }}
+\newcommand{\MODULE}{\textsc{module }}
+\newcommand{\OTHER}{\textsc{other }}
+\newcommand{\STRING}{\textsc{string}}
+\newcommand{\THEN}{\textsc{ then }}
+\newcommand{\THEOREM}{\textsc{theorem }}
+\newcommand{\LEMMA}{\textsc{lemma }}
+\newcommand{\PROPOSITION}{\textsc{proposition }}
+\newcommand{\COROLLARY}{\textsc{corollary }}
+\newcommand{\TRUE}{\textsc{true}}
+\newcommand{\VARIABLE}{\textsc{variable }}
+\newcommand{\VARIABLES}{\textsc{variables }}
+\newcommand{\WITH}{\textsc{ with }}
+\newcommand{\WF}{\textrm{WF}}
+\newcommand{\SF}{\textrm{SF}}
+\newcommand{\CHOOSE}{\textsc{choose }}
+\newcommand{\ENABLED}{\textsc{enabled }}
+\newcommand{\UNCHANGED}{\textsc{unchanged }}
+\newcommand{\SUBSET}{\textsc{subset }}
+\newcommand{\UNION}{\textsc{union }}
+\newcommand{\DOMAIN}{\textsc{domain }}
+% Added for tla2tex
+\newcommand{\BY}{\textsc{by }}
+\newcommand{\OBVIOUS}{\textsc{obvious }}
+\newcommand{\HAVE}{\textsc{have }}
+\newcommand{\QED}{\textsc{qed }}
+\newcommand{\TAKE}{\textsc{take }}
+\newcommand{\DEF}{\textsc{ def }}
+\newcommand{\HIDE}{\textsc{hide }}
+\newcommand{\RECURSIVE}{\textsc{recursive }}
+\newcommand{\USE}{\textsc{use }}
+\newcommand{\DEFINE}{\textsc{define }}
+\newcommand{\PROOF}{\textsc{proof }}
+\newcommand{\WITNESS}{\textsc{witness }}
+\newcommand{\PICK}{\textsc{pick }}
+\newcommand{\DEFS}{\textsc{defs }}
+\newcommand{\PROVE}{\settowidth{\symlength}{\ASSUME}%
+   \makebox[\symlength][l]{\textsc{prove}}\@s{-4.1}}%
+  %% The \@s{-4.1) is a kludge added on 24 Oct 2009 [happy birthday, Ellen]
+  %% so the correct alignment occurs if the user types
+  %%   ASSUME X
+  %%   PROVE  Y
+  %% because it cancels the extra 4.1 pts added because of the 
+  %% extra space after the PROVE.  This seems to works OK.
+  %% However, the 4.1 equals Parameters.LaTeXLeftSpace(1) and
+  %% should be changed if that method ever changes.
+\newcommand{\SUFFICES}{\textsc{suffices }}
+\newcommand{\NEW}{\textsc{new }}
+\newcommand{\LAMBDA}{\textsc{lambda }}
+\newcommand{\STATE}{\textsc{state }}
+\newcommand{\ACTION}{\textsc{action }}
+\newcommand{\TEMPORAL}{\textsc{temporal }}
+\newcommand{\ONLY}{\textsc{only }}              %% added by LL on 2 Oct 2009
+\newcommand{\OMITTED}{\textsc{omitted }}        %% added by LL on 31 Oct 2009
+\newcommand{\@pfstepnum}[2]{\ensuremath{\langle#1\rangle}\textrm{#2}}
+\newcommand{\bang}{\@s{1}\mbox{\small !}\@s{1}}
+%% We should format || differently in PlusCal code than in TLA+ formulas.
+\newcommand{\p@barbar}{\ifpcalsymbols
+   \,\,\rule[-.25em]{.075em}{1em}\hspace*{.2em}\rule[-.25em]{.075em}{1em}\,\,%
+   \else \,||\,\fi}
+%% PlusCal keywords
+\newcommand{\p@fair}{\textbf{fair }}
+\newcommand{\p@semicolon}{\textbf{\,; }}
+\newcommand{\p@algorithm}{\textbf{algorithm }}
+\newcommand{\p@mmfair}{\textbf{-{}-fair }}
+\newcommand{\p@mmalgorithm}{\textbf{-{}-algorithm }}
+\newcommand{\p@assert}{\textbf{assert }}
+\newcommand{\p@await}{\textbf{await }}
+\newcommand{\p@begin}{\textbf{begin }}
+\newcommand{\p@end}{\textbf{end }}
+\newcommand{\p@call}{\textbf{call }}
+\newcommand{\p@define}{\textbf{define }}
+\newcommand{\p@do}{\textbf{ do }}
+\newcommand{\p@either}{\textbf{either }}
+\newcommand{\p@or}{\textbf{or }}
+\newcommand{\p@goto}{\textbf{goto }}
+\newcommand{\p@if}{\textbf{if }}
+\newcommand{\p@then}{\,\,\textbf{then }}
+\newcommand{\p@else}{\ifcsyntax \textbf{else } \else \,\,\textbf{else }\fi}
+\newcommand{\p@elsif}{\,\,\textbf{elsif }}
+\newcommand{\p@macro}{\textbf{macro }}
+\newcommand{\p@print}{\textbf{print }}
+\newcommand{\p@procedure}{\textbf{procedure }}
+\newcommand{\p@process}{\textbf{process }}
+\newcommand{\p@return}{\textbf{return}}
+\newcommand{\p@skip}{\textbf{skip}}
+\newcommand{\p@variable}{\textbf{variable }}
+\newcommand{\p@variables}{\textbf{variables }}
+\newcommand{\p@while}{\textbf{while }}
+\newcommand{\p@when}{\textbf{when }}
+\newcommand{\p@with}{\textbf{with }}
+\newcommand{\p@lparen}{\textbf{(\,\,}}
+\newcommand{\p@rparen}{\textbf{\,\,) }}   
+\newcommand{\p@lbrace}{\textbf{\{\,\,}}   
+\newcommand{\p@rbrace}{\textbf{\,\,\} }}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% REDEFINE STANDARD COMMANDS TO MAKE THEM FORMAT BETTER %
+%                                                       %
+% We redefine \in and \notin                            %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\renewcommand{\_}{\rule{.4em}{.06em}\hspace{.05em}}
+\newlength{\equalswidth}
+\let\oldin=\in
+\let\oldnotin=\notin
+\renewcommand{\in}{%
+   {\settowidth{\equalswidth}{$\.{=}$}\makebox[\equalswidth][c]{$\oldin$}}}
+\renewcommand{\notin}{%
+   {\settowidth{\equalswidth}{$\.{=}$}\makebox[\equalswidth]{$\oldnotin$}}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                  %
+% HORIZONTAL BARS:                                 %
+%                                                  %
+%   \moduleLeftDash    |~~~~~~~~~~                 %
+%   \moduleRightDash    ~~~~~~~~~~|                %
+%   \midbar            |----------|                %
+%   \bottombar         |__________|                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\charwidth}\settowidth{\charwidth}{{\small\tt M}}
+\newlength{\boxrulewd}\setlength{\boxrulewd}{.4pt}
+\newlength{\boxlineht}\setlength{\boxlineht}{.5\baselineskip}
+\newcommand{\boxsep}{\charwidth}
+\newlength{\boxruleht}\setlength{\boxruleht}{.5ex}
+\newlength{\boxruledp}\setlength{\boxruledp}{-\boxruleht}
+\addtolength{\boxruledp}{\boxrulewd}
+\newcommand{\boxrule}{\leaders\hrule height \boxruleht depth \boxruledp
+                      \hfill\mbox{}}
+\newcommand{\@computerule}{%
+  \setlength{\boxruleht}{.5ex}%
+  \setlength{\boxruledp}{-\boxruleht}%
+  \addtolength{\boxruledp}{\boxrulewd}}
+
+\newcommand{\bottombar}{\hspace{-\boxsep}%
+  \raisebox{-\boxrulewd}[0pt][0pt]{\rule[.5ex]{\boxrulewd}{\boxlineht}}%
+  \boxrule
+  \raisebox{-\boxrulewd}[0pt][0pt]{%
+      \rule[.5ex]{\boxrulewd}{\boxlineht}}\hspace{-\boxsep}\vspace{0pt}}
+
+\newcommand{\moduleLeftDash}%
+   {\hspace*{-\boxsep}%
+     \raisebox{-\boxlineht}[0pt][0pt]{\rule[.5ex]{\boxrulewd
+               }{\boxlineht}}%
+    \boxrule\hspace*{.4em }}
+
+\newcommand{\moduleRightDash}%
+    {\hspace*{.4em}\boxrule
+    \raisebox{-\boxlineht}[0pt][0pt]{\rule[.5ex]{\boxrulewd
+               }{\boxlineht}}\hspace{-\boxsep}}%\vspace{.2em}
+
+\newcommand{\midbar}{\hspace{-\boxsep}\raisebox{-.5\boxlineht}[0pt][0pt]{%
+   \rule[.5ex]{\boxrulewd}{\boxlineht}}\boxrule\raisebox{-.5\boxlineht%
+   }[0pt][0pt]{\rule[.5ex]{\boxrulewd}{\boxlineht}}\hspace{-\boxsep}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FORMATING COMMANDS                                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PLUSCAL SHADING                                                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The TeX pcalshading switch is set on to cause PlusCal shading to be
+% performed.  This changes the behavior of the following commands and
+% environments to cause full-width shading to be performed on all lines.
+% 
+%   \tstrut \@x cpar mcom \@pvspace
+% 
+% The TeX pcalsymbols switch is turned on when typesetting a PlusCal algorithm,
+% whether or not shading is being performed.  It causes symbols (other than
+% parentheses and braces and PlusCal-only keywords) that should be typeset
+% differently depending on whether they are in an algorithm to be typeset
+% appropriately.  Currently, the only such symbol is "||".
+%
+% The TeX csyntax switch is turned on when typesetting a PlusCal algorithm in
+% c-syntax.  This allows symbols to be format differently in the two syntaxes.
+% The "else" keyword is the only one that is.
+
+\newif\ifpcalshading \pcalshadingfalse
+\newif\ifpcalsymbols \pcalsymbolsfalse
+\newif\ifcsyntax     \csyntaxtrue
+
+% The \@pvspace command makes a vertical space.  It uses \vspace
+% except with \ifpcalshading, in which case it sets \pvcalvspace
+% and the space is added by a following \@x command.
+%
+\newlength{\pcalvspace}\setlength{\pcalvspace}{0pt}%
+\newcommand{\@pvspace}[1]{%
+  \ifpcalshading
+     \par\global\setlength{\pcalvspace}{#1}%
+  \else
+     \par\vspace{#1}%
+  \fi
+}
+
+% The lcom environment was changed to set \lcomindent equal to
+% the indentation it produces.  This length is used by the
+% cpar environment to make shading extend for the full width
+% of the line.  This assumes that lcom environments are not
+% nested.  I hope TLATeX does not nest them.
+%
+\newlength{\lcomindent}%
+\setlength{\lcomindent}{0pt}%
+
+%\tstrut: A strut to produce inter-paragraph space in a comment.
+%\rstrut: A strut to extend the bottom of a one-line comment so
+%         there's no break in the shading between comments on 
+%         successive lines.
+\newcommand\tstrut%
+  {\raisebox{\vshadelen}{\raisebox{-.25em}{\rule{0pt}{1.15em}}}%
+   \global\setlength{\vshadelen}{0pt}}
+\newcommand\rstrut{\raisebox{-.25em}{\rule{0pt}{1.15em}}%
+ \global\setlength{\vshadelen}{0pt}}
+
+
+% \.{op} formats operator op in math mode with empty boxes on either side.
+% Used because TeX otherwise vary the amount of space it leaves around op.
+\renewcommand{\.}[1]{\ensuremath{\mbox{}#1\mbox{}}}
+
+% \@s{n} produces an n-point space
+\newcommand{\@s}[1]{\hspace{#1pt}}           
+
+% \@x{txt} starts a specification line in the beginning with txt
+% in the final LaTeX source.
+\newlength{\@xlen}
+\newcommand\xtstrut%
+  {\setlength{\@xlen}{1.05em}%
+   \addtolength{\@xlen}{\pcalvspace}%
+    \raisebox{\vshadelen}{\raisebox{-.25em}{\rule{0pt}{\@xlen}}}%
+   \global\setlength{\vshadelen}{0pt}%
+   \global\setlength{\pcalvspace}{0pt}}
+
+\newcommand{\@x}[1]{\par
+  \ifpcalshading
+  \makebox[0pt][l]{\shadebox{\xtstrut\hspace*{\textwidth}}}%
+  \fi
+  \mbox{$\mbox{}#1\mbox{}$}}  
+
+% \@xx{txt} continues a specification line with the text txt.
+\newcommand{\@xx}[1]{\mbox{$\mbox{}#1\mbox{}$}}  
+
+% \@y{cmt} produces a one-line comment.
+\newcommand{\@y}[1]{\mbox{\footnotesize\hspace{.65em}%
+  \ifthenelse{\boolean{shading}}{%
+      \shadebox{#1\hspace{-\the\lastskip}\rstrut}}%
+               {#1\hspace{-\the\lastskip}\rstrut}}}
+
+% \@z{cmt} produces a zero-width one-line comment.
+\newcommand{\@z}[1]{\makebox[0pt][l]{\footnotesize
+  \ifthenelse{\boolean{shading}}{%
+      \shadebox{#1\hspace{-\the\lastskip}\rstrut}}%
+               {#1\hspace{-\the\lastskip}\rstrut}}}
+
+
+% \@w{str} produces the TLA+ string "str".
+\newcommand{\@w}[1]{\textsf{``{#1}''}}             
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% SHADING                                                                   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\def\graymargin{1}
+  % The number of points of margin in the shaded box.
+
+% \definecolor{boxshade}{gray}{.85}
+% Defines the darkness of the shading: 1 = white, 0 = black
+% Added by TLATeX only if needed.
+
+% \shadebox{txt} puts txt in a shaded box.
+\newlength{\templena}
+\newlength{\templenb}
+\newsavebox{\tempboxa}
+\newcommand{\shadebox}[1]{{\setlength{\fboxsep}{\graymargin pt}%
+     \savebox{\tempboxa}{#1}%
+     \settoheight{\templena}{\usebox{\tempboxa}}%
+     \settodepth{\templenb}{\usebox{\tempboxa}}%
+     \hspace*{-\fboxsep}\raisebox{0pt}[\templena][\templenb]%
+        {\colorbox{boxshade}{\usebox{\tempboxa}}}\hspace*{-\fboxsep}}}
+
+% \vshade{n} makes an n-point inter-paragraph space, with
+%  shading if the `shading' flag is true.
+\newlength{\vshadelen}
+\setlength{\vshadelen}{0pt}
+\newcommand{\vshade}[1]{\ifthenelse{\boolean{shading}}%
+   {\global\setlength{\vshadelen}{#1pt}}%
+   {\vspace{#1pt}}}
+
+\newlength{\boxwidth}
+\newlength{\multicommentdepth}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE cpar ENVIRONMENT                                                      %
+% ^^^^^^^^^^^^^^^^^^^^                                                      %
+% The LaTeX input                                                           %
+%                                                                           %
+%   \begin{cpar}{pop}{nest}{isLabel}{d}{e}{arg6}                            %
+%     XXXXXXXXXXXXXXX                                                       %
+%     XXXXXXXXXXXXXXX                                                       %
+%     XXXXXXXXXXXXXXX                                                       %
+%   \end{cpar}                                                              %
+%                                                                           %
+% produces one of two possible results.  If isLabel is the letter "T",      %
+% it produces the following, where [label] is the result of typesetting     %
+% arg6 in an LR box, and d is is a number representing a distance in        %
+% points.                                                                   %
+%                                                                           %
+%   prevailing |<-- d -->[label]<- e ->XXXXXXXXXXXXXXX                      %
+%         left |                       XXXXXXXXXXXXXXX                      %
+%       margin |                       XXXXXXXXXXXXXXX                      %
+%                                                                           %
+% If isLabel is the letter "F", then it produces                            %
+%                                                                           %
+%   prevailing |<-- d -->XXXXXXXXXXXXXXXXXXXXXXX                            %
+%         left |         <- e ->XXXXXXXXXXXXXXXX                            %
+%       margin |                XXXXXXXXXXXXXXXX                            %
+%                                                                           %
+% where d and e are numbers representing distances in points.               %
+%                                                                           %
+% The prevailing left margin is the one in effect before the most recent    %
+% pop (argument 1) cpar environments with "T" as the nest argument, where   %
+% pop is a number \geq 0.                                                   %
+%                                                                           %
+% If the nest argument is the letter "T", then the prevailing left          %
+% margin is moved to the left of the second (and following) lines of        %
+% X's.  Otherwise, the prevailing left margin is left unchanged.            %
+%                                                                           %
+% An \unnest{n} command moves the prevailing left margin to where it was    %
+% before the most recent n cpar environments with "T" as the nesting        %
+% argument.                                                                 %
+%                                                                           %
+% The environment leaves no vertical space above or below it, or between    %
+% its paragraphs.  (TLATeX inserts the proper amount of vertical space.)    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcounter{pardepth}
+\setcounter{pardepth}{0}
+
+% \setgmargin{txt} defines \gmarginN to be txt, where N is \roman{pardepth}.
+% \thegmargin equals \gmarginN, where N is \roman{pardepth}.
+\newcommand{\setgmargin}[1]{%
+  \expandafter\xdef\csname gmargin\roman{pardepth}\endcsname{#1}}
+\newcommand{\thegmargin}{\csname gmargin\roman{pardepth}\endcsname}
+\newcommand{\gmargin}{0pt}
+
+\newsavebox{\tempsbox}
+
+\newlength{\@cparht}
+\newlength{\@cpardp}
+\newenvironment{cpar}[6]{%
+  \addtocounter{pardepth}{-#1}%
+  \ifthenelse{\boolean{shading}}{\par\begin{lrbox}{\tempsbox}%
+                                 \begin{minipage}[t]{\linewidth}}{}%
+  \begin{list}{}{%
+     \edef\temp{\thegmargin}
+     \ifthenelse{\equal{#3}{T}}%
+       {\settowidth{\leftmargin}{\hspace{\temp}\footnotesize #6\hspace{#5pt}}%
+        \addtolength{\leftmargin}{#4pt}}%
+       {\setlength{\leftmargin}{#4pt}%
+        \addtolength{\leftmargin}{#5pt}%
+        \addtolength{\leftmargin}{\temp}%
+        \setlength{\itemindent}{-#5pt}}%
+      \ifthenelse{\equal{#2}{T}}{\addtocounter{pardepth}{1}%
+                                 \setgmargin{\the\leftmargin}}{}%
+      \setlength{\labelwidth}{0pt}%
+      \setlength{\labelsep}{0pt}%
+      \setlength{\itemindent}{-\leftmargin}%
+      \setlength{\topsep}{0pt}%
+      \setlength{\parsep}{0pt}%
+      \setlength{\partopsep}{0pt}%
+      \setlength{\parskip}{0pt}%
+      \setlength{\itemsep}{0pt}
+      \setlength{\itemindent}{#4pt}%
+      \addtolength{\itemindent}{-\leftmargin}}%
+   \ifthenelse{\equal{#3}{T}}%
+      {\item[\tstrut\footnotesize \hspace{\temp}{#6}\hspace{#5pt}]
+        }%
+      {\item[\tstrut\hspace{\temp}]%
+         }%
+   \footnotesize}
+ {\hspace{-\the\lastskip}\tstrut
+ \end{list}%
+  \ifthenelse{\boolean{shading}}%
+          {\end{minipage}%
+           \end{lrbox}%
+           \ifpcalshading
+             \setlength{\@cparht}{\ht\tempsbox}%
+             \setlength{\@cpardp}{\dp\tempsbox}%
+             \addtolength{\@cparht}{.15em}%
+             \addtolength{\@cpardp}{.2em}%
+             \addtolength{\@cparht}{\@cpardp}%
+            % I don't know what's going on here.  I want to add a
+            % \pcalvspace high shaded line, but I don't know how to
+            % do it.  A little trial and error shows that the following
+            % does a reasonable job approximating that, eliminating
+            % the line if \pcalvspace is small.
+            \addtolength{\@cparht}{\pcalvspace}%
+             \ifdim \pcalvspace > .8em
+               \addtolength{\pcalvspace}{-.2em}%
+               \hspace*{-\lcomindent}%
+               \shadebox{\rule{0pt}{\pcalvspace}\hspace*{\textwidth}}\par
+               \global\setlength{\pcalvspace}{0pt}%
+               \fi
+             \hspace*{-\lcomindent}%
+             \makebox[0pt][l]{\raisebox{-\@cpardp}[0pt][0pt]{%
+                 \shadebox{\rule{0pt}{\@cparht}\hspace*{\textwidth}}}}%
+             \hspace*{\lcomindent}\usebox{\tempsbox}%
+             \par
+           \else
+             \shadebox{\usebox{\tempsbox}}\par
+           \fi}%
+           {}%
+  }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE ppar ENVIRONMENT                                                       %
+% ^^^^^^^^^^^^^^^^^^^^                                                       %
+% The environment                                                            %
+%                                                                            %
+%   \begin{ppar} ... \end{ppar}                                              %
+%                                                                            %
+% is equivalent to                                                           %
+%                                                                            %
+%   \begin{cpar}{0}{F}{F}{0}{0}{} ... \end{cpar}                             %
+%                                                                            %
+% The environment is put around each line of the output for a PlusCal        %
+% algorithm.                                                                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newenvironment{ppar}{%
+%  \ifthenelse{\boolean{shading}}{\par\begin{lrbox}{\tempsbox}%
+%                                 \begin{minipage}[t]{\linewidth}}{}%
+%  \begin{list}{}{%
+%     \edef\temp{\thegmargin}
+%        \setlength{\leftmargin}{0pt}%
+%        \addtolength{\leftmargin}{\temp}%
+%        \setlength{\itemindent}{0pt}%
+%      \setlength{\labelwidth}{0pt}%
+%      \setlength{\labelsep}{0pt}%
+%      \setlength{\itemindent}{-\leftmargin}%
+%      \setlength{\topsep}{0pt}%
+%      \setlength{\parsep}{0pt}%
+%      \setlength{\partopsep}{0pt}%
+%      \setlength{\parskip}{0pt}%
+%      \setlength{\itemsep}{0pt}
+%      \setlength{\itemindent}{0pt}%
+%      \addtolength{\itemindent}{-\leftmargin}}%
+%      \item[\tstrut\hspace{\temp}]}%
+% {\hspace{-\the\lastskip}\tstrut
+% \end{list}%
+%  \ifthenelse{\boolean{shading}}{\end{minipage}  
+%                                 \end{lrbox}%
+%                                 \shadebox{\usebox{\tempsbox}}\par}{}%
+%  }
+
+ %%% TESTING
+ \newcommand{\xtest}[1]{\par
+ \makebox[0pt][l]{\shadebox{\xtstrut\hspace*{\textwidth}}}%
+ \mbox{$\mbox{}#1\mbox{}$}} 
+
+% \newcommand{\xxtest}[1]{\par
+% \makebox[0pt][l]{\shadebox{\xtstrut{#1}\hspace*{\textwidth}}}%
+% \mbox{$\mbox{}#1\mbox{}$}} 
+
+%\newlength{\pcalvspace}
+%\setlength{\pcalvspace}{0pt}
+% \newlength{\xxtestlen}
+% \setlength{\xxtestlen}{0pt}
+% \newcommand\xtstrut%
+%   {\setlength{\xxtestlen}{1.15em}%
+%    \addtolength{\xxtestlen}{\pcalvspace}%
+%     \raisebox{\vshadelen}{\raisebox{-.25em}{\rule{0pt}{\xxtestlen}}}%
+%    \global\setlength{\vshadelen}{0pt}%
+%    \global\setlength{\pcalvspace}{0pt}}
+   
+   %%%% TESTING
+   
+   %% The xcpar environment
+   %%  Note: overloaded use of \pcalvspace for testing.
+   %%
+%   \newlength{\xcparht}%
+%   \newlength{\xcpardp}%
+   
+%   \newenvironment{xcpar}[6]{%
+%  \addtocounter{pardepth}{-#1}%
+%  \ifthenelse{\boolean{shading}}{\par\begin{lrbox}{\tempsbox}%
+%                                 \begin{minipage}[t]{\linewidth}}{}%
+%  \begin{list}{}{%
+%     \edef\temp{\thegmargin}%
+%     \ifthenelse{\equal{#3}{T}}%
+%       {\settowidth{\leftmargin}{\hspace{\temp}\footnotesize #6\hspace{#5pt}}%
+%        \addtolength{\leftmargin}{#4pt}}%
+%       {\setlength{\leftmargin}{#4pt}%
+%        \addtolength{\leftmargin}{#5pt}%
+%        \addtolength{\leftmargin}{\temp}%
+%        \setlength{\itemindent}{-#5pt}}%
+%      \ifthenelse{\equal{#2}{T}}{\addtocounter{pardepth}{1}%
+%                                 \setgmargin{\the\leftmargin}}{}%
+%      \setlength{\labelwidth}{0pt}%
+%      \setlength{\labelsep}{0pt}%
+%      \setlength{\itemindent}{-\leftmargin}%
+%      \setlength{\topsep}{0pt}%
+%      \setlength{\parsep}{0pt}%
+%      \setlength{\partopsep}{0pt}%
+%      \setlength{\parskip}{0pt}%
+%      \setlength{\itemsep}{0pt}%
+%      \setlength{\itemindent}{#4pt}%
+%      \addtolength{\itemindent}{-\leftmargin}}%
+%   \ifthenelse{\equal{#3}{T}}%
+%      {\item[\xtstrut\footnotesize \hspace{\temp}{#6}\hspace{#5pt}]%
+%        }%
+%      {\item[\xtstrut\hspace{\temp}]%
+%         }%
+%   \footnotesize}
+% {\hspace{-\the\lastskip}\tstrut
+% \end{list}%
+%  \ifthenelse{\boolean{shading}}{\end{minipage}  
+%                                 \end{lrbox}%
+%                                 \setlength{\xcparht}{\ht\tempsbox}%
+%                                 \setlength{\xcpardp}{\dp\tempsbox}%
+%                                 \addtolength{\xcparht}{.15em}%
+%                                 \addtolength{\xcpardp}{.2em}%
+%                                 \addtolength{\xcparht}{\xcpardp}%
+%                                 \hspace*{-\lcomindent}%
+%                                 \makebox[0pt][l]{\raisebox{-\xcpardp}[0pt][0pt]{%
+%                                      \shadebox{\rule{0pt}{\xcparht}\hspace*{\textwidth}}}}%
+%                                 \hspace*{\lcomindent}\usebox{\tempsbox}%
+%                                 \par}{}%
+%  }
+%  
+% \newlength{\xmcomlen}
+%\newenvironment{xmcom}[1]{%
+%  \setcounter{pardepth}{0}%
+%  \hspace{.65em}%
+%  \begin{lrbox}{\alignbox}\sloppypar%
+%      \setboolean{shading}{false}%
+%      \setlength{\boxwidth}{#1pt}%
+%      \addtolength{\boxwidth}{-.65em}%
+%      \begin{minipage}[t]{\boxwidth}\footnotesize
+%      \parskip=0pt\relax}%
+%       {\end{minipage}\end{lrbox}%
+%       \setlength{\xmcomlen}{\textwidth}%
+%       \addtolength{\xmcomlen}{-\wd\alignbox}%
+%       \settodepth{\alignwidth}{\usebox{\alignbox}}%
+%       \global\setlength{\multicommentdepth}{\alignwidth}%
+%       \setlength{\boxwidth}{\alignwidth}%
+%       \global\addtolength{\alignwidth}{-\maxdepth}%
+%       \addtolength{\boxwidth}{.1em}%
+%       \raisebox{0pt}[0pt][0pt]{%
+%        \ifthenelse{\boolean{shading}}%
+%          {\hspace*{-\xmcomlen}\shadebox{\rule[-\boxwidth]{0pt}{0pt}%
+%                                 \hspace*{\xmcomlen}\usebox{\alignbox}}}%
+%          {\usebox{\alignbox}}}%
+%       \vspace*{\alignwidth}\pagebreak[0]\vspace{-\alignwidth}\par}
+% % a multi-line comment, whose first argument is its width in points.
+%  
+   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE lcom ENVIRONMENT                                                       %
+% ^^^^^^^^^^^^^^^^^^^^                                                       %
+% A multi-line comment with no text to its left is typeset in an lcom        % 
+% environment, whose argument is a number representing the indentation       % 
+% of the left margin, in points.  All the text of the comment should be      % 
+% inside cpar environments.                                                  % 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newenvironment{lcom}[1]{%
+  \setlength{\lcomindent}{#1pt} % Added for PlusCal handling.
+  \par\vspace{.2em}%
+  \sloppypar
+  \setcounter{pardepth}{0}%
+  \footnotesize
+  \begin{list}{}{%
+    \setlength{\leftmargin}{#1pt}
+    \setlength{\labelwidth}{0pt}%
+    \setlength{\labelsep}{0pt}%
+    \setlength{\itemindent}{0pt}%
+    \setlength{\topsep}{0pt}%
+    \setlength{\parsep}{0pt}%
+    \setlength{\partopsep}{0pt}%
+    \setlength{\parskip}{0pt}}
+    \item[]}%
+  {\end{list}\vspace{.3em}\setlength{\lcomindent}{0pt}%
+ }
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% THE mcom ENVIRONMENT AND \mutivspace COMMAND                              %
+% ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                              %
+%                                                                           %
+% A part of the spec containing a right-comment of the form                 %
+%                                                                           %
+%      xxxx (*************)                                                 %
+%      yyyy (* ccccccccc *)                                                 %
+%      ...  (* ccccccccc *)                                                 %
+%           (* ccccccccc *)                                                 %
+%           (* ccccccccc *)                                                 %
+%           (*************)                                                 %
+%                                                                           %
+% is typeset by                                                             %
+%                                                                           %
+%     XXXX \begin{mcom}{d}                                                  %
+%            CCCC ... CCC                                                   %
+%          \end{mcom}                                                       %
+%     YYYY ...                                                              %
+%     \multivspace{n}                                                       %
+%                                                                           %
+% where the number d is the width in points of the comment, n is the        %
+% number of xxxx, yyyy, ...  lines to the left of the comment.              %
+% All the text of the comment should be typeset in cpar environments.       %
+%                                                                           %
+% This puts the comment into a single box (so no page breaks can occur      %
+% within it).  The entire box is shaded iff the shading flag is true.       %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\xmcomlen}%
+\newenvironment{mcom}[1]{%
+  \setcounter{pardepth}{0}%
+  \hspace{.65em}%
+  \begin{lrbox}{\alignbox}\sloppypar%
+      \setboolean{shading}{false}%
+      \setlength{\boxwidth}{#1pt}%
+      \addtolength{\boxwidth}{-.65em}%
+      \begin{minipage}[t]{\boxwidth}\footnotesize
+      \parskip=0pt\relax}%
+       {\end{minipage}\end{lrbox}%
+       \setlength{\xmcomlen}{\textwidth}%       % For PlusCal shading
+       \addtolength{\xmcomlen}{-\wd\alignbox}%  % For PlusCal shading
+       \settodepth{\alignwidth}{\usebox{\alignbox}}%
+       \global\setlength{\multicommentdepth}{\alignwidth}%
+       \setlength{\boxwidth}{\alignwidth}%      % For PlusCal shading
+       \global\addtolength{\alignwidth}{-\maxdepth}%
+       \addtolength{\boxwidth}{.1em}%           % For PlusCal shading
+      \raisebox{0pt}[0pt][0pt]{%
+        \ifthenelse{\boolean{shading}}%
+          {\ifpcalshading
+             \hspace*{-\xmcomlen}%
+             \shadebox{\rule[-\boxwidth]{0pt}{0pt}\hspace*{\xmcomlen}%
+                          \usebox{\alignbox}}%
+           \else
+             \shadebox{\usebox{\alignbox}}
+           \fi
+          }%
+          {\usebox{\alignbox}}}%
+       \vspace*{\alignwidth}\pagebreak[0]\vspace{-\alignwidth}\par}
+ % a multi-line comment, whose first argument is its width in points.
+
+
+% \multispace{n} produces the vertical space indicated by "|"s in 
+% this situation
+%   
+%     xxxx (*************)
+%     xxxx (* ccccccccc *)
+%      |   (* ccccccccc *)
+%      |   (* ccccccccc *)
+%      |   (* ccccccccc *)
+%      |   (*************)
+%
+% where n is the number of "xxxx" lines.
+\newcommand{\multivspace}[1]{\addtolength{\multicommentdepth}{-#1\baselineskip}%
+ \addtolength{\multicommentdepth}{1.2em}%
+ \ifthenelse{\lengthtest{\multicommentdepth > 0pt}}%
+    {\par\vspace{\multicommentdepth}\par}{}}
+
+%\newenvironment{hpar}[2]{%
+%  \begin{list}{}{\setlength{\leftmargin}{#1pt}%
+%                 \addtolength{\leftmargin}{#2pt}%
+%                 \setlength{\itemindent}{-#2pt}%
+%                 \setlength{\topsep}{0pt}%
+%                 \setlength{\parsep}{0pt}%
+%                 \setlength{\partopsep}{0pt}%
+%                 \setlength{\parskip}{0pt}%
+%                 \addtolength{\labelsep}{0pt}}%
+%  \item[]\footnotesize}{\end{list}}
+%    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%    % Typesets a sequence of paragraphs like this:                         %
+%    %                                                                      %
+%    %      left |<-- d1 --> XXXXXXXXXXXXXXXXXXXXXXXX                       %
+%    %    margin |           <- d2 -> XXXXXXXXXXXXXXX                       %
+%    %           |                    XXXXXXXXXXXXXXX                       %
+%    %           |                                                          %
+%    %           |                    XXXXXXXXXXXXXXX                       %
+%    %           |                    XXXXXXXXXXXXXXX                       %
+%    %                                                                      %
+%    % where d1 = #1pt and d2 = #2pt, but with no vspace between            %
+%    % paragraphs.                                                          %
+%    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Commands for repeated characters that produce dashes.              %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \raisedDash{wd}{ht}{thk} makes a horizontal line wd characters wide, 
+% raised a distance ht ex's above the baseline, with a thickness of 
+% thk em's.
+\newcommand{\raisedDash}[3]{\raisebox{#2ex}{\setlength{\alignwidth}{.5em}%
+  \rule{#1\alignwidth}{#3em}}}
+
+% The following commands take a single argument n and produce the
+% output for n repeated characters, as follows
+%   \cdash:    -
+%   \tdash:    ~
+%   \ceqdash:  =
+%   \usdash:   _
+\newcommand{\cdash}[1]{\raisedDash{#1}{.5}{.04}}
+\newcommand{\usdash}[1]{\raisedDash{#1}{0}{.04}}
+\newcommand{\ceqdash}[1]{\raisedDash{#1}{.5}{.08}}
+\newcommand{\tdash}[1]{\raisedDash{#1}{1}{.08}}
+
+\newlength{\spacewidth}
+\setlength{\spacewidth}{.2em}
+\newcommand{\e}[1]{\hspace{#1\spacewidth}}
+%% \e{i} produces space corresponding to i input spaces.
+
+
+%% Alignment-file Commands
+
+\newlength{\alignboxwidth}
+\newlength{\alignwidth}
+\newsavebox{\alignbox}
+
+% \al{i}{j}{txt} is used in the alignment file to put "%{i}{j}{wd}"
+% in the log file, where wd is the width of the line up to that point,
+% and txt is the following text.
+\newcommand{\al}[3]{%
+  \typeout{\%{#1}{#2}{\the\alignwidth}}%
+  \cl{#3}}
+
+%% \cl{txt} continues a specification line in the alignment file
+%% with text txt.
+\newcommand{\cl}[1]{%
+  \savebox{\alignbox}{\mbox{$\mbox{}#1\mbox{}$}}%
+  \settowidth{\alignboxwidth}{\usebox{\alignbox}}%
+  \addtolength{\alignwidth}{\alignboxwidth}%
+  \usebox{\alignbox}}
+
+% \fl{txt} in the alignment file begins a specification line that
+% starts with the text txt.
+\newcommand{\fl}[1]{%
+  \par
+  \savebox{\alignbox}{\mbox{$\mbox{}#1\mbox{}$}}%
+  \settowidth{\alignwidth}{\usebox{\alignbox}}%
+  \usebox{\alignbox}}
+
+
+
+  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Ordinarily, TeX typesets letters in math mode in a special math italic    %
+% font.  This makes it typeset "it" to look like the product of the         %
+% variables i and t, rather than like the word "it".  The following         %
+% commands tell TeX to use an ordinary italic font instead.                 %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\ifx\documentclass\undefined
+\else
+  \DeclareSymbolFont{tlaitalics}{\encodingdefault}{cmr}{m}{it}
+  \let\itfam\symtlaitalics
+\fi
+
+\makeatletter
+\newcommand{\tlx@c}{\c@tlx@ctr\advance\c@tlx@ctr\@ne}
+\newcounter{tlx@ctr}
+\c@tlx@ctr=\itfam \multiply\c@tlx@ctr"100\relax \advance\c@tlx@ctr "7061\relax
+\mathcode`a=\tlx@c \mathcode`b=\tlx@c \mathcode`c=\tlx@c \mathcode`d=\tlx@c
+\mathcode`e=\tlx@c \mathcode`f=\tlx@c \mathcode`g=\tlx@c \mathcode`h=\tlx@c
+\mathcode`i=\tlx@c \mathcode`j=\tlx@c \mathcode`k=\tlx@c \mathcode`l=\tlx@c
+\mathcode`m=\tlx@c \mathcode`n=\tlx@c \mathcode`o=\tlx@c \mathcode`p=\tlx@c
+\mathcode`q=\tlx@c \mathcode`r=\tlx@c \mathcode`s=\tlx@c \mathcode`t=\tlx@c
+\mathcode`u=\tlx@c \mathcode`v=\tlx@c \mathcode`w=\tlx@c \mathcode`x=\tlx@c
+\mathcode`y=\tlx@c \mathcode`z=\tlx@c
+\c@tlx@ctr=\itfam \multiply\c@tlx@ctr"100\relax \advance\c@tlx@ctr "7041\relax
+\mathcode`A=\tlx@c \mathcode`B=\tlx@c \mathcode`C=\tlx@c \mathcode`D=\tlx@c
+\mathcode`E=\tlx@c \mathcode`F=\tlx@c \mathcode`G=\tlx@c \mathcode`H=\tlx@c
+\mathcode`I=\tlx@c \mathcode`J=\tlx@c \mathcode`K=\tlx@c \mathcode`L=\tlx@c
+\mathcode`M=\tlx@c \mathcode`N=\tlx@c \mathcode`O=\tlx@c \mathcode`P=\tlx@c
+\mathcode`Q=\tlx@c \mathcode`R=\tlx@c \mathcode`S=\tlx@c \mathcode`T=\tlx@c
+\mathcode`U=\tlx@c \mathcode`V=\tlx@c \mathcode`W=\tlx@c \mathcode`X=\tlx@c
+\mathcode`Y=\tlx@c \mathcode`Z=\tlx@c
+\makeatother
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                THE describe ENVIRONMENT                %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%
+% It is like the description environment except it takes an argument
+% ARG that should be the text of the widest label.  It adjusts the
+% indentation so each item with label LABEL produces
+%%      LABEL             blah blah blah
+%%      <- width of ARG ->blah blah blah
+%%                        blah blah blah
+\newenvironment{describe}[1]%
+   {\begin{list}{}{\settowidth{\labelwidth}{#1}%
+            \setlength{\labelsep}{.5em}%
+            \setlength{\leftmargin}{\labelwidth}% 
+            \addtolength{\leftmargin}{\labelsep}%
+            \addtolength{\leftmargin}{\parindent}%
+            \def\makelabel##1{\rm ##1\hfill}}%
+            \setlength{\topsep}{0pt}}%% 
+                % Sets \topsep to 0 to reduce vertical space above
+                % and below embedded displayed equations
+   {\end{list}}
+
+%   For tlatex.TeX
+\usepackage{verbatim}
+\makeatletter
+\def\tla{\let\%\relax%
+         \@bsphack
+         \typeout{\%{\the\linewidth}}%
+             \let\do\@makeother\dospecials\catcode`\^^M\active
+             \let\verbatim@startline\relax
+             \let\verbatim@addtoline\@gobble
+             \let\verbatim@processline\relax
+             \let\verbatim@finish\relax
+             \verbatim@}
+\let\endtla=\@esphack
+
+\let\pcal=\tla
+\let\endpcal=\endtla
+\let\ppcal=\tla
+\let\endppcal=\endtla
+
+% The tlatex environment is used by TLATeX.TeX to typeset TLA+.
+% TLATeX.TLA starts its files by writing a \tlatex command.  This
+% command/environment sets \parindent to 0 and defines \% to its
+% standard definition because the writing of the log files is messed up
+% if \% is defined to be something else.  It also executes
+% \@computerule to determine the dimensions for the TLA horizonatl
+% bars.
+\newenvironment{tlatex}{\@computerule%
+                        \setlength{\parindent}{0pt}%
+                       \makeatletter\chardef\%=`\%}{}
+
+
+% The notla environment produces no output.  You can turn a 
+% tla environment to a notla environment to prevent tlatex.TeX from
+% re-formatting the environment.
+
+\def\notla{\let\%\relax%
+         \@bsphack
+             \let\do\@makeother\dospecials\catcode`\^^M\active
+             \let\verbatim@startline\relax
+             \let\verbatim@addtoline\@gobble
+             \let\verbatim@processline\relax
+             \let\verbatim@finish\relax
+             \verbatim@}
+\let\endnotla=\@esphack
+
+\let\nopcal=\notla
+\let\endnopcal=\endnotla
+\let\noppcal=\notla
+\let\endnoppcal=\endnotla
+
+%%%%%%%%%%%%%%%%%%%%%%%% end of tlatex.sty file %%%%%%%%%%%%%%%%%%%%%%% 
+% last modified on Fri  3 August 2012 at 14:23:49 PST by lamport
+
+\begin{document}
+\tlatex
+\setboolean{shading}{true}
+ \@x{\makebox[0pt][r]{\scriptsize 1\hspace{1em}}}\moduleLeftDash\@xx{
+ {\MODULE} U3Inv\_proof}\moduleRightDash\@xx{}%
+ \@x{\makebox[0pt][r]{\scriptsize 2\hspace{1em}} {\EXTENDS} Implementation ,\,
+ TypeSafety ,\, Inv ,\, Lemmas}%
+\@pvspace{8.0pt}%
+ \@x{\makebox[0pt][r]{\scriptsize 4\hspace{1em}} {\THEOREM} U3Inv \.{\defeq}
+ Inv \.{\land} [ Next ]_{ varlist} \.{\land} ( \E\, p \.{\in} PROCESSES \.{:}
+ U3 ( p ) ) \.{\implies} Inv \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 5\hspace{1em}}\@s{8.2}\@pfstepnum{1}{}\ 
+ {\SUFFICES} {\ASSUME} Inv ,\, [ Next ]_{ varlist} ,\, {\NEW} p \.{\in}
+ PROCESSES ,\, U3 ( p )}%
+\@x{\makebox[0pt][r]{\scriptsize 6\hspace{1em}}\@s{40.71} {\PROVE} Inv \.{'}}%
+\@x{\makebox[0pt][r]{\scriptsize 7\hspace{1em}}\@s{16.4} {\OBVIOUS}}%
+ \@x{\makebox[0pt][r]{\scriptsize 8\hspace{1em}}\@s{8.2}\@pfstepnum{1}{1.}\ 
+ TypeOK \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 9\hspace{1em}}\@s{16.4} {\BY} NextTypeOK
+ {\DEF} Inv}%
+ \@x{\makebox[0pt][r]{\scriptsize 10\hspace{1em}}\@s{8.2}\@pfstepnum{1}{}\ 
+ {\USE}\@pfstepnum{1}{1}\  {\DEF} U3 ,\, Inv}%
+ \@x{\makebox[0pt][r]{\scriptsize 11\hspace{1em}}\@s{8.2}\@pfstepnum{1}{2.}\ 
+ InvDecide \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 12\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 13\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 14\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{0} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 15\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1} (
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 16\hspace{1em}}\@s{119.14} \.{\land} t . op
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 17\hspace{1em}}\@s{119.14} \.{\land} t . arg
+ [ p\_1 ] \.{=} BOT ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 18\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvDecide}%
+ \@x{\makebox[0pt][r]{\scriptsize 19\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 20\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 21\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 22\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 23\hspace{1em}}\@s{122.96} \.{\land} t . ret
+ \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 24\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 25\hspace{1em}}\@s{122.96} \.{\land} t . arg
+ \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 26\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 27\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 28\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvDecide ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All
+ ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 29\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 30\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvDecide ,\, TypeOK ,\, Valid\_pc
+ ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 31\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 32\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 33\hspace{1em}}\@s{8.2}\@pfstepnum{1}{3.}\ 
+ InvF1 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 34\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 35\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 36\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1} (
+ \.{\land} pc [ p\_1 ]\@s{4.31} \.{=}\@w{F1}\@s{15.97} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 37\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 38\hspace{1em}}\@s{223.12} \.{\land} t . arg
+ [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 39\hspace{1em}}\@s{223.12} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 40\hspace{1em}}\@s{119.14} \.{\land}\@s{4.1}
+ pc [ p\_1 ] \.{=}\@w{F1U1}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret [
+ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 41\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 42\hspace{1em}}\@s{223.12} \.{\land} t . arg
+ [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 43\hspace{1em}}\@s{223.12} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 44\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F1U2}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 45\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 46\hspace{1em}}\@s{223.12} \.{\land} t . arg
+ [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 47\hspace{1em}}\@s{223.12} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 48\hspace{1em}}\@s{223.12} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 49\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F1U7}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 50\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 51\hspace{1em}}\@s{223.12} \.{\land} t . arg
+ [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 52\hspace{1em}}\@s{223.12} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 53\hspace{1em}}\@s{223.12} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 54\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F1U8}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 55\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 56\hspace{1em}}\@s{223.12} \.{\land} t . arg
+ [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 57\hspace{1em}}\@s{223.12} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 58\hspace{1em}}\@s{223.12} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 59\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvF1}%
+ \@x{\makebox[0pt][r]{\scriptsize 60\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 61\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 62\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 63\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 64\hspace{1em}}\@s{122.96} \.{\land} t . ret
+ \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 65\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 66\hspace{1em}}\@s{122.96} \.{\land} t . arg
+ \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 67\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 68\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 69\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvF1 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 70\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 71\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvF1 ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 72\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 73\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 74\hspace{1em}}\@s{8.2}\@pfstepnum{1}{4.}\ 
+ InvF2 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 75\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 76\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 77\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1} (
+ \.{\land} pc [ p\_1 ]\@s{4.31} \.{=}\@w{F2}\@s{15.97} \.{\implies} \.{\land}
+ t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 78\hspace{1em}}\@s{230.47} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 79\hspace{1em}}\@s{230.47} \.{\land} t . arg
+ [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 80\hspace{1em}}\@s{230.47} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 81\hspace{1em}}\@s{230.47} \.{\land}
+ InvF2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 82\hspace{1em}}\@s{119.14} \.{\land}\@s{4.1}
+ pc [ p\_1 ] \.{=}\@w{F2U1}\@s{4.1} \.{\implies} \.{\land} t . ret [ p\_1 ]
+ \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 83\hspace{1em}}\@s{230.47} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 84\hspace{1em}}\@s{230.47} \.{\land} t . arg
+ [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 85\hspace{1em}}\@s{230.47} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 86\hspace{1em}}\@s{230.47} \.{\land}
+ InvF2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 87\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F2U2}\@s{4.10} \.{\implies}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 88\hspace{1em}}\@s{230.47} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 89\hspace{1em}}\@s{230.47} \.{\land} t . arg
+ [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 90\hspace{1em}}\@s{230.47} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 91\hspace{1em}}\@s{230.47} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 92\hspace{1em}}\@s{230.47} \.{\land}
+ InvF2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 93\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F2U7}\@s{4.10} \.{\implies}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 94\hspace{1em}}\@s{230.47} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 95\hspace{1em}}\@s{230.47} \.{\land} t . arg
+ [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 96\hspace{1em}}\@s{230.47} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 97\hspace{1em}}\@s{230.47} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 98\hspace{1em}}\@s{230.47} \.{\land}
+ InvF2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 99\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F2U8}\@s{4.10} \.{\implies}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 100\hspace{1em}}\@s{230.47} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 101\hspace{1em}}\@s{230.47} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 102\hspace{1em}}\@s{230.47} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 103\hspace{1em}}\@s{230.47} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 104\hspace{1em}}\@s{230.47} \.{\land}
+ InvF2All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 105\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvF2}%
+ \@x{\makebox[0pt][r]{\scriptsize 106\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 107\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 108\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 109\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 110\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 111\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 112\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 113\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 114\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 115\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvF2 ,\, InvF2All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 116\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 117\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvF2 ,\, InvF2All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 118\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 119\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 120\hspace{1em}}\@s{8.2}\@pfstepnum{1}{5.}\ 
+ InvF3 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 121\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 122\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 123\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} pc [ p\_1 ]\@s{4.31} \.{=}\@w{F3}\@s{15.97} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 124\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 125\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 126\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 127\hspace{1em}}\@s{234.57} \.{\land}
+ InvF3All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 128\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.1} pc [ p\_1 ] \.{=}\@w{F3U1}\@s{4.1} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 129\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 130\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 131\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 132\hspace{1em}}\@s{234.57} \.{\land}
+ InvF3All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 133\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F3U2}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 134\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 135\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 136\hspace{1em}}\@s{234.57} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 137\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 138\hspace{1em}}\@s{234.57} \.{\land}
+ InvF3All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 139\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F3U7}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 140\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 141\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 142\hspace{1em}}\@s{234.57} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 143\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 144\hspace{1em}}\@s{234.57} \.{\land}
+ InvF3All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 145\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F3U8}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 146\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 147\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 148\hspace{1em}}\@s{234.57} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 149\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 150\hspace{1em}}\@s{234.57} \.{\land}
+ InvF3All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 151\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvF3}%
+ \@x{\makebox[0pt][r]{\scriptsize 152\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 153\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 154\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 155\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 156\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 157\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 158\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 159\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 160\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 161\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvF3 ,\, InvF3All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 162\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 163\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvF3 ,\, InvF3All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 164\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 165\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 166\hspace{1em}}\@s{8.2}\@pfstepnum{1}{6.}\ 
+ InvF4 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 167\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 168\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 169\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} pc [ p\_1 ]\@s{4.31} \.{=}\@w{F4}\@s{15.97} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 170\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 171\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 172\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 173\hspace{1em}}\@s{234.57} \.{\land}
+ InvF4All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 174\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.1} pc [ p\_1 ] \.{=}\@w{F4U1}\@s{4.1} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 175\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 176\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 177\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 178\hspace{1em}}\@s{234.57} \.{\land}
+ InvF4All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 179\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F4U2}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 180\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 181\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 182\hspace{1em}}\@s{234.57} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 183\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 184\hspace{1em}}\@s{234.57} \.{\land}
+ InvF4All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 185\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F4U7}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 186\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 187\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 188\hspace{1em}}\@s{234.57} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 189\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 190\hspace{1em}}\@s{234.57} \.{\land}
+ InvF4All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 191\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F4U8}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 192\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 193\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 194\hspace{1em}}\@s{234.57} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 195\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 196\hspace{1em}}\@s{234.57} \.{\land}
+ InvF4All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 197\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvF4}%
+ \@x{\makebox[0pt][r]{\scriptsize 198\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 199\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 200\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 201\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 202\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 203\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 204\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 205\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 206\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 207\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvF4 ,\, InvF4All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 208\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 209\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvF4 ,\, InvF4All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 210\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 211\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 212\hspace{1em}}\@s{8.2}\@pfstepnum{1}{7.}\ 
+ InvF5 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 213\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 214\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 215\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} pc [ p\_1 ]\@s{4.31} \.{=}\@w{F5}\@s{15.97} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 216\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 217\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 218\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 219\hspace{1em}}\@s{234.57} \.{\land}
+ InvF5All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 220\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.1} pc [ p\_1 ] \.{=}\@w{F5U1}\@s{4.1} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 221\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 222\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 223\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 224\hspace{1em}}\@s{234.57} \.{\land}
+ InvF5All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 225\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F5U2}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 226\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 227\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 228\hspace{1em}}\@s{234.57} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 229\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 230\hspace{1em}}\@s{234.57} \.{\land}
+ InvF5All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 231\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F5U7}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 232\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 233\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 234\hspace{1em}}\@s{234.57} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 235\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 236\hspace{1em}}\@s{234.57} \.{\land}
+ InvF5All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 237\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F5U8}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 238\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 239\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 240\hspace{1em}}\@s{234.57} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 241\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 242\hspace{1em}}\@s{234.57} \.{\land}
+ InvF5All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 243\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvF5}%
+ \@x{\makebox[0pt][r]{\scriptsize 244\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}\
+ ( pc [ p\_1 ] \.{=}\@w{F5}\@s{12.29} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 245\hspace{1em}}\@s{129.26} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 246\hspace{1em}}\@s{121.06} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 247\hspace{1em}}\@s{121.06} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 248\hspace{1em}}\@s{121.06} \.{\land}
+ InvF5All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 249\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 250\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 251\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 252\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 253\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 254\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 255\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 256\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 257\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 258\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 259\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 260\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 261\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 262\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 263\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}\
+ ( pc [ p\_1 ] \.{=}\@w{F5U1}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 264\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 265\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 266\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 267\hspace{1em}}\@s{132.94} \.{\land}
+ InvF5All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 268\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 269\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 270\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 271\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 272\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 273\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 274\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 275\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 276\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 277\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 278\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 279\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 280\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 281\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 282\hspace{1em}}\@s{16.4}\@pfstepnum{2}{3.}\
+ ( pc [ p\_1 ] \.{=}\@w{F5U2}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 283\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 284\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 285\hspace{1em}}\@s{132.94} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 286\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 287\hspace{1em}}\@s{132.94} \.{\land}
+ InvF5All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 288\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 289\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 290\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 291\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 292\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 293\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 294\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 295\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 296\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 297\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 298\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 299\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 300\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 301\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 302\hspace{1em}}\@s{16.4}\@pfstepnum{2}{4.}\
+ ( pc [ p\_1 ] \.{=}\@w{F5U7}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 303\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 304\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 305\hspace{1em}}\@s{132.94} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 306\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 307\hspace{1em}}\@s{132.94} \.{\land}
+ InvF5All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 308\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 309\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 310\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 311\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 312\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 313\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 314\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 315\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 316\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 317\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 318\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 319\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 320\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 321\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 322\hspace{1em}}\@s{16.4}\@pfstepnum{2}{5.}\
+ ( pc [ p\_1 ] \.{=}\@w{F5U8}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 323\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 324\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 325\hspace{1em}}\@s{132.94} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 326\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 327\hspace{1em}}\@s{132.94} \.{\land}
+ InvF5All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 328\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 329\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 330\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 331\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 332\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 333\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 334\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 335\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 336\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 337\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 338\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 339\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF5 ,\, InvF5All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 340\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 341\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 342\hspace{1em}}\@s{16.4}\@pfstepnum{2}{6.}\
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 343\hspace{1em}}\@s{24.59}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2} ,\,\@pfstepnum{2}{3}
+ ,\,\@pfstepnum{2}{4} ,\,\@pfstepnum{2}{5}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 344\hspace{1em}}\@s{8.2}\@pfstepnum{1}{8.}\ 
+ InvF6 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 345\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 346\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 347\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} pc [ p\_1 ]\@s{4.31} \.{=}\@w{F6}\@s{15.97} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 348\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 349\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 350\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 351\hspace{1em}}\@s{234.57} \.{\land}
+ InvF6All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 352\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.1} pc [ p\_1 ] \.{=}\@w{F6U1}\@s{4.1} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 353\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 354\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 355\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 356\hspace{1em}}\@s{234.57} \.{\land}
+ InvF6All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 357\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F6U2}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 358\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 359\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 360\hspace{1em}}\@s{234.57} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 361\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 362\hspace{1em}}\@s{234.57} \.{\land}
+ InvF6All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 363\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F6U7}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 364\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 365\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 366\hspace{1em}}\@s{234.57} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 367\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 368\hspace{1em}}\@s{234.57} \.{\land}
+ InvF6All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 369\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F6U8}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 370\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 371\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 372\hspace{1em}}\@s{234.57} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 373\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 374\hspace{1em}}\@s{234.57} \.{\land}
+ InvF6All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 375\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvF6}%
+ \@x{\makebox[0pt][r]{\scriptsize 376\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}\
+ ( pc [ p\_1 ] \.{=}\@w{F6}\@s{12.29} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 377\hspace{1em}}\@s{129.26} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 378\hspace{1em}}\@s{121.06} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 379\hspace{1em}}\@s{121.06} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 380\hspace{1em}}\@s{121.06} \.{\land}
+ InvF6All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 381\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 382\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 383\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 384\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 385\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 386\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 387\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 388\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 389\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 390\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 391\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 392\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 393\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 394\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 395\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}\
+ ( pc [ p\_1 ] \.{=}\@w{F6U1}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 396\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 397\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 398\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 399\hspace{1em}}\@s{132.94} \.{\land}
+ InvF6All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 400\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 401\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 402\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 403\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 404\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 405\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 406\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 407\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 408\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 409\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 410\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 411\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 412\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 413\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 414\hspace{1em}}\@s{16.4}\@pfstepnum{2}{3.}\
+ ( pc [ p\_1 ] \.{=}\@w{F6U2}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 415\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 416\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 417\hspace{1em}}\@s{132.94} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 418\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 419\hspace{1em}}\@s{132.94} \.{\land}
+ InvF6All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 420\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 421\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 422\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 423\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 424\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 425\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 426\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 427\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 428\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 429\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 430\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 431\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 432\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 433\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 434\hspace{1em}}\@s{16.4}\@pfstepnum{2}{4.}\
+ ( pc [ p\_1 ] \.{=}\@w{F6U7}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 435\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 436\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 437\hspace{1em}}\@s{132.94} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 438\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 439\hspace{1em}}\@s{132.94} \.{\land}
+ InvF6All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 440\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 441\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 442\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 443\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 444\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 445\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 446\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 447\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 448\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 449\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 450\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 451\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 452\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 453\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 454\hspace{1em}}\@s{16.4}\@pfstepnum{2}{5.}\
+ ( pc [ p\_1 ] \.{=}\@w{F6U8}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 455\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 456\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 457\hspace{1em}}\@s{132.94} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 458\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 459\hspace{1em}}\@s{132.94} \.{\land}
+ InvF6All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 460\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 461\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 462\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 463\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 464\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 465\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 466\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 467\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 468\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 469\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 470\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 471\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF6 ,\, InvF6All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 472\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 473\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 474\hspace{1em}}\@s{16.4}\@pfstepnum{2}{6.}\
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 475\hspace{1em}}\@s{24.59}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2} ,\,\@pfstepnum{2}{3}
+ ,\,\@pfstepnum{2}{4} ,\,\@pfstepnum{2}{5}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 476\hspace{1em}}\@s{8.2}\@pfstepnum{1}{9.}\ 
+ InvF7 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 477\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 478\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 479\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} pc [ p\_1 ]\@s{4.31} \.{=}\@w{F7}\@s{15.97} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 480\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 481\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 482\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 483\hspace{1em}}\@s{234.57} \.{\land}
+ InvF7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 484\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.1} pc [ p\_1 ] \.{=}\@w{F7U1}\@s{4.1} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 485\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 486\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 487\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 488\hspace{1em}}\@s{234.57} \.{\land}
+ InvF7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 489\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F7U2}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 490\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 491\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 492\hspace{1em}}\@s{234.57} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 493\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 494\hspace{1em}}\@s{234.57} \.{\land}
+ InvF7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 495\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F7U7}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 496\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 497\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 498\hspace{1em}}\@s{234.57} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 499\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 500\hspace{1em}}\@s{234.57} \.{\land}
+ InvF7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 501\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{F7U8}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 502\hspace{1em}}\@s{234.57} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 503\hspace{1em}}\@s{234.57} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 504\hspace{1em}}\@s{234.57} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 505\hspace{1em}}\@s{234.57} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 506\hspace{1em}}\@s{234.57} \.{\land}
+ InvF7All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 507\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvF7}%
+ \@x{\makebox[0pt][r]{\scriptsize 508\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}\
+ ( pc [ p\_1 ] \.{=}\@w{F7}\@s{12.29} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 509\hspace{1em}}\@s{129.26} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 510\hspace{1em}}\@s{121.06} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 511\hspace{1em}}\@s{121.06} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, t . arg [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 512\hspace{1em}}\@s{121.06} \.{\land}
+ InvF7All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 513\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 514\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 515\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 516\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 517\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 518\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 519\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 520\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 521\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 522\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 523\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 524\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 525\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 526\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 527\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}\
+ ( pc [ p\_1 ] \.{=}\@w{F7U1}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 528\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 529\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 530\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 531\hspace{1em}}\@s{132.94} \.{\land}
+ InvF7All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 532\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 533\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 534\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 535\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 536\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 537\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 538\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 539\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 540\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 541\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 542\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 543\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 544\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 545\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 546\hspace{1em}}\@s{16.4}\@pfstepnum{2}{3.}\
+ ( pc [ p\_1 ] \.{=}\@w{F7U2}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 547\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 548\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 549\hspace{1em}}\@s{132.94} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 550\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 551\hspace{1em}}\@s{132.94} \.{\land}
+ InvF7All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 552\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 553\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 554\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 555\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 556\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 557\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 558\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 559\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 560\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 561\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 562\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 563\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 564\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 565\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 566\hspace{1em}}\@s{16.4}\@pfstepnum{2}{4.}\
+ ( pc [ p\_1 ] \.{=}\@w{F7U7}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 567\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 568\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 569\hspace{1em}}\@s{132.94} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 570\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 571\hspace{1em}}\@s{132.94} \.{\land}
+ InvF7All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 572\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 573\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 574\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 575\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 576\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 577\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 578\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 579\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 580\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 581\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 582\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 583\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 584\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 585\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 586\hspace{1em}}\@s{16.4}\@pfstepnum{2}{5.}\
+ ( pc [ p\_1 ] \.{=}\@w{F7U8}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 587\hspace{1em}}\@s{144.39} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 588\hspace{1em}}\@s{132.94} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 589\hspace{1em}}\@s{132.94} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 590\hspace{1em}}\@s{132.94} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 591\hspace{1em}}\@s{132.94} \.{\land}
+ InvF7All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 592\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 593\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 594\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 595\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 596\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 597\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 598\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 599\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 600\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 601\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 602\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 603\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvF7 ,\, InvF7All ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 604\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 605\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 606\hspace{1em}}\@s{16.4}\@pfstepnum{2}{6.}\
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 607\hspace{1em}}\@s{24.59}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2} ,\,\@pfstepnum{2}{3}
+ ,\,\@pfstepnum{2}{4} ,\,\@pfstepnum{2}{5}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 608\hspace{1em}}\@s{8.2}\@pfstepnum{1}{10.}\
+ InvFR \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 609\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 610\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 611\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} pc [ p\_1 ]\@s{4.31} \.{=}\@w{FR}\@s{15.97} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} u\_F [ p\_1 ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 612\hspace{1em}}\@s{236.03} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 613\hspace{1em}}\@s{236.03} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 614\hspace{1em}}\@s{236.03} \.{\land}
+ SameRoot ( t ,\, t . arg [ p\_1 ] ,\, u\_F [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 615\hspace{1em}}\@s{236.03} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_F [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 616\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.1} pc [ p\_1 ] \.{=}\@w{FRU1}\@s{4.1} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 617\hspace{1em}}\@s{236.03} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 618\hspace{1em}}\@s{236.03} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 619\hspace{1em}}\@s{236.03} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 620\hspace{1em}}\@s{236.03} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_F [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 621\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{FRU2}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 622\hspace{1em}}\@s{236.03} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 623\hspace{1em}}\@s{236.03} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 624\hspace{1em}}\@s{236.03} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 625\hspace{1em}}\@s{236.03} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 626\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{FRU7}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 627\hspace{1em}}\@s{236.03} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 628\hspace{1em}}\@s{236.03} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 629\hspace{1em}}\@s{236.03} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 630\hspace{1em}}\@s{236.03} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 631\hspace{1em}}\@s{119.14}
+ \.{\land}\@s{4.10} pc [ p\_1 ] \.{=}\@w{FRU8}\@s{4.10} \.{\implies}\@s{4.1}
+ \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 632\hspace{1em}}\@s{236.03} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 633\hspace{1em}}\@s{236.03} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 634\hspace{1em}}\@s{236.03} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 635\hspace{1em}}\@s{236.03} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 636\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvFR}%
+ \@x{\makebox[0pt][r]{\scriptsize 637\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}\
+ ( pc [ p\_1 ] \.{=}\@w{FR}\@s{12.29} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} u\_F [ p\_1 ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 638\hspace{1em}}\@s{130.72} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{F}}%
+ \@x{\makebox[0pt][r]{\scriptsize 639\hspace{1em}}\@s{122.52} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 640\hspace{1em}}\@s{122.52} \.{\land}
+ SameRoot ( t ,\, t . arg [ p\_1 ] ,\, u\_F [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 641\hspace{1em}}\@s{122.52} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_F [ p\_1 ] ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 642\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 643\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 644\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 645\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 646\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 647\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 648\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 649\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 650\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 651\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 652\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 653\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\, InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 654\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 655\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 656\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}\
+ ( pc [ p\_1 ] \.{=}\@w{FRU1}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 657\hspace{1em}}\@s{145.85} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 658\hspace{1em}}\@s{134.40} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 659\hspace{1em}}\@s{134.40} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 660\hspace{1em}}\@s{134.40} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_F [ p\_1 ] ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 661\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 662\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 663\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 664\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 665\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 666\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 667\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 668\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 669\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 670\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 671\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 672\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\, InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 673\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 674\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 675\hspace{1em}}\@s{16.4}\@pfstepnum{2}{3.}\
+ ( pc [ p\_1 ] \.{=}\@w{FRU2}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 676\hspace{1em}}\@s{145.85} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 677\hspace{1em}}\@s{134.40} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 678\hspace{1em}}\@s{134.40} \.{\land}
+ InvU2All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 679\hspace{1em}}\@s{134.40} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 680\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 681\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 682\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 683\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 684\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 685\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 686\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 687\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 688\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 689\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 690\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 691\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\, InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 692\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 693\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 694\hspace{1em}}\@s{16.4}\@pfstepnum{2}{4.}\
+ ( pc [ p\_1 ] \.{=}\@w{FRU7}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 695\hspace{1em}}\@s{145.85} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 696\hspace{1em}}\@s{134.40} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 697\hspace{1em}}\@s{134.40} \.{\land}
+ InvU7All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 698\hspace{1em}}\@s{134.40} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, u\_U [ p\_1 ] ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 699\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 700\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 701\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 702\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 703\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 704\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 705\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 706\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 707\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 708\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 709\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 710\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\, InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 711\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 712\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 713\hspace{1em}}\@s{16.4}\@pfstepnum{2}{5.}\
+ ( pc [ p\_1 ] \.{=}\@w{FRU8}\@s{4.1} \.{\implies}\@s{4.1} \.{\land} t . ret
+ [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 714\hspace{1em}}\@s{145.85} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 715\hspace{1em}}\@s{134.40} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 716\hspace{1em}}\@s{134.40} \.{\land}
+ InvU8All ( p\_1 ,\, t )}%
+ \@x{\makebox[0pt][r]{\scriptsize 717\hspace{1em}}\@s{134.40} \.{\land}
+ SameRoot ( t ,\, c [ p\_1 ] ,\, v\_U [ p\_1 ] ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 718\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 719\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 720\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 721\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 722\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 723\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 724\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 725\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 726\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 727\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 728\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 729\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvFR ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\, InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 730\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 731\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 732\hspace{1em}}\@s{16.4}\@pfstepnum{2}{6.}\
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 733\hspace{1em}}\@s{24.59}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2} ,\,\@pfstepnum{2}{3}
+ ,\,\@pfstepnum{2}{4} ,\,\@pfstepnum{2}{5}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 734\hspace{1em}}\@s{8.2}\@pfstepnum{1}{11.}\
+ InvU1 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 735\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 736\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 737\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{U1} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 738\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ (\@s{12.29} \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 739\hspace{1em}}\@s{127.34} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 740\hspace{1em}}\@s{119.14} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 741\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvU1}%
+ \@x{\makebox[0pt][r]{\scriptsize 742\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 743\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 744\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 745\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 746\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 747\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 748\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 749\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 750\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 751\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU1 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 752\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 753\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvU1 ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 754\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 755\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 756\hspace{1em}}\@s{8.2}\@pfstepnum{1}{12.}\
+ InvU2 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 757\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 758\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 759\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{U2} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 760\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ (\@s{12.29} \.{\land} t . ret [ p\_1 ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 761\hspace{1em}}\@s{127.34} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 762\hspace{1em}}\@s{119.14} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 763\hspace{1em}}\@s{119.14} \.{\land}
+ InvU2All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 764\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvU2}%
+ \@x{\makebox[0pt][r]{\scriptsize 765\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 766\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 767\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 768\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 769\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 770\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 771\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 772\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 773\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 774\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU2 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 775\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 776\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvU2 ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 777\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 778\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 779\hspace{1em}}\@s{8.2}\@pfstepnum{1}{13.}\
+ InvU3 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 780\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 781\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 782\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{U3} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 783\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 784\hspace{1em}}\@s{119.14} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 785\hspace{1em}}\@s{119.14} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 786\hspace{1em}}\@s{119.14} \.{\land}
+ SameRoot ( t ,\, t . arg [ p\_1 ] [ 1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 787\hspace{1em}}\@s{119.14} \.{\land}
+ SameRoot ( t ,\, t . arg [ p\_1 ] [ 2 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 788\hspace{1em}}\@s{119.14} \.{\land} t .
+ ret [ p\_1 ] \.{=} ACK \.{\implies} SameRoot ( t ,\, u\_U [ p\_1 ] ,\, v\_U
+ [ p\_1 ] ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 789\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvU3}%
+ \@x{\makebox[0pt][r]{\scriptsize 790\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 791\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 792\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 793\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 794\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 795\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 796\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 797\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 798\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 799\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 800\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 801\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 802\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 803\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 804\hspace{1em}}\@s{8.2}\@pfstepnum{1}{14.}\
+ InvU4 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 805\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 806\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 807\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{U4} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 808\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ (\@s{12.29} \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 809\hspace{1em}}\@s{127.34} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 810\hspace{1em}}\@s{119.14} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 811\hspace{1em}}\@s{119.14} \.{\land}
+ SameRoot ( t ,\, t . arg [ p\_1 ] [ 1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 812\hspace{1em}}\@s{119.14} \.{\land}
+ SameRoot ( t ,\, t . arg [ p\_1 ] [ 2 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 813\hspace{1em}}\@s{119.14} \.{\land} ( t .
+ ret [ p\_1 ] \.{=} ACK \.{\implies} SameRoot ( t ,\, u\_U [ p\_1 ] ,\, v\_U
+ [ p\_1 ] ) )}%
+ \@x{\makebox[0pt][r]{\scriptsize 814\hspace{1em}}\@s{119.14} \.{\land} u\_U [
+ p\_1 ] \.{\neq} v\_U [ p\_1 ] ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 815\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvU4}%
+ \@x{\makebox[0pt][r]{\scriptsize 816\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} pc [ p\_1 ] \.{=}\@w{U3}}%
+ \@x{\makebox[0pt][r]{\scriptsize 817\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 818\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 819\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 820\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 821\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 822\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 823\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 824\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 825\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 826\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 827\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU4 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 828\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 829\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvU3 ,\, InvU4 ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 830\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 831\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 832\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} pc [ p\_1 ] \.{=}\@w{U4}}%
+ \@x{\makebox[0pt][r]{\scriptsize 833\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 834\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 835\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 836\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 837\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 838\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 839\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 840\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 841\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 842\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 843\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU4 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 844\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 845\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvU4 ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\, InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 846\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 847\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 848\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 849\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\  {\DEF} Inv ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 850\hspace{1em}}\@s{8.2}\@pfstepnum{1}{15.}\
+ InvU5 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 851\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 852\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 853\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{U5} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 854\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 855\hspace{1em}}\@s{119.14} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 856\hspace{1em}}\@s{119.14} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 857\hspace{1em}}\@s{119.14} \.{\land}
+ InvU5All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 858\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvU5}%
+ \@x{\makebox[0pt][r]{\scriptsize 859\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 860\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 861\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 862\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 863\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 864\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 865\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 866\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 867\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 868\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU5 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot ,\, InvU5All}%
+ \@x{\makebox[0pt][r]{\scriptsize 869\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 870\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvU5 ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\, InvU5All}%
+ \@x{\makebox[0pt][r]{\scriptsize 871\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 872\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 873\hspace{1em}}\@s{8.2}\@pfstepnum{1}{16.}\
+ InvU6 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 874\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 875\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 876\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{U6} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 877\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 878\hspace{1em}}\@s{119.14} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 879\hspace{1em}}\@s{119.14} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 880\hspace{1em}}\@s{119.14} \.{\land}
+ InvU6All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 881\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvU6}%
+ \@x{\makebox[0pt][r]{\scriptsize 882\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 883\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 884\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 885\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 886\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 887\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 888\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 889\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 890\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 891\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU6 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot ,\, InvU6All}%
+ \@x{\makebox[0pt][r]{\scriptsize 892\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 893\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvU6 ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\, InvU6All}%
+ \@x{\makebox[0pt][r]{\scriptsize 894\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 895\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 896\hspace{1em}}\@s{8.2}\@pfstepnum{1}{17.}\
+ InvU7 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 897\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 898\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 899\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{U7} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 900\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 901\hspace{1em}}\@s{119.14} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 902\hspace{1em}}\@s{119.14} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 903\hspace{1em}}\@s{119.14} \.{\land}
+ InvU7All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 904\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvU7}%
+ \@x{\makebox[0pt][r]{\scriptsize 905\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 906\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 907\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 908\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 909\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 910\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 911\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 912\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 913\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 914\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU7 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 915\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 916\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvU7 ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 917\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 918\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 919\hspace{1em}}\@s{8.2}\@pfstepnum{1}{18.}\
+ InvU8 \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 920\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 921\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 922\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{U8} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 923\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} t . ret [ p\_1 ] \.{\in} \{ BOT ,\, ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 924\hspace{1em}}\@s{119.14} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 925\hspace{1em}}\@s{119.14} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 926\hspace{1em}}\@s{119.14} \.{\land}
+ InvU8All ( p\_1 ,\, t ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 927\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvU8}%
+ \@x{\makebox[0pt][r]{\scriptsize 928\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 929\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 930\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 931\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 932\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 933\hspace{1em}}\@s{122.96} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 934\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 935\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 936\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 937\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU8 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 938\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 939\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, InvU8 ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 940\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 941\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 942\hspace{1em}}\@s{8.2}\@pfstepnum{1}{19.}\
+ InvUR \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 943\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} p\_1 \.{\in} PROCESSES \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 944\hspace{1em}}\@s{115.04} {\NEW} t \.{\in}
+ M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 945\hspace{1em}}\@s{115.04} ( pc [ p\_1 ]
+ \.{=}\@w{UR} ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 946\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ (\@s{12.29} \.{\land} t . ret [ p\_1 ] \.{=} ACK}%
+ \@x{\makebox[0pt][r]{\scriptsize 947\hspace{1em}}\@s{127.34} \.{\land} t . op
+ [ p\_1 ] \.{=}\@w{U}}%
+ \@x{\makebox[0pt][r]{\scriptsize 948\hspace{1em}}\@s{119.14} \.{\land} t .
+ arg [ p\_1 ] \.{\in} NodeSet \.{\times} NodeSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 949\hspace{1em}}\@s{119.14} \.{\land}
+ SameRoot ( t ,\, t . arg [ p\_1 ] [ 1 ] ,\, u\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 950\hspace{1em}}\@s{119.14} \.{\land}
+ SameRoot ( t ,\, t . arg [ p\_1 ] [ 2 ] ,\, v\_U [ p\_1 ] )}%
+ \@x{\makebox[0pt][r]{\scriptsize 951\hspace{1em}}\@s{119.14} \.{\land}
+ SameRoot ( t ,\, u\_U [ p\_1 ] ,\, v\_U [ p\_1 ] ) ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 952\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ InvUR}%
+ \@x{\makebox[0pt][r]{\scriptsize 953\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} pc [ p\_1 ] \.{=}\@w{U3}}%
+ \@x{\makebox[0pt][r]{\scriptsize 954\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 955\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 956\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 957\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 958\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 959\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 960\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 961\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 962\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 963\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ p \.{=} p\_1}%
+ \@x{\makebox[0pt][r]{\scriptsize 964\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, TypeOK ,\, Valid\_pc ,\, PCSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 965\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 966\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, InvUR ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\,
+ InvU7All ,\, InvU8All ,\, SameRoot ,\, ReturnSet ,\, Configs ,\, Valid\_M}%
+\@pvspace{8.0pt}%
+ \@x{\makebox[0pt][r]{\scriptsize 968\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 969\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvU3 ,\, InvUR ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\,
+ InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 970\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 971\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 972\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} pc [ p\_1 ] \.{=}\@w{UR}}%
+ \@x{\makebox[0pt][r]{\scriptsize 973\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 974\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 975\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\USE}\@pfstepnum{3}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 976\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 977\hspace{1em}}\@s{139.36} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 978\hspace{1em}}\@s{139.36} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 979\hspace{1em}}\@s{139.36} \.{\land} t . op
+ \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 980\hspace{1em}}\@s{139.36} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 981\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 982\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 983\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, InvUR ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, InvU2All ,\, InvU7All ,\,
+ InvU8All ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 984\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 985\hspace{1em}}\@s{49.19}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, InvUR ,\, TypeOK ,\, Valid\_pc ,\,
+ PCSet ,\, InvU2All ,\, InvU7All ,\, InvU8All ,\, SameRoot ,\, InvF2All}%
+ \@x{\makebox[0pt][r]{\scriptsize 986\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 987\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 988\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 989\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\  {\DEF} Inv ,\, TypeOK ,\,
+ Valid\_pc ,\, PCSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 990\hspace{1em}}\@s{8.2}\@pfstepnum{1}{20.}\
+ SigmaRespectsShared \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 991\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} t \.{\in} M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 992\hspace{1em}}\@s{115.04} {\NEW}
+ i\@s{0.18} \.{\in} NodeSet \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 993\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( \.{\land} F [ i ] . bit\@s{0.21} \.{=} 0\@s{16.40} \.{\implies} t . sigma
+ [ i ] \.{=} t . sigma [ F [ i ] . parent ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 994\hspace{1em}}\@s{119.14} \.{\land} F [ i
+ ] . bit \.{=} 1\@s{16.39} \.{\implies} t . sigma [ i ] \.{=} i ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 995\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ SigmaRespectsShared}%
+ \@x{\makebox[0pt][r]{\scriptsize 996\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 997\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 998\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 999\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 1000\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 1001\hspace{1em}}\@s{122.96} \.{\land} t .
+ op \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 1002\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 1003\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 1004\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1005\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, SigmaRespectsShared ,\, TypeOK ,\, Valid\_F ,\, Valid\_M ,\, Configs ,\,
+ StateSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 1006\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 1007\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, SigmaRespectsShared ,\, TypeOK ,\,
+ Valid\_F ,\, Valid\_M ,\, Configs ,\, StateSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 1008\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1009\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize
+ 1010\hspace{1em}}\@s{8.2}\@pfstepnum{1}{21.}\  SharedRespectsSigma \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1011\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\SUFFICES} {\ASSUME} {\NEW} t \.{\in} M \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 1012\hspace{1em}}\@s{115.04} {\NEW}
+ i\@s{0.18} \.{\in} NodeSet \.{'} ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 1013\hspace{1em}}\@s{115.04} ( t . sigma [ i
+ ] \.{=} i ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1014\hspace{1em}}\@s{76.79} {\PROVE}\@s{4.1}
+ ( F [ i ] . bit \.{=} 1 ) \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1015\hspace{1em}}\@s{24.59} {\BY} {\DEF}
+ SharedRespectsSigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 1016\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 1017\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 1018\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} \.{\land} told . ret [ p ] \.{\in} \{ BOT ,\,
+ ACK \}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1019\hspace{1em}}\@s{122.96} \.{\land} t .
+ sigma \.{=} told . sigma}%
+ \@x{\makebox[0pt][r]{\scriptsize 1020\hspace{1em}}\@s{122.96} \.{\land} t .
+ ret \.{=} [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 1021\hspace{1em}}\@s{122.96} \.{\land} t .
+ op \.{=} told . op}%
+ \@x{\makebox[0pt][r]{\scriptsize 1022\hspace{1em}}\@s{122.96} \.{\land} t .
+ arg \.{=} told . arg}%
+ \@x{\makebox[0pt][r]{\scriptsize 1023\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot}%
+ \@x{\makebox[0pt][r]{\scriptsize 1024\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1025\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, SharedRespectsSigma ,\, TypeOK ,\, Valid\_F ,\, Valid\_M ,\, Configs ,\,
+ StateSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 1026\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 1027\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, SharedRespectsSigma ,\, TypeOK ,\,
+ Valid\_F ,\, Valid\_M ,\, Configs ,\, StateSet}%
+ \@x{\makebox[0pt][r]{\scriptsize 1028\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1029\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize
+ 1030\hspace{1em}}\@s{8.2}\@pfstepnum{1}{22.}\  Linearizable \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1031\hspace{1em}}\@s{16.4}\@pfstepnum{2}{1.}
+ {\CASE} u\_U [ p ] \.{=} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 1032\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\USE}\@pfstepnum{2}{1}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 1033\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\PICK} told \.{\in} M \.{:} told . ret [ p ] \.{=} BOT \.{\lor} told . ret
+ [ p ] \.{=} ACK}%
+ \@x{\makebox[0pt][r]{\scriptsize 1034\hspace{1em}}\@s{48.91} {\BY} {\DEF} Inv
+ ,\, InvU3 ,\, TypeOK ,\, Valid\_pc ,\, PCSet ,\, Configs ,\, StateSet ,\,
+ OpSet ,\, ArgSet ,\, ReturnSet ,\, Valid\_M ,\, SameRoot ,\, Linearizable}%
+ \@x{\makebox[0pt][r]{\scriptsize
+ 1035\hspace{1em}}\@s{32.8}\@pfstepnum{3}{a.}\  told \.{\in} Configs}%
+ \@x{\makebox[0pt][r]{\scriptsize 1036\hspace{1em}}\@s{49.19} {\BY} {\DEF} Inv
+ ,\, TypeOK ,\, Valid\_M}%
+ \@x{\makebox[0pt][r]{\scriptsize 1037\hspace{1em}}\@s{32.8}\@pfstepnum{3}{1.}
+ {\CASE} told . ret [ p ] \.{=} BOT}%
+ \@x{\makebox[0pt][r]{\scriptsize 1038\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\
+ {\DEFINE} t \.{\defeq} [ sigma \.{\mapsto} told . sigma ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 1039\hspace{1em}}\@s{126.93} ret \.{\mapsto}
+ [ told . ret {\EXCEPT} {\bang} [ p ] \.{=} ACK ] ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 1040\hspace{1em}}\@s{126.93} op \.{\mapsto}
+ told . op ,\,}%
+ \@x{\makebox[0pt][r]{\scriptsize 1041\hspace{1em}}\@s{126.93} arg \.{\mapsto}
+ told . arg ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 1042\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\
+ t \.{\in} M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1043\hspace{1em}}\@s{65.31}
+ {\BY}\@pfstepnum{3}{1}\  {\DEF} Inv ,\, Configs ,\, StateSet ,\, OpSet ,\,
+ ArgSet ,\, ReturnSet ,\, TypeOK ,\, t ,\, Valid\_M}%
+ \@x{\makebox[0pt][r]{\scriptsize 1044\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1045\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, Linearizable}%
+ \@x{\makebox[0pt][r]{\scriptsize 1046\hspace{1em}}\@s{32.8}\@pfstepnum{3}{2.}
+ {\CASE} told . ret [ p ] \.{=} ACK}%
+ \@x{\makebox[0pt][r]{\scriptsize 1047\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\
+ told \.{\in} M \.{'}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1048\hspace{1em}}\@s{65.31}
+ {\BY}\@pfstepnum{3}{2}\  {\DEF} Inv ,\, Configs ,\, StateSet ,\, OpSet ,\,
+ ArgSet ,\, ReturnSet ,\, TypeOK ,\, Valid\_M}%
+ \@x{\makebox[0pt][r]{\scriptsize 1049\hspace{1em}}\@s{49.19}\@pfstepnum{4}{}\
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1050\hspace{1em}}\@s{65.31} {\BY} {\DEF} Inv
+ ,\, Linearizable}%
+ \@x{\makebox[0pt][r]{\scriptsize 1051\hspace{1em}}\@s{32.8}\@pfstepnum{3}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1052\hspace{1em}}\@s{48.91}
+ {\BY}\@pfstepnum{3}{1} ,\,\@pfstepnum{3}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize 1053\hspace{1em}}\@s{16.4}\@pfstepnum{2}{2.}
+ {\CASE} u\_U [ p ] \.{\neq} v\_U [ p ]}%
+ \@x{\makebox[0pt][r]{\scriptsize 1054\hspace{1em}}\@s{32.8}
+ {\BY}\@pfstepnum{2}{2}\  {\DEF} Inv ,\, Linearizable}%
+ \@x{\makebox[0pt][r]{\scriptsize 1055\hspace{1em}}\@s{16.4}\@pfstepnum{2}{}\ 
+ {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1056\hspace{1em}}\@s{32.51}
+ {\BY}\@pfstepnum{2}{1} ,\,\@pfstepnum{2}{2}\ }%
+ \@x{\makebox[0pt][r]{\scriptsize
+ 1057\hspace{1em}}\@s{8.2}\@pfstepnum{1}{23.}\  {\QED}}%
+ \@x{\makebox[0pt][r]{\scriptsize 1058\hspace{1em}}\@s{16.4}
+ {\BY}\@pfstepnum{1}{1} ,\,\@pfstepnum{1}{10} ,\,\@pfstepnum{1}{11}
+ ,\,\@pfstepnum{1}{12} ,\,\@pfstepnum{1}{13} ,\,\@pfstepnum{1}{14}
+ ,\,\@pfstepnum{1}{15} ,\,\@pfstepnum{1}{16} ,\,\@pfstepnum{1}{17}
+ ,\,\@pfstepnum{1}{18} ,\,\@pfstepnum{1}{19} ,\,\@pfstepnum{1}{2}
+ ,\,\@pfstepnum{1}{20} ,\,\@pfstepnum{1}{21} ,\,\@pfstepnum{1}{22}
+ ,\,\@pfstepnum{1}{3} ,\,\@pfstepnum{1}{4} ,\,\@pfstepnum{1}{5}
+ ,\,\@pfstepnum{1}{6} ,\,\@pfstepnum{1}{7} ,\,\@pfstepnum{1}{8}
+ ,\,\@pfstepnum{1}{9}\  {\DEF} Inv}%
+\@pvspace{8.0pt}%
+\@x{\makebox[0pt][r]{\scriptsize 1060\hspace{1em}}}\bottombar\@xx{}%
+\setboolean{shading}{false}
+\begin{lcom}{0}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+\ensuremath{\.{\,\backslash\,}}* Modification History
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Last modified \ensuremath{Wed}
+ \ensuremath{Apr} 23 23:17:39 \ensuremath{EDT} 2025 by \ensuremath{karunram
+}%
+\end{cpar}%
+\begin{cpar}{0}{F}{F}{0}{0}{}%
+ \ensuremath{\.{\,\backslash\,}}* Created \ensuremath{Wed} \ensuremath{Apr} 23
+ 23:17:25 \ensuremath{EDT} 2025 by \ensuremath{karunram
+}%
+\end{cpar}%
+\end{lcom}%
+\end{document}
