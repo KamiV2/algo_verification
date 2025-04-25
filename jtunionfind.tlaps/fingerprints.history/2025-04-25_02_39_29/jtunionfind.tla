@@ -739,7 +739,51 @@ THEOREM U6InvU7 == (Inv /\ [Next]_varlist /\ \E p \in PROCESSES: U6(p)) /\ TypeO
             BY Isa DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M
         <2> \A i, j \in NodeSet: SameRoot(told, i, j) => SameRoot(t, i, j)
             BY DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, SameRoot
-        <2> QED            
+        <2>1. CASE pc[p_1] = "U6"
+          <3> p = p_1
+            BY <2>1 DEF Inv, TypeOK, Valid_pc, PCSet
+          <3> SameRoot(t, u_U[p_1], v_U[p_1])'
+            BY <2>1 DEF Inv, TypeOK, Valid_pc, PCSet, SameRoot, Valid_u_U, Valid_v_U, InvU6, InvU6All, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M
+          <3>1. (t.ret[p_1] \in {BOT, ACK})'
+            BY <2>1 DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvU7, InvU7All, SameRoot
+          <3>2. (t.op[p_1] = "U")'
+            BY <2>1 DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvU7, InvU7All, SameRoot
+          <3>3. (t.arg[p_1] \in NodeSet \X NodeSet)'
+            BY <2>1 DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvU7, InvU7All, SameRoot
+          <3>4. InvU7All(p_1, t)'
+            <4>1. SameRoot(t, t.arg[p_1][1], u_U[p_1])'
+              BY <2>1 DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvU7, InvU7All, SameRoot
+            <4>2. SameRoot(t, t.arg[p_1][2], v_U[p_1])'
+              BY <2>1 DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvU7, InvU7All, SameRoot
+            <4>3. (t.ret[p_1] = ACK => SameRoot(t, u_U[p_1], v_U[p_1]))'
+              BY <2>1 DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvU7, InvU7All, SameRoot
+            <4>4. QED
+              BY <4>1, <4>2, <4>3 DEF InvU7All
+            
+          <3>5. QED
+            BY <3>1, <3>2, <3>3, <3>4
+            
+        <2>2. CASE pc[p_1] = "U7"
+        <2> QED
+          <3>1. (t.ret[p_1] \in {BOT, ACK})'
+            BY DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M
+          <3>2. (t.op[p_1] = "U")'
+            BY DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6
+          <3>3. (t.arg[p_1] \in NodeSet \X NodeSet)'
+            BY DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6
+          <3>4. InvU7All(p_1, t)'
+            <4>1. SameRoot(t, t.arg[p_1][1], u_U[p_1])'
+              BY DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvU7, InvU7All, SameRoot
+            <4>2. SameRoot(t, t.arg[p_1][2], v_U[p_1])'
+              BY DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvU7, InvU7All, SameRoot
+            <4>3. (t.ret[p_1] = ACK => SameRoot(t, u_U[p_1], v_U[p_1]))'
+              BY DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvU7, InvU7All, SameRoot
+            <4>4. QED
+              BY <4>1, <4>2, <4>3 DEF InvU7All
+            
+          <3>5. QED
+            BY <3>1, <3>2, <3>3, <3>4
+            
     <1>2. CASE /\ a_U[p].rank > b_U[p].rank 
                /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]
         <2> ~(a_U[p].rank < b_U[p].rank)
@@ -2335,5 +2379,5 @@ THEOREM U6Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: U6(p)) => Inv'
     
 =============================================================================
 \* Modification History
-\* Last modified Fri Apr 25 02:41:12 EDT 2025 by karunram
+\* Last modified Fri Apr 25 02:39:24 EDT 2025 by karunram
 \* Created Fri Apr 04 00:28:14 EDT 2025 by karunram

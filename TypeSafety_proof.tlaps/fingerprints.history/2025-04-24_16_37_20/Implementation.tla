@@ -226,77 +226,140 @@ U5(p) ==        /\ pc[p] = "U5"
                 /\ UNCHANGED <<F, u_F, a_F, b_F, u_U, v_U, a_U, c, d, M>>
 
 \*\* TODO: THIS IS WRONG RIGHT NOW. FIX THIS.
+\*U6(p) ==        /\ pc[p] = "U6"
+\*                /\  IF a_U[p].rank < b_U[p].rank
+\*                        THEN IF F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1]
+\*                                THEN    /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 0]]
+\*                                        /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
+\*                                                                                    /\ t.ret = [told.ret EXCEPT ![p] = ACK]
+\*                                                                                    /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[u_U[p]] 
+\*                                                                                                                    THEN told.sigma[v_U[p]] 
+\*                                                                                                                    ELSE told.sigma[i]]
+\*                                                                                    /\ t.op = told.op
+\*                                                                                    /\ t.arg = told.arg
+\*                                                                                \/  /\ told.ret[p] = ACK
+\*                                                                                    /\ t.ret = told.ret
+\*                                                                                    /\ t.sigma = told.sigma
+\*                                                                                    /\ t.op = told.op
+\*                                                                                    /\ t.arg = told.arg}
+\*                                ELSE    /\ F' = F
+\*                                        /\ M' = M
+\*                    ELSE IF a_U[p].rank > b_U[p].rank
+\*                            THEN IF F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]
+\*                                    THEN    /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
+\*                                            /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
+\*                                                                                        /\ t.ret = [told.ret EXCEPT ![p] = ACK]
+\*                                                                                        /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[v_U[p]] 
+\*                                                                                                                        THEN told.sigma[u_U[p]] 
+\*                                                                                                                        ELSE told.sigma[i]]
+\*                                                                                        /\ t.op = told.op
+\*                                                                                        /\ t.arg = told.arg
+\*                                                                                    \/  /\ told.ret[p] = ACK
+\*                                                                                        /\ t.ret = told.ret
+\*                                                                                        /\ t.sigma = told.sigma
+\*                                                                                        /\ t.op = told.op
+\*                                                                                        /\ t.arg = told.arg}
+\*                                    ELSE    /\ F' = F
+\*                                            /\ M' = M
+\*                    ELSE 
+\*                            IF u_U[p] < v_U[p] \* ranks are equal
+\*                                    THEN IF F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1] \* u < v
+\*                                            THEN    \/  /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 0]]
+\*                                                        /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
+\*                                                                                                    /\ t.ret = [told.ret EXCEPT ![p] = ACK]
+\*                                                                                                    /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[u_U[p]] 
+\*                                                                                                                                    THEN told.sigma[v_U[p]] 
+\*                                                                                                                                    ELSE told.sigma[i]]
+\*                                                                                                    /\ t.op = told.op
+\*                                                                                                    /\ t.arg = told.arg
+\*                                                                                                \/  /\ told.ret[p] = ACK
+\*                                                                                                    /\ t.ret = told.ret
+\*                                                                                                    /\ t.sigma = told.sigma
+\*                                                                                                    /\ t.op = told.op
+\*                                                                                                    /\ t.arg = told.arg}
+\*                                            ELSE    /\ F' = F
+\*                                                    /\ M' = M
+\*                                    ELSE IF F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1] \* v > u
+\*                                            THEN    \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
+\*                                                        /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
+\*                                                                                                    /\ t.ret = [told.ret EXCEPT ![p] = ACK]
+\*                                                                                                    /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[v_U[p]] 
+\*                                                                                                                                    THEN told.sigma[u_U[p]] 
+\*                                                                                                                                    ELSE told.sigma[i]]
+\*                                                                                                    /\ t.op = told.op
+\*                                                                                                    /\ t.arg = told.arg
+\*                                                                                                \/  /\ told.ret[p] = ACK
+\*                                                                                                    /\ t.ret = told.ret
+\*                                                                                                    /\ t.sigma = told.sigma
+\*                                                                                                    /\ t.op = told.op
+\*                                                                                                    /\ t.arg = told.arg}
+\*                                                    \/  /\ F' = F
+\*                                                        /\ M' = M
+\*                                            ELSE    /\ F' = F
+\*                                                    /\ M' = M
+\*                /\ pc' = [pc EXCEPT ![p] = "U7"]
+\*                /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
+
 U6(p) ==        /\ pc[p] = "U6"
-                /\  IF a_U[p].rank < b_U[p].rank
-                        THEN IF F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1]
-                                THEN    /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 0]]
-                                        /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
-                                                                                    /\ t.ret = [told.ret EXCEPT ![p] = ACK]
-                                                                                    /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[u_U[p]] 
-                                                                                                                    THEN told.sigma[v_U[p]] 
-                                                                                                                    ELSE told.sigma[i]]
-                                                                                    /\ t.op = told.op
-                                                                                    /\ t.arg = told.arg
-                                                                                \/  /\ told.ret[p] = ACK
-                                                                                    /\ t.ret = told.ret
-                                                                                    /\ t.sigma = told.sigma
-                                                                                    /\ t.op = told.op
-                                                                                    /\ t.arg = told.arg}
-                                ELSE    /\ F' = F
-                                        /\ M' = M
-                    ELSE IF a_U[p].rank > b_U[p].rank
-                            THEN IF F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]
-                                    THEN    /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
-                                            /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
-                                                                                        /\ t.ret = [told.ret EXCEPT ![p] = ACK]
-                                                                                        /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[v_U[p]] 
-                                                                                                                        THEN told.sigma[u_U[p]] 
-                                                                                                                        ELSE told.sigma[i]]
-                                                                                        /\ t.op = told.op
-                                                                                        /\ t.arg = told.arg
-                                                                                    \/  /\ told.ret[p] = ACK
-                                                                                        /\ t.ret = told.ret
-                                                                                        /\ t.sigma = told.sigma
-                                                                                        /\ t.op = told.op
-                                                                                        /\ t.arg = told.arg}
-                                    ELSE    /\ F' = F
-                                            /\ M' = M
-                    ELSE 
-                            IF u_U[p] < v_U[p] \* ranks are equal
-                                    THEN IF F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1] \* u < v
-                                            THEN    \/  /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 0]]
-                                                        /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
-                                                                                                    /\ t.ret = [told.ret EXCEPT ![p] = ACK]
-                                                                                                    /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[u_U[p]] 
-                                                                                                                                    THEN told.sigma[v_U[p]] 
-                                                                                                                                    ELSE told.sigma[i]]
-                                                                                                    /\ t.op = told.op
-                                                                                                    /\ t.arg = told.arg
-                                                                                                \/  /\ told.ret[p] = ACK
-                                                                                                    /\ t.ret = told.ret
-                                                                                                    /\ t.sigma = told.sigma
-                                                                                                    /\ t.op = told.op
-                                                                                                    /\ t.arg = told.arg}
-                                            ELSE    /\ F' = F
-                                                    /\ M' = M
-                                    ELSE IF u_U[p] > v_U[p] /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1] \* v > u
-                                            THEN    \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
-                                                        /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
-                                                                                                    /\ t.ret = [told.ret EXCEPT ![p] = ACK]
-                                                                                                    /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[v_U[p]] 
-                                                                                                                                    THEN told.sigma[u_U[p]] 
-                                                                                                                                    ELSE told.sigma[i]]
-                                                                                                    /\ t.op = told.op
-                                                                                                    /\ t.arg = told.arg
-                                                                                                \/  /\ told.ret[p] = ACK
-                                                                                                    /\ t.ret = told.ret
-                                                                                                    /\ t.sigma = told.sigma
-                                                                                                    /\ t.op = told.op
-                                                                                                    /\ t.arg = told.arg}
-                                            ELSE    /\ F' = F
-                                                    /\ M' = M
+                /\ CASE (a_U[p].rank < b_U[p].rank /\ F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1]) -> 
+                            /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 0]]
+                            /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
+                                                                        /\ t.ret = [told.ret EXCEPT ![p] = ACK]
+                                                                        /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[u_U[p]] 
+                                                                                                        THEN told.sigma[v_U[p]] 
+                                                                                                        ELSE told.sigma[i]]
+                                                                        /\ t.op = told.op
+                                                                        /\ t.arg = told.arg
+                                                                    \/  /\ told.ret[p] = ACK
+                                                                        /\ t.ret = told.ret
+                                                                        /\ t.sigma = told.sigma
+                                                                        /\ t.op = told.op
+                                                                        /\ t.arg = told.arg}
+                     [] (a_U[p].rank > b_U[p].rank /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]) ->
+                            /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
+                            /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
+                                                                        /\ t.ret = [told.ret EXCEPT ![p] = ACK]
+                                                                        /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[v_U[p]] 
+                                                                                                        THEN told.sigma[u_U[p]] 
+                                                                                                        ELSE told.sigma[i]]
+                                                                        /\ t.op = told.op
+                                                                        /\ t.arg = told.arg
+                                                                    \/  /\ told.ret[p] = ACK
+                                                                        /\ t.ret = told.ret
+                                                                        /\ t.sigma = told.sigma
+                                                                        /\ t.op = told.op
+                                                                        /\ t.arg = told.arg}
+                     [] (a_U[p].rank = b_U[p].rank /\ u_U[p] < v_U[p] /\ F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1]) -> TRUE
+                            /\ F' = [F EXCEPT ![u_U[p]] = [parent |-> v_U[p], rank |-> a_U[p].rank, bit |-> 0]]
+                            /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
+                                                                        /\ t.ret = [told.ret EXCEPT ![p] = ACK]
+                                                                        /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[u_U[p]] 
+                                                                                                        THEN told.sigma[v_U[p]] 
+                                                                                                        ELSE told.sigma[i]]
+                                                                        /\ t.op = told.op
+                                                                        /\ t.arg = told.arg
+                                                                    \/  /\ told.ret[p] = ACK
+                                                                        /\ t.ret = told.ret
+                                                                        /\ t.sigma = told.sigma
+                                                                        /\ t.op = told.op
+                                                                        /\ t.arg = told.arg}
+                     [] (a_U[p].rank = b_U[p].rank /\ u_U[p] > v_U[p] /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]) -> TRUE
+                            /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
+                            /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
+                                                                        /\ t.ret = [told.ret EXCEPT ![p] = ACK]
+                                                                        /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[v_U[p]] 
+                                                                                                        THEN told.sigma[u_U[p]] 
+                                                                                                        ELSE told.sigma[i]]
+                                                                        /\ t.op = told.op
+                                                                        /\ t.arg = told.arg
+                                                                    \/  /\ told.ret[p] = ACK
+                                                                        /\ t.ret = told.ret
+                                                                        /\ t.sigma = told.sigma
+                                                                        /\ t.op = told.op
+                                                                        /\ t.arg = told.arg}
+                     [] OTHER -> F' = F /\ M' = M
                 /\ pc' = [pc EXCEPT ![p] = "U7"]
-                /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
+                /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>> 
 
 U7(p) ==        /\ pc[p] = "U7"
                 /\ pc' = [pc EXCEPT ![p] = "F1U7"]
@@ -366,5 +429,5 @@ Spec ==     Init /\ [][Next]_varlist
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Apr 24 20:33:58 EDT 2025 by karunram
+\* Last modified Thu Apr 24 16:25:57 EDT 2025 by karunram
 \* Created Thu Apr 03 12:26:37 EDT 2025 by karunram

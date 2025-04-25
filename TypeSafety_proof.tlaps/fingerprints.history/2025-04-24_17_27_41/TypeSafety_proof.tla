@@ -136,9 +136,6 @@ LEMMA NextTypeOK == TypeOK /\ [Next]_varlist => TypeOK'
         BY <1>13 DEF TypeOK, F3
     <1>14. ASSUME NEW p \in PROCESSES, F4(p)
             PROVE TypeOK'
-      <2> Valid_pc'
-        BY <1>14 DEF TypeOK, F4, FieldSet
-      <2> QED        
         BY <1>14 DEF TypeOK, F4, FieldSet
     <1>15. ASSUME NEW p \in PROCESSES, F5(p)
             PROVE TypeOK'
@@ -182,5 +179,5 @@ THEOREM TypeSafety == Spec => []TypeOK
     
 =============================================================================
 \* Modification History
-\* Last modified Thu Apr 24 17:32:53 EDT 2025 by karunram
+\* Last modified Thu Apr 24 17:27:39 EDT 2025 by karunram
 \* Created Thu Apr 03 21:51:43 EDT 2025 by karunram

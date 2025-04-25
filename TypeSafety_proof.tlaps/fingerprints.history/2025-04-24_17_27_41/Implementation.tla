@@ -279,7 +279,7 @@ U6(p) ==        /\ pc[p] = "U6"
                                                                                                     /\ t.arg = told.arg}
                                             ELSE    /\ F' = F
                                                     /\ M' = M
-                                    ELSE IF u_U[p] > v_U[p] /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1] \* v > u
+                                    ELSE IF F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1] \* v > u
                                             THEN    \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
                                                         /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
                                                                                                     /\ t.ret = [told.ret EXCEPT ![p] = ACK]
@@ -293,6 +293,8 @@ U6(p) ==        /\ pc[p] = "U6"
                                                                                                     /\ t.sigma = told.sigma
                                                                                                     /\ t.op = told.op
                                                                                                     /\ t.arg = told.arg}
+                                                    \/  /\ F' = F
+                                                        /\ M' = M
                                             ELSE    /\ F' = F
                                                     /\ M' = M
                 /\ pc' = [pc EXCEPT ![p] = "U7"]
@@ -366,5 +368,5 @@ Spec ==     Init /\ [][Next]_varlist
 
 =============================================================================
 \* Modification History
-\* Last modified Thu Apr 24 20:33:58 EDT 2025 by karunram
+\* Last modified Thu Apr 24 16:43:25 EDT 2025 by karunram
 \* Created Thu Apr 03 12:26:37 EDT 2025 by karunram

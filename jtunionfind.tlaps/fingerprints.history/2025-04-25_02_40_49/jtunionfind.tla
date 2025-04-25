@@ -739,7 +739,24 @@ THEOREM U6InvU7 == (Inv /\ [Next]_varlist /\ \E p \in PROCESSES: U6(p)) /\ TypeO
             BY Isa DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M
         <2> \A i, j \in NodeSet: SameRoot(told, i, j) => SameRoot(t, i, j)
             BY DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, SameRoot
-        <2> QED            
+        <2> QED
+          <3>1. CASE /\ told.ret[p] = BOT
+                     /\ t.ret = [told.ret EXCEPT ![p] = ACK]
+                     /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[u_U[p]] 
+                                                     THEN told.sigma[v_U[p]] 
+                                                     ELSE told.sigma[i]]
+                     /\ t.op = told.op
+                     /\ t.arg = told.arg
+            BY <3>1 DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvF7, InvF7All
+          <3>2. CASE /\ told.ret[p] = ACK
+                     /\ t.ret = told.ret
+                     /\ t.sigma = told.sigma
+                     /\ t.op = told.op
+                     /\ t.arg = told.arg
+            BY <3>2 DEF Inv, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M, InvU6, InvU6All, InvF7, InvF7All
+          <3>3. QED
+            BY <3>1, <3>2
+            
     <1>2. CASE /\ a_U[p].rank > b_U[p].rank 
                /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]
         <2> ~(a_U[p].rank < b_U[p].rank)
@@ -2335,5 +2352,5 @@ THEOREM U6Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: U6(p)) => Inv'
     
 =============================================================================
 \* Modification History
-\* Last modified Fri Apr 25 02:41:12 EDT 2025 by karunram
+\* Last modified Fri Apr 25 02:40:39 EDT 2025 by karunram
 \* Created Fri Apr 04 00:28:14 EDT 2025 by karunram
