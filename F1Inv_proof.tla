@@ -146,34 +146,34 @@ THEOREM F1Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F1(p)) => Inv'
                              /\ t.arg[p_1] \in NodeSet
                              /\ SameRoot(t, c[p_1], t.arg[p_1])
                              /\ InvF5All(p_1, t))'
-      BY DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+      BY NeverReroot DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All, Valid_u_F, Valid_a_F, FieldSet              
     <2>2. (pc[p_1] = "F5U1"  =>  /\ t.ret[p_1] = BOT
                                  /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
                                /\ SameRoot(t, c[p_1], u_U[p_1])
                                /\ InvF5All(p_1, t))'
-      BY DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+      BY NeverReroot DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All, Valid_u_F, Valid_a_F, FieldSet              
     <2>3. (pc[p_1] = "F5U2"  =>  /\ t.ret[p_1] = BOT
                                  /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
                                /\ InvU2All(p_1, t)
                                /\ SameRoot(t, c[p_1], v_U[p_1])
                                /\ InvF5All(p_1, t))'
-      BY DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+      BY NeverReroot DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All, Valid_u_F, Valid_a_F, FieldSet              
     <2>4. (pc[p_1] = "F5U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                  /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
                                /\ InvU7All(p_1, t)
                                /\ SameRoot(t, c[p_1], u_U[p_1])
                                /\ InvF5All(p_1, t))'
-      BY DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+      BY NeverReroot DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All, Valid_u_F, Valid_a_F, FieldSet              
     <2>5. (pc[p_1] = "F5U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                  /\ t.op[p_1] = "U"
                                /\ t.arg[p_1] \in NodeSet \X NodeSet
                                /\ InvU8All(p_1, t)
                                /\ SameRoot(t, c[p_1], v_U[p_1])
                                /\ InvF5All(p_1, t))'
-      BY DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
+      BY NeverReroot DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All, Valid_u_F, Valid_a_F, FieldSet              
     <2>6. QED
       BY <2>1, <2>2, <2>3, <2>4, <2>5
       
@@ -276,5 +276,5 @@ THEOREM F1Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: F1(p)) => Inv'
     BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>22, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
 =============================================================================
 \* Modification History
-\* Last modified Thu Apr 17 10:07:24 EDT 2025 by karunram
+\* Last modified Sun Apr 27 15:59:34 EDT 2025 by karunram
 \* Created Thu Apr 03 23:35:23 EDT 2025 by karunram
