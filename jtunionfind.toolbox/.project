@@ -151,6 +151,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/U5Inv_proof.tla</locationURI>
 		</link>
 		<link>
+			<name>U6Inv_proof.tla</name>
+			<type>1</type>
+			<locationURI>PARENT-1-PROJECT_LOC/U6Inv_proof.tla</locationURI>
+		</link>
+		<link>
 			<name>U7Inv.tla</name>
 			<type>1</type>
 			<locationURI>PARENT-1-PROJECT_LOC/U7Inv.tla</locationURI>

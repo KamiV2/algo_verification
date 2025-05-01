@@ -1,0 +1,77 @@
+;; obligation #237
+$hyp "v'109" Inv
+$hyp "p_in" (TLA.in p PROCESSES)
+$hyp "v'111" (a_U6a p)
+$hyp "v'114" (/\ a_hef12f5554781c2213604492856f635a
+TypeOK)
+$hyp "v'115" (= (TLA.fapply pc p) "U6")
+$hyp "v'122" (\/ (/\ (= a_Fhash_primea
+(TLA.except F (TLA.fapply a_uunde_Ua p) (TLA.record "parent" (TLA.fapply a_vunde_Ua p) "rank" (TLA.fapply (TLA.fapply a_aunde_Ua p) "rank") "bit" 0)))
+(= a_Mhash_primea
+(TLA.subsetOf Configs ((t) (TLA.bEx M ((told) (\/ (/\ (= (TLA.fapply (TLA.fapply told "ret") p)
+BOT) (= (TLA.fapply t "ret") (TLA.except (TLA.fapply told "ret") p ACK))
+(= (TLA.fapply t "sigma")
+(TLA.Fcn NodeSet ((i) (TLA.cond (= (TLA.fapply (TLA.fapply told "sigma") i)
+(TLA.fapply (TLA.fapply told "sigma") (TLA.fapply (TLA.fapply (TLA.fapply told "arg") p) (TLA.fapply TLA.Succ 0)))) (TLA.fapply (TLA.fapply told "sigma") (TLA.fapply (TLA.fapply (TLA.fapply told "arg") p) (TLA.fapply TLA.Succ (TLA.fapply TLA.Succ 0)))) (TLA.fapply (TLA.fapply told "sigma") i)))))
+(= (TLA.fapply t "op") (TLA.fapply told "op")) (= (TLA.fapply t "arg")
+(TLA.fapply told "arg"))) (/\ (= (TLA.fapply (TLA.fapply told "ret") p) ACK)
+(= (TLA.fapply t "ret") (TLA.fapply told "ret")) (= (TLA.fapply t "sigma")
+(TLA.fapply told "sigma")) (= (TLA.fapply t "op") (TLA.fapply told "op"))
+(= (TLA.fapply t "arg") (TLA.fapply told "arg"))))))))) (= a_pchash_primea
+(TLA.except pc p "U7")) (/\ (= a_uunde_Fhash_primea a_uunde_Fa)
+(= a_aunde_Fhash_primea a_aunde_Fa) (= a_bunde_Fhash_primea a_bunde_Fa)
+(= a_uunde_Uhash_primea a_uunde_Ua) (= a_vunde_Uhash_primea a_vunde_Ua)
+(= a_aunde_Uhash_primea a_aunde_Ua) (= a_bunde_Uhash_primea a_bunde_Ua)
+(= a_chash_primea a_ca) (= a_dhash_primea d))) (/\ (= a_Fhash_primea
+(TLA.except F (TLA.fapply a_uunde_Ua p) (TLA.record "parent" (TLA.fapply a_vunde_Ua p) "rank" (TLA.fapply (TLA.fapply a_aunde_Ua p) "rank") "bit" (TLA.fapply TLA.Succ 0))))
+(= a_Mhash_primea M) (= a_pchash_primea (TLA.except pc p "U7"))
+(/\ (= a_uunde_Fhash_primea a_uunde_Fa) (= a_aunde_Fhash_primea a_aunde_Fa)
+(= a_bunde_Fhash_primea a_bunde_Fa) (= a_uunde_Uhash_primea a_uunde_Ua)
+(= a_vunde_Uhash_primea a_vunde_Ua) (= a_aunde_Uhash_primea a_aunde_Ua)
+(= a_bunde_Uhash_primea a_bunde_Ua) (= a_chash_primea a_ca) (= a_dhash_primea
+d))))
+$hyp "v'126" (= a_Fhash_primea
+(TLA.except F (TLA.fapply a_uunde_Ua p) (TLA.record "parent" (TLA.fapply a_vunde_Ua p) "rank" (TLA.fapply (TLA.fapply a_aunde_Ua p) "rank") "bit" 0)))
+$hyp "v'127" (= a_Mhash_primea
+(TLA.subsetOf Configs ((t) (TLA.bEx M ((told) (\/ (/\ (= (TLA.fapply (TLA.fapply told "ret") p)
+BOT) (= (TLA.fapply t "ret") (TLA.except (TLA.fapply told "ret") p ACK))
+(= (TLA.fapply t "sigma")
+(TLA.Fcn NodeSet ((i) (TLA.cond (= (TLA.fapply (TLA.fapply told "sigma") i)
+(TLA.fapply (TLA.fapply told "sigma") (TLA.fapply (TLA.fapply (TLA.fapply told "arg") p) (TLA.fapply TLA.Succ 0)))) (TLA.fapply (TLA.fapply told "sigma") (TLA.fapply (TLA.fapply (TLA.fapply told "arg") p) (TLA.fapply TLA.Succ (TLA.fapply TLA.Succ 0)))) (TLA.fapply (TLA.fapply told "sigma") i)))))
+(= (TLA.fapply t "op") (TLA.fapply told "op")) (= (TLA.fapply t "arg")
+(TLA.fapply told "arg"))) (/\ (= (TLA.fapply (TLA.fapply told "ret") p) ACK)
+(= (TLA.fapply t "ret") (TLA.fapply told "ret")) (= (TLA.fapply t "sigma")
+(TLA.fapply told "sigma")) (= (TLA.fapply t "op") (TLA.fapply told "op"))
+(= (TLA.fapply t "arg")
+(TLA.fapply told "arg")))))))))
+$hyp "v'128" (= a_pchash_primea
+(TLA.except pc p "U7"))
+$hyp "v'129" (= a_uunde_Fhash_primea
+a_uunde_Fa)
+$hyp "v'130" (= a_aunde_Fhash_primea
+a_aunde_Fa)
+$hyp "v'131" (= a_bunde_Fhash_primea
+a_bunde_Fa)
+$hyp "v'132" (= a_uunde_Uhash_primea
+a_uunde_Ua)
+$hyp "v'133" (= a_vunde_Uhash_primea
+a_vunde_Ua)
+$hyp "v'134" (= a_aunde_Uhash_primea
+a_aunde_Ua)
+$hyp "v'135" (= a_bunde_Uhash_primea
+a_bunde_Ua)
+$hyp "v'136" (= a_chash_primea a_ca)
+$hyp "v'137" (= a_dhash_primea
+d)
+$hyp "v'156" (TLA.bAll PROCESSES ((a_punde_1a) (TLA.bAll a_Mhash_primea ((t) (=> (= (TLA.fapply a_pchash_primea a_punde_1a)
+"U7") (/\ (/\ (/\ (/\ (TLA.in (TLA.fapply (TLA.fapply t "ret") a_punde_1a)
+(TLA.set BOT ACK))) (= (TLA.fapply (TLA.fapply t "op") a_punde_1a) "U"))
+(TLA.in (TLA.fapply (TLA.fapply t "arg") a_punde_1a)
+(TLA.prod NodeSet NodeSet))) (a_hd9bc9358b287a226e1580f74721591a a_punde_1a
+t)))))))
+$goal (TLA.bAll PROCESSES ((p_1) (TLA.bAll a_Mhash_primea ((t) (=> (= (TLA.fapply a_pchash_primea p_1)
+"U7") (/\ (TLA.in (TLA.fapply (TLA.fapply t "ret") p_1) (TLA.set BOT ACK))
+(= (TLA.fapply (TLA.fapply t "op") p_1) "U")
+(TLA.in (TLA.fapply (TLA.fapply t "arg") p_1) (TLA.prod NodeSet NodeSet))
+(a_hd9bc9358b287a226e1580f74721591a p_1
+t)))))))
