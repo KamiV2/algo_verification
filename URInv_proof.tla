@@ -203,11 +203,13 @@ THEOREM URInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: UR(p)) => Inv'
   <1>7. InvF5'
     <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
                         NEW t \in M'
-                 PROVE  (/\  pc[p_1] = "F5"    =>  /\ t.ret[p_1] = BOT
+                 PROVE  (/\  pc[p_1] = "F5"    =>  /\ t.ret[p_1] \in {BOT} \cup NodeSet
                                                    /\ t.op[p_1] = "F"
                                                    /\ t.arg[p_1] \in NodeSet
                                                    /\ SameRoot(t, c[p_1], t.arg[p_1])
                                                    /\ InvF5All(p_1, t)
+                                                   /\ b_F[p_1].bit = 0 => t.ret[p_1] = BOT
+                                                   /\ b_F[p_1].bit = 1 => t.ret[p_1] = a_F[p_1].parent
                          /\  pc[p_1] = "F5U1"  =>  /\ t.ret[p_1] = BOT
                                                    /\ t.op[p_1] = "U"
                                                    /\ t.arg[p_1] \in NodeSet \X NodeSet
@@ -240,11 +242,13 @@ THEOREM URInv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: UR(p)) => Inv'
                          /\ t.arg = [told.arg EXCEPT ![p] = BOT]
                          /\ t.sigma = told.sigma
         BY DEF Inv, InvUR, TypeOK, Valid_pc, PCSet, Configs, StateSet, OpSet, ArgSet, ReturnSet, Valid_M
-    <2>1. (pc[p_1] = "F5"    =>  /\ t.ret[p_1] = BOT
-                               /\ t.op[p_1] = "F"
-                             /\ t.arg[p_1] \in NodeSet
-                             /\ SameRoot(t, c[p_1], t.arg[p_1])
-                             /\ InvF5All(p_1, t))'
+    <2>1. (pc[p_1] = "F5"    =>  /\ t.ret[p_1] \in {BOT} \cup NodeSet
+                                 /\ t.op[p_1] = "F"
+                                 /\ t.arg[p_1] \in NodeSet
+                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                 /\ InvF5All(p_1, t)
+                                 /\ b_F[p_1].bit = 0 => t.ret[p_1] = BOT
+                                 /\ b_F[p_1].bit = 1 => t.ret[p_1] = a_F[p_1].parent)'
       BY NeverReroot DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, InvU2All, InvU7All, InvU8All, SameRoot
     <2>2. (pc[p_1] = "F5U1"  =>  /\ t.ret[p_1] = BOT
                                  /\ t.op[p_1] = "U"

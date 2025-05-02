@@ -22,11 +22,13 @@ THEOREsM U5Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: U5(p)) => Inv'
   <1>7. InvF5'
     <2> SUFFICES ASSUME NEW p_1 \in PROCESSES',
                         NEW t \in M'
-                 PROVE  (/\  pc[p_1] = "F5"    =>  /\ t.ret[p_1] = BOT
-                                                   /\ t.op[p_1] = "F"
-                                                 /\ t.arg[p_1] \in NodeSet
-                                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
-                                                 /\ InvF5All(p_1, t)
+                 PROVE  (/\  pc[p_1] = "F5"    =>   /\ t.ret[p_1] \in {BOT} \cup NodeSet
+                                                    /\ t.op[p_1] = "F"
+                                                    /\ t.arg[p_1] \in NodeSet
+                                                    /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                    /\ InvF5All(p_1, t)
+                                                    /\ b_F[p_1].bit = 0 => t.ret[p_1] = BOT
+                                                    /\ b_F[p_1].bit = 1 => t.ret[p_1] = a_F[p_1].parent
                          /\  pc[p_1] = "F5U1"  =>  /\ t.ret[p_1] = BOT
                                                    /\ t.op[p_1] = "U"
                                                  /\ t.arg[p_1] \in NodeSet \X NodeSet
@@ -51,11 +53,13 @@ THEOREsM U5Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: U5(p)) => Inv'
                                                  /\ SameRoot(t, c[p_1], v_U[p_1])
                                                  /\ InvF5All(p_1, t))'
       BY DEF InvF5
-    <2>1. (pc[p_1] = "F5"    =>  /\ t.ret[p_1] = BOT
-                               /\ t.op[p_1] = "F"
-                             /\ t.arg[p_1] \in NodeSet
-                             /\ SameRoot(t, c[p_1], t.arg[p_1])
-                             /\ InvF5All(p_1, t))'
+    <2>1. (pc[p_1] = "F5"    =>  /\ t.ret[p_1] \in {BOT} \cup NodeSet
+                                 /\ t.op[p_1] = "F"
+                                 /\ t.arg[p_1] \in NodeSet
+                                 /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                 /\ InvF5All(p_1, t)
+                                 /\ b_F[p_1].bit = 0 => t.ret[p_1] = BOT
+                                 /\ b_F[p_1].bit = 1 => t.ret[p_1] = a_F[p_1].parent)'
       BY DEF Inv, InvF5, InvF5All, TypeOK, Valid_pc, PCSet, SameRoot, InvU2All, InvU7All, InvU8All
     <2>2. (pc[p_1] = "F5U1"  =>  /\ t.ret[p_1] = BOT
                                  /\ t.op[p_1] = "U"
@@ -191,12 +195,10 @@ THEOREsM U5Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: U5(p)) => Inv'
     BY DEF Inv, InvUR, TypeOK, Valid_pc, PCSet, SameRoot
   <1>20. SigmaRespectsShared'
     BY DEF Inv, SigmaRespectsShared
-  <1>21. SharedRespectsSigma'
-    BY DEF Inv, SharedRespectsSigma
-  <1>22. Linearizable'
+  <1>21. Linearizable'
     BY DEF Inv, Linearizable
-  <1>23. QED
-    BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>22, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
+  <1>22. QED
+    BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
 
 =============================================================================
 

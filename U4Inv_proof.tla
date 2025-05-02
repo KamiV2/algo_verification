@@ -145,12 +145,10 @@ THEOREM U4Inv == Inv /\ [Next]_varlist /\ (\E p \in PROCESSES: U4(p)) => Inv'
     BY DEF Inv, InvUR, TypeOK, Valid_pc, PCSet, SameRoot
   <1>20. SigmaRespectsShared'
     BY DEF Inv, SigmaRespectsShared
-  <1>21. SharedRespectsSigma'
-    BY DEF Inv, SharedRespectsSigma
-  <1>22. Linearizable'
+  <1>21. Linearizable'
     BY DEF Inv, Linearizable
-  <1>23. QED
-    BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>22, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
+  <1>22. QED
+    BY <1>1, <1>10, <1>11, <1>12, <1>13, <1>14, <1>15, <1>16, <1>17, <1>18, <1>19, <1>2, <1>20, <1>21, <1>3, <1>4, <1>5, <1>6, <1>7, <1>8, <1>9 DEF Inv
 =============================================================================
 \* Modification History
 \* Last modified Thu Apr 17 05:17:57 EDT 2025 by karunram
