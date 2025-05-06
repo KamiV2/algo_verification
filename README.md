@@ -1,5 +1,3 @@
-# Proof of Randomized Linking for Jayanti-Tarjan Union Find
+# Proof of Randomized Linking by Rank for Jayanti-Tarjan Union Find
 
-TLAPS proof of an invariant which proves the linearizability of a randomized-linking Jayanti-Tarjan union find object. 
-
-[Tracker for current invariant proof completion status](https://docs.google.com/spreadsheets/d/1Yqtq38Lc4a2_2oYHtgnZmo03U00SsDBCwdSBlB6LxvI/edit?usp=sharing)
+This repository contains a TLAPS proof of an invariant which proves the linearizability of a randomized linking-by-rank concurrent union find algorithm due to [Jayanti and Tarjan](https://link.springer.com/article/10.1007/s00446-020-00388-x), using the metaconfiguration tracking technique of [Jayanti et al.](https://doi.org/10.1145/3632924).
