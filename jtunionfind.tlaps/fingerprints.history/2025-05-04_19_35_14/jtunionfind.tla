@@ -1,4 +1,6 @@
----------------------------- MODULE U6Inv_proof ----------------------------
+---------------------------- MODULE jtunionfind ----------------------------
+
+\* Main module file. See Linearizability.tla for the proof of linearizability.
 
 EXTENDS Implementation, TypeSafety, Inv, Lemmas, Integers
 
@@ -2779,32 +2781,32 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                                 NEW t \in M'
                          PROVE  (/\  pc[p_1] = "F3"    =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "F"
-                                                           /\ t.arg[p_1] \in NodeSet
-                                                           /\ SameRoot(t, c[p_1], t.arg[p_1])
-                                                           /\ InvF3All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet
+                                                         /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                         /\ InvF3All(p_1, t)
                                  /\  pc[p_1] = "F3U1"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF3All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF3All(p_1, t)
                                  /\  pc[p_1] = "F3U2"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU2All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF3All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU2All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF3All(p_1, t)
                                  /\  pc[p_1] = "F3U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU7All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF3All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU7All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF3All(p_1, t)
                                  /\  pc[p_1] = "F3U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU8All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF3All(p_1, t))'
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU8All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF3All(p_1, t))'
               BY DEF InvF3
             <4> PICK told \in M: \/  /\ told.ret[p] = BOT
                                      /\ t.ret = [told.ret EXCEPT ![p] = ACK]
@@ -4286,7 +4288,7 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                 \/ a_U[p].rank > b_U[p].rank 
                 \/ (a_U[p].rank = b_U[p].rank /\ u_U[p] < v_U[p]))
             BY <1>4 DEF Inv, TypeOK, Valid_a_U, Valid_b_U, FieldSet, Valid_u_U, Valid_v_U, NodeSet
-        <2> \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank+1, bit |-> 0]]
+        <2> \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
                 /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
                                                             /\ t.ret = [told.ret EXCEPT ![p] = ACK]
                                                             /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[told.arg[p][2]] 
@@ -4301,12 +4303,12 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                                                             /\ t.arg = told.arg}
                 /\ pc' = [pc EXCEPT ![p] = "U7"]
                 /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
-            \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank+1, bit |-> 1]]
+            \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 1]]
                 /\ M' = M
                 /\ pc' = [pc EXCEPT ![p] = "U7"]
                 /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
                 BY <1>4, <2>a DEF U6
-        <2>1. CASE /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank+1, bit |-> 0]]
+        <2>1. CASE /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 0]]
                    /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
                                                                /\ t.ret = [told.ret EXCEPT ![p] = ACK]
                                                                /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[told.arg[p][2]] 
@@ -4435,32 +4437,32 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                                 NEW t \in M'
                          PROVE  (/\  pc[p_1] = "F2"    =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "F"
-                                                           /\ t.arg[p_1] \in NodeSet
-                                                           /\ SameRoot(t, c[p_1], t.arg[p_1])
-                                                           /\ InvF2All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet
+                                                         /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                         /\ InvF2All(p_1, t)
                                  /\  pc[p_1] = "F2U1"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF2All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF2All(p_1, t)
                                  /\  pc[p_1] = "F2U2"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU2All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF2All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU2All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF2All(p_1, t)
                                  /\  pc[p_1] = "F2U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU7All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF2All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU7All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF2All(p_1, t)
                                  /\  pc[p_1] = "F2U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU8All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF2All(p_1, t))'
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU8All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF2All(p_1, t))'
               BY DEF InvF2
             <4> PICK told \in M: \/  /\ told.ret[p] = BOT
                                      /\ t.ret = [told.ret EXCEPT ![p] = ACK]
@@ -4528,32 +4530,32 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                                 NEW t \in M'
                          PROVE  (/\  pc[p_1] = "F3"    =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "F"
-                                                           /\ t.arg[p_1] \in NodeSet
-                                                           /\ SameRoot(t, c[p_1], t.arg[p_1])
-                                                           /\ InvF3All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet
+                                                         /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                         /\ InvF3All(p_1, t)
                                  /\  pc[p_1] = "F3U1"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF3All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF3All(p_1, t)
                                  /\  pc[p_1] = "F3U2"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU2All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF3All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU2All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF3All(p_1, t)
                                  /\  pc[p_1] = "F3U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU7All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF3All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU7All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF3All(p_1, t)
                                  /\  pc[p_1] = "F3U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU8All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF3All(p_1, t))'
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU8All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF3All(p_1, t))'
               BY DEF InvF3
             <4> PICK told \in M: \/  /\ told.ret[p] = BOT
                                      /\ t.ret = [told.ret EXCEPT ![p] = ACK]
@@ -4617,32 +4619,32 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                                 NEW t \in M'
                          PROVE  (/\  pc[p_1] = "F4"    =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "F"
-                                                           /\ t.arg[p_1] \in NodeSet
-                                                           /\ SameRoot(t, c[p_1], t.arg[p_1])
-                                                           /\ InvF4All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet
+                                                         /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                         /\ InvF4All(p_1, t)
                                  /\  pc[p_1] = "F4U1"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF4All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF4All(p_1, t)
                                  /\  pc[p_1] = "F4U2"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU2All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF4All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU2All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF4All(p_1, t)
                                  /\  pc[p_1] = "F4U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU7All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF4All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU7All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF4All(p_1, t)
                                  /\  pc[p_1] = "F4U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU8All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF4All(p_1, t))'
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU8All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF4All(p_1, t))'
               BY DEF InvF4
             <4> PICK told \in M: \/  /\ told.ret[p] = BOT
                                      /\ t.ret = [told.ret EXCEPT ![p] = ACK]
@@ -4946,32 +4948,32 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                                 NEW t \in M'
                          PROVE  (/\  pc[p_1] = "F7"    =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "F"
-                                                           /\ t.arg[p_1] \in NodeSet
-                                                           /\ SameRoot(t, c[p_1], t.arg[p_1])
-                                                           /\ InvF7All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet
+                                                         /\ SameRoot(t, c[p_1], t.arg[p_1])
+                                                         /\ InvF7All(p_1, t)
                                  /\  pc[p_1] = "F7U1"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF7All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF7All(p_1, t)
                                  /\  pc[p_1] = "F7U2"  =>  /\ t.ret[p_1] = BOT
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU2All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF7All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU2All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF7All(p_1, t)
                                  /\  pc[p_1] = "F7U7"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU7All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], u_U[p_1])
-                                                           /\ InvF7All(p_1, t)
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU7All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], u_U[p_1])
+                                                         /\ InvF7All(p_1, t)
                                  /\  pc[p_1] = "F7U8"  =>  /\ t.ret[p_1] \in {BOT, ACK}
                                                            /\ t.op[p_1] = "U"
-                                                           /\ t.arg[p_1] \in NodeSet \X NodeSet
-                                                           /\ InvU8All(p_1, t)
-                                                           /\ SameRoot(t, c[p_1], v_U[p_1])
-                                                           /\ InvF7All(p_1, t))'
+                                                         /\ t.arg[p_1] \in NodeSet \X NodeSet
+                                                         /\ InvU8All(p_1, t)
+                                                         /\ SameRoot(t, c[p_1], v_U[p_1])
+                                                         /\ InvF7All(p_1, t))'
               BY DEF InvF7
             <4> PICK told \in M: \/  /\ told.ret[p] = BOT
                                      /\ t.ret = [told.ret EXCEPT ![p] = ACK]
@@ -5604,7 +5606,7 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                 <6> (F[i].parent = u_U[p])'
                     BY DEF Inv, TypeOK, Valid_v_U, Valid_F, FieldSet
                 <6> QED
-                    BY DEF Inv, TypeOK, Valid_v_U, Valid_u_U, SameRoot, InvU6, InvU6All, Valid_F, FieldSet
+                    BY DEF Inv, TypeOK, Valid_v_U, Valid_u_U, SameRoot, InvU6, InvU6All
               <5>2. CASE F[i].bit = 0
                 <6> SameRoot(told, i, F[i].parent)
                     BY <5>2 DEF Inv, SigmaRespectsShared, SameRoot
@@ -5647,7 +5649,7 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                 BY <4>b DEF Linearizable
           <3>22. QED
             BY <3>1, <3>10, <3>11, <3>12, <3>13, <3>14, <3>15, <3>16, <3>17, <3>18, <3>19, <3>2, <3>20, <3>21, <3>3, <3>4, <3>5, <3>6, <3>7, <3>8, <3>9 DEF Inv
-        <2>2. CASE /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank+1, bit |-> 1]]
+        <2>2. CASE /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank, bit |-> 1]]
                    /\ M' = M
                    /\ pc' = [pc EXCEPT ![p] = "U7"]
                    /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
@@ -6381,5 +6383,10 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
 
 =============================================================================
 \* Modification History
-\* Last modified Sun May 04 21:58:20 EDT 2025 by karunram
+\* Last modified Sun May 04 19:35:06 EDT 2025 by karunram
 \* Created Thu May 01 02:16:41 EDT 2025 by karunram
+
+=============================================================================
+\* Modification History
+\* Last modified Fri May 02 16:20:50 EDT 2025 by karunram
+\* Created Fri Apr 04 00:28:14 EDT 2025 by karunram

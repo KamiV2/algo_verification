@@ -5604,7 +5604,7 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
                 <6> (F[i].parent = u_U[p])'
                     BY DEF Inv, TypeOK, Valid_v_U, Valid_F, FieldSet
                 <6> QED
-                    BY DEF Inv, TypeOK, Valid_v_U, Valid_u_U, SameRoot, InvU6, InvU6All, Valid_F, FieldSet
+                    BY DEF Inv, TypeOK, Valid_v_U, Valid_u_U, SameRoot, InvU6, InvU6All
               <5>2. CASE F[i].bit = 0
                 <6> SameRoot(told, i, F[i].parent)
                     BY <5>2 DEF Inv, SigmaRespectsShared, SameRoot
@@ -6381,5 +6381,5 @@ THEOREM U6Inv == Inv /\ (\E p \in PROCESSES: U6(p)) => Inv'
 
 =============================================================================
 \* Modification History
-\* Last modified Sun May 04 21:58:20 EDT 2025 by karunram
+\* Last modified Sun May 04 21:56:54 EDT 2025 by karunram
 \* Created Thu May 01 02:16:41 EDT 2025 by karunram
