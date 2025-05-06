@@ -1,0 +1,16 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: >-
+  TLA+ Linearizability proof for a concurrent union-find
+  object
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Karun
+    family-names: Ram
+    email: karun.ram.25@dartmouth.edu
+repository-code: 'https://github.com/KamiV2/linearizability-jt-union-find'
