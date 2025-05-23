@@ -1,4 +1,6 @@
------------------------ MODULE StrongLinearizability -----------------------
+---------------------------- MODULE jtunionfind ----------------------------
+
+\* Main module file. See Linearizability.tla for the proof of linearizability.
 
 EXTENDS Implementation, TypeSafety, Inv, Lemmas, FiniteSetTheorems, Linearizability
 
@@ -545,32 +547,12 @@ THEOREM NextSLPrelim == Inv /\ SLEquivalent /\ [Next]_varlist => SLEquivalent'
     <2>4. CASE /\ a_U[p].rank = b_U[p].rank
                /\ u_U[p] > v_U[p] 
                /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]
-        <3> USE <1>14, <2>4 DEF U6
-        <3>f. ~(\/ a_U[p].rank < b_U[p].rank 
+        <3>a. ~(\/ a_U[p].rank < b_U[p].rank 
                 \/ a_U[p].rank > b_U[p].rank 
                 \/ (a_U[p].rank = b_U[p].rank /\ u_U[p] < v_U[p]))
             BY <2>4 DEF Inv, TypeOK, Valid_a_U, Valid_b_U, FieldSet, Valid_u_U, Valid_v_U, NodeSet
-        <3>x. \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank+1, bit |-> 0]]
-                  /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
-                                                              /\ t.ret = [told.ret EXCEPT ![p] = ACK]
-                                                              /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[told.arg[p][2]] 
-                                                                                                  THEN told.sigma[told.arg[p][1]] 
-                                                                                                  ELSE told.sigma[i]]
-                                                              /\ t.op = told.op
-                                                              /\ t.arg = told.arg
-                                                          \/  /\ told.ret[p] = ACK
-                                                              /\ t.ret = told.ret
-                                                              /\ t.sigma = told.sigma
-                                                              /\ t.op = told.op
-                                                              /\ t.arg = told.arg}
-                  /\ pc' = [pc EXCEPT ![p] = "U7"]
-                  /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
-              \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank+1, bit |-> 1]]
-                  /\ M' = M
-                  /\ pc' = [pc EXCEPT ![p] = "U7"]
-                  /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
-            BY <3>f, <1>14 DEF U6
-        <3>1. CASE M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
+        <3> \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank+1, bit |-> 0]]
+                /\ M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
                                                             /\ t.ret = [told.ret EXCEPT ![p] = ACK]
                                                             /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[told.arg[p][2]] 
                                                                                                 THEN told.sigma[told.arg[p][1]] 
@@ -582,94 +564,24 @@ THEOREM NextSLPrelim == Inv /\ SLEquivalent /\ [Next]_varlist => SLEquivalent'
                                                             /\ t.sigma = told.sigma
                                                             /\ t.op = told.op
                                                             /\ t.arg = told.arg}
-            <4> PICK told \in M: /\ (told.ret[p] = BOT \/ told.ret[p] = ACK) 
-                                 /\ told.arg[p] \in NodeSet \X NodeSet  
-                BY DEF Inv, InvU6, Linearizable
-            <4> HIDE <1>14, <2>4 DEF U6
-            <4>a. told \in Configs
-                BY <3>x DEF Inv, TypeOK, Valid_M
-            <4>b. M' = {t \in Configs: \E rold \in M:
-                            (\/ /\ rold.ret[p] = BOT 
-                                /\ t.sigma = [i \in NodeSet |-> IF rold.sigma[i] = rold.sigma[rold.arg[p][2]] 
-                                                                THEN rold.sigma[rold.arg[p][1]] 
-                                                                ELSE rold.sigma[i]]
-                                /\ t.ret = [rold.ret EXCEPT ![p] = ACK]
-                                /\ t.op = rold.op
-                                /\ t.arg = rold.arg
-                             \/ /\ rold.ret[p] = ACK
-                                /\ t.sigma = rold.sigma
-                                /\ t.ret = rold.ret
-                                /\ t.op = rold.op
-                                /\ t.arg = rold.arg) /\ rold = told}
-                BY <3>1 DEF TypeOK, Valid_M, SLEquivalent
-            <4>c. M' = {t \in Configs:
-                             \/ /\ told.ret[p] = BOT 
-                                /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[told.arg[p][2]] 
-                                                                THEN told.sigma[told.arg[p][1]] 
-                                                                ELSE told.sigma[i]]
-                                /\ t.ret = [told.ret EXCEPT ![p] = ACK]
-                                /\ t.op = told.op
-                                /\ t.arg = told.arg
-                             \/ /\ told.ret[p] = ACK
-                                /\ t.sigma = told.sigma
-                                /\ t.ret = told.ret
-                                /\ t.op = told.op
-                                /\ t.arg = told.arg}
-              BY <4>b
-            <4>1. CASE told.ret[p] = BOT
-                <5>a. ACK # BOT
-                    BY AckBotDef
-                <5> USE <4>1
-                <5> M' = {t \in Configs: /\ told.ret[p] = BOT 
-                                         /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[told.arg[p][2]] 
-                                                                         THEN told.sigma[told.arg[p][1]] 
-                                                                         ELSE told.sigma[i]]
-                                         /\ t.ret = [told.ret EXCEPT ![p] = ACK]
-                                         /\ t.op = told.op
-                                         /\ t.arg = told.arg}
-                    BY <4>a, <4>c, <5>a DEF TypeOK, Valid_M, SLEquivalent, Configs, ReturnSet
-                <5> DEFINE t == [sigma |-> [j \in NodeSet |-> IF told.sigma[j] = told.sigma[told.arg[p][2]] 
-                                                                  THEN told.sigma[told.arg[p][1]] 
-                                                                  ELSE told.sigma[j]],
-                                 ret |-> [told.ret EXCEPT ![p] = ACK],
-                                 op |-> told.op,
-                                 arg |-> told.arg]
-                <5>b. t \in M'
-                    BY <4>a DEF Inv, Configs, StateSet, OpSet, ArgSet, ReturnSet, TypeOK, t, Valid_M
-                <5>c. (\A r \in M': r = t)
-                    BY <4>a DEF Inv, Configs, StateSet, OpSet, ArgSet, ReturnSet, TypeOK, t, Valid_M
-                <5> QED
-                    BY <5>b, <5>c DEF SLEquivalent
-            <4>2. CASE told.ret[p] = ACK
-                <5> USE <4>2
-                <5>a. ACK # BOT
-                    BY AckBotDef
-                <5> M' = {t \in Configs: /\ told.ret[p] = ACK 
-                                         /\ t.sigma = told.sigma
-                                         /\ t.ret = told.ret
-                                         /\ t.op = told.op
-                                         /\ t.arg = told.arg}
-                    BY <4>a, <4>c, <5>a DEF TypeOK, Valid_M, SLEquivalent, Configs, ReturnSet
-                <5> \A t \in M': t = told
-                    BY <4>a DEF Inv, Configs, StateSet, OpSet, ArgSet, ReturnSet, TypeOK, Valid_M
-                <5> QED
-                    BY DEF SLEquivalent
-            <4> QED
-                BY <4>1, <4>2
-        <3>2. CASE M' = M
-            BY <3>2 DEF SLEquivalent
+                /\ pc' = [pc EXCEPT ![p] = "U7"]
+                /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
+            \/  /\ F' = [F EXCEPT ![v_U[p]] = [parent |-> u_U[p], rank |-> b_U[p].rank+1, bit |-> 1]]
+                /\ M' = M
+                /\ pc' = [pc EXCEPT ![p] = "U7"]
+                /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
+                BY <2>4, <3>a, <1>14 DEF U6
         <3> QED
-            BY <3>x, <3>1, <3>2
-      <2>5 CASE ~(\/ /\ a_U[p].rank < b_U[p].rank 
-                     /\ F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1] 
-                  \/ /\ a_U[p].rank > b_U[p].rank 
-                     /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]  
-                  \/ /\ a_U[p].rank = b_U[p].rank
-                     /\ u_U[p] < v_U[p] 
-                     /\ F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1] 
-                  \/ /\ a_U[p].rank = b_U[p].rank
-                     /\ u_U[p] > v_U[p] 
-                     /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1])
+    <2>5. CASE    ~(\/ /\ a_U[p].rank < b_U[p].rank 
+                       /\ F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1] 
+                    \/ /\ a_U[p].rank > b_U[p].rank 
+                       /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1]  
+                    \/ /\ a_U[p].rank = b_U[p].rank
+                       /\ u_U[p] < v_U[p] 
+                       /\ F[u_U[p]] = [parent |-> a_U[p].parent, rank |-> a_U[p].rank, bit |-> 1] 
+                    \/ /\ a_U[p].rank = b_U[p].rank
+                       /\ u_U[p] > v_U[p] 
+                       /\ F[v_U[p]] = [parent |-> b_U[p].parent, rank |-> b_U[p].rank, bit |-> 1])
         <3> /\ pc' = [pc EXCEPT ![p] = "U7"]
             /\ F' = F
             /\ M' = M
@@ -831,8 +743,8 @@ THEOREM SLInvariantHolds == Spec => [](Linearizable /\ SLEquivalent)
 
 THEOREM StrongLinearizability == Spec => [](Cardinality(M) = 1)
     BY PTL, SLEquiv, SLInvariantHolds
-
+    
 =============================================================================
 \* Modification History
-\* Last modified Fri May 23 14:46:27 EDT 2025 by karunram
-\* Created Mon May 19 10:19:30 EDT 2025 by karunram
+\* Last modified Fri May 23 14:31:23 EDT 2025 by karunram
+\* Created Fri Apr 04 00:28:14 EDT 2025 by karunram

@@ -1,4 +1,6 @@
------------------------ MODULE StrongLinearizability -----------------------
+---------------------------- MODULE jtunionfind ----------------------------
+
+\* Main module file. See Linearizability.tla for the proof of linearizability.
 
 EXTENDS Implementation, TypeSafety, Inv, Lemmas, FiniteSetTheorems, Linearizability
 
@@ -831,8 +833,8 @@ THEOREM SLInvariantHolds == Spec => [](Linearizable /\ SLEquivalent)
 
 THEOREM StrongLinearizability == Spec => [](Cardinality(M) = 1)
     BY PTL, SLEquiv, SLInvariantHolds
-
+    
 =============================================================================
 \* Modification History
-\* Last modified Fri May 23 14:46:27 EDT 2025 by karunram
-\* Created Mon May 19 10:19:30 EDT 2025 by karunram
+\* Last modified Fri May 23 14:43:11 EDT 2025 by karunram
+\* Created Fri Apr 04 00:28:14 EDT 2025 by karunram

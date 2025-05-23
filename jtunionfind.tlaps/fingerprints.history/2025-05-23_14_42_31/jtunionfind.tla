@@ -1,4 +1,6 @@
------------------------ MODULE StrongLinearizability -----------------------
+---------------------------- MODULE jtunionfind ----------------------------
+
+\* Main module file. See Linearizability.tla for the proof of linearizability.
 
 EXTENDS Implementation, TypeSafety, Inv, Lemmas, FiniteSetTheorems, Linearizability
 
@@ -569,7 +571,7 @@ THEOREM NextSLPrelim == Inv /\ SLEquivalent /\ [Next]_varlist => SLEquivalent'
                   /\ M' = M
                   /\ pc' = [pc EXCEPT ![p] = "U7"]
                   /\ UNCHANGED <<u_F, a_F, b_F, u_U, v_U, a_U, b_U, c, d>>
-            BY <3>f, <1>14 DEF U6
+            BY <2>3, <3>f, <1>14 DEF U6
         <3>1. CASE M' = {t \in Configs: \E told \in M:  \/  /\ told.ret[p] = BOT
                                                             /\ t.ret = [told.ret EXCEPT ![p] = ACK]
                                                             /\ t.sigma = [i \in NodeSet |-> IF told.sigma[i] = told.sigma[told.arg[p][2]] 
@@ -585,7 +587,7 @@ THEOREM NextSLPrelim == Inv /\ SLEquivalent /\ [Next]_varlist => SLEquivalent'
             <4> PICK told \in M: /\ (told.ret[p] = BOT \/ told.ret[p] = ACK) 
                                  /\ told.arg[p] \in NodeSet \X NodeSet  
                 BY DEF Inv, InvU6, Linearizable
-            <4> HIDE <1>14, <2>4 DEF U6
+            <4> HIDE <1>14, <2>3 DEF U6
             <4>a. told \in Configs
                 BY <3>x DEF Inv, TypeOK, Valid_M
             <4>b. M' = {t \in Configs: \E rold \in M:
@@ -831,8 +833,8 @@ THEOREM SLInvariantHolds == Spec => [](Linearizable /\ SLEquivalent)
 
 THEOREM StrongLinearizability == Spec => [](Cardinality(M) = 1)
     BY PTL, SLEquiv, SLInvariantHolds
-
+    
 =============================================================================
 \* Modification History
-\* Last modified Fri May 23 14:46:27 EDT 2025 by karunram
-\* Created Mon May 19 10:19:30 EDT 2025 by karunram
+\* Last modified Fri May 23 14:42:28 EDT 2025 by karunram
+\* Created Fri Apr 04 00:28:14 EDT 2025 by karunram
